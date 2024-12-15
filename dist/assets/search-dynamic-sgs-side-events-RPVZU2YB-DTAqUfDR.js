@@ -1,5 +1,5 @@
 const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/index-C2hyIV5J.js","assets/index-DBrHpClR.js","assets/index-D35V1hng.css"])))=>i.map(i=>d[i]);
-import{x as e,s as t,_ as B,v as D}from "./index-DBrHpClR.js";import{p as R}from "./chunk-Y3BVWVFU-CA85Hzup.js";var a=null;async function S(){return a??(a=n())}async function n(){return R(await e.kpuzzle(),`SubgroupSizes 24 21 18 15 12 9 6
+import{x as e,s as t,_ as B,v as D}from"./index-DBrHpClR.js";import{p as R}from"./chunk-Y3BVWVFU-CA85Hzup.js";var a=null;async function S(){return a??(a=n())}async function n(){return R(await e.kpuzzle(),`SubgroupSizes 24 21 18 15 12 9 6
 
 Alg F
 Alg F2
