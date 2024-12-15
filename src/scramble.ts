@@ -67,12 +67,13 @@ const checkScramble = (cubeMoves: string[]): string => {
         console.log("wrongCounter", wrongCounter);
         scrambleDiv!.innerHTML = `${inverseMoves}`;
     } else {
-        scrambleDiv!.innerHTML = coloredScramble;
+        scrambleDiv!.innerHTML = coloredScramble ?? "";
         console.log("cubeMoves.length", cubeMoves.length);
         console.log("scramble.length", scrambleMoves?.length);
     }
 
 
+    // @ts-ignore
     if(wrongCounter === 0 && cubeMoves.length === scrambleMoves?.length && timerState !== "RUNNING") {
         activateTimer();
         scrambleDiv!.innerHTML = ""
