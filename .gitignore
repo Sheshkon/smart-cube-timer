@@ -4,6 +4,6 @@
 !.gitignore
 
 # Include only the specific folder (e.g., `my-folder`)
-!dist/
-dist/*
-!dist/**/*
+!docs/
+docs/*
+!docs/**/*
