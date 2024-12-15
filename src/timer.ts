@@ -4,7 +4,7 @@ import {cubeTimestampLinearFit, GanCubeMove, makeTimeFromTimestamp} from "gan-we
 import {conn, twistyPlayer} from "./index.ts";
 import {patternToFacelets, SOLVED_STATE} from "./utils.ts";
 import $ from "jquery";
-import {saveResult, Result} from "./stats.ts";
+import {saveResult} from "./stats.ts";
 import {generateScramble, scramble} from "./scramble.ts";
 
 var timerState: "IDLE" | "READY" | "RUNNING" | "STOPPED" = "IDLE";

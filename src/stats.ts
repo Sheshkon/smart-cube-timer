@@ -21,7 +21,7 @@ const saveResult = (result: Result) => {
 };
 
 // Add a new entry to the table
-const addEntryToTable = (entry: Result, index: number, size) => {
+const addEntryToTable = (entry: Result, index: number, size: number) => {
     const row = document.createElement("tr");
 
     row.innerHTML = `
