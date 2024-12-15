@@ -1,5 +1,9 @@
+# Ignore all files and folders
+*
 # Exclude .gitignore itself
 !.gitignore
 
 # Include only the specific folder (e.g., `my-folder`)
 !dist/
+dist/*
+!dist/**/*
