@@ -40,7 +40,7 @@ function setTimerState(state: typeof timerState) {
             var lastMove = fittedMoves.slice(-1).pop();
             const time = setTimerValue(lastMove ? lastMove.cubeTimestamp! : 0);
             console.log(time)
-            saveResult({time, scramble: scramble?.toString()})
+            saveResult({originalTime: time.originalTime, time: time.time, scramble: scramble?.toString()})
             setTimerState("IDLE")
             generateScramble()
             break;
@@ -52,7 +52,7 @@ function setTimerValue(timestamp: number) {
     let t = makeTimeFromTimestamp(timestamp);
     let time = `${t.minutes}:${t.seconds.toString(10).padStart(2, '0')}.${t.milliseconds.toString(10).padStart(3, '0')}`
     $('#timer').html(time);
-    return time
+    return {time: time, originalTime: t}
 }
 
 let localTimer: Subscription | null = null;

@@ -177,3 +177,11 @@ th {
 #reset-state {
     display: none;
 }
+
+.stats-table {
+    height: 35%;
+}
+
+.stats-table td,th {
+    text-align: center;
+}

@@ -1,5 +1,3 @@
-import './style.css'
-
 import $ from 'jquery';
 import {TwistyPlayer} from 'cubing/twisty';
 
