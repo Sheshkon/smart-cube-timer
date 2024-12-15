@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>gan-cube-sample</title>
-  <script type="module" crossorigin src="/smart-cube-timer/assets/index-DQ6-KAep.js"></script>
-  <link rel="stylesheet" crossorigin href="/smart-cube-timer/assets/index-BHQ9TyPB.css">
+    <title>gan-cube-sample</title>
+  <script type="module" crossorigin src="/smart-cube-timer/assets/index-DBrHpClR.js"></script>
+  <link rel="stylesheet" crossorigin href="/smart-cube-timer/assets/index-D35V1hng.css">
 </head>
 
 <body>
@@ -21,7 +21,20 @@
     <div class="app-container">
         <div class="left-info">
             <div class="left-info-up"></div>
-            <div class="left-info-down"></div>
+            <div class="left-info-down">
+                <table class="stats-table">
+                    <thead>
+                    <tr>
+                        <th>Current AVG</th>
+                        <th>AVG 5</th>
+                        <th>AVG 12</th>
+                        <th>AVG 100</th>
+                    </tr>
+                    </thead>
+                    <tbody id="statsTableBody">
+                    </tbody>
+                </table>
+            </div>
         </div>
         <div class="cube-container">
             <div id="cube"></div>
@@ -29,7 +42,7 @@
                 <button id="connect">Connect</button>
                 <button id="reset-state">Reset State</button>
                 <button id="reset-gyro">Reset Gyro</button>
-<!--                <button id="show-full-info">Show Full Info</button>-->
+                <!--                <button id="show-full-info">Show Full Info</button>-->
             </div>
         </div>
         <div class="right-info">
@@ -43,7 +56,7 @@
                         <th>Scramble</th>
                     </tr>
                     </thead>
-                    <tbody id="tableBody">
+                    <tbody id="sessionTableBody">
                     </tbody>
                 </table>
             </div>
