@@ -9,7 +9,7 @@ html, body {
 }
 
 body {
-    background-color: #e3d48a;
+    background-color: #black;
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -161,6 +161,7 @@ table {
     height: 100%;
     table-layout: auto;
     border-collapse: collapse;
+    color: white;
 }
 
 th, td {
@@ -233,4 +234,8 @@ thead {
 #scramble-display span {
     white-space: nowrap;
     display: inline-block;
+}
+
+#battery {
+    width: 3rem
 }

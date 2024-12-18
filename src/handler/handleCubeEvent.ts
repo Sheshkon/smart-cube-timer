@@ -3,6 +3,7 @@ import handleGyroEvent from "./gyroHandler.ts";
 import {handleMoveEvent, handleFaceletsEvent} from "./moveHandler.ts";
 import $ from "jquery";
 import {twistyPlayer} from "../index.ts";
+const imgUrl = new URL('../../public/battery-0.svg', import.meta.url)
 
 function handleCubeEvent(event: GanCubeEvent) {
     if (event.type != "GYRO"){
@@ -21,12 +22,22 @@ function handleCubeEvent(event: GanCubeEvent) {
         $('#productDate').val(event.productDate || '- n/a -');
         $('#gyroSupported').val(event.gyroSupported ? "YES" : "NO");
     } else if (event.type == "BATTERY") {
+        $('#battery').attr('src',`${imgUrl.toString().replace("0", getBatteryNumber(event.batteryLevel))}`);
         $('#batteryLevel').val(event.batteryLevel + '%');
     } else if (event.type == "DISCONNECT") {
         twistyPlayer.alg = '';
         $('.info input').val('- n/a -');
         $('#connect').html('Connect');
     }
+}
+
+function getBatteryNumber(batteryLevel: number) {
+    if (batteryLevel > 80) return "3"
+    if (batteryLevel > 40) return "2"
+    if (batteryLevel > 15) return "1"
+    return "0"
+
+
 }
 
 export {
