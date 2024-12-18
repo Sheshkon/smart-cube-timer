@@ -12,7 +12,8 @@ let scramble: Alg | null = null
 
 const generateScramble = async () => {
     scramble = await randomScrambleForEvent("333");
-    scrambleDiv!.innerHTML = scramble.toString()
+
+    scrambleDiv!.innerHTML = scramble.toString().split(" ").map(move => colorizeMove(move)).join("");
     return scramble
 }
 
@@ -51,7 +52,7 @@ const checkScramble = (cubeMoves: string[]): string => {
         }
 
         return colorizeMove(move);
-    }).join(" ");
+    }).join("");
 
     if (wrongCounter > 1) {
         inverseMoves = new Alg(cubeMoves.slice(startWrongIndex, cubeMoves.length).join(" "))

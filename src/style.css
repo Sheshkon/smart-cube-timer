@@ -223,3 +223,14 @@ thead {
     position: sticky;
     top: 0;
 }
+
+#scramble-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+#scramble-display span {
+    white-space: nowrap;
+    display: inline-block;
+}
