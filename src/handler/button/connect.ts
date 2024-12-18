@@ -20,6 +20,7 @@ $('#connect').on('click', async () => {
         setConnection(null);
         $('#reset-gyro').hide();
         $('#reset-state').hide();
+        $('#battery').hide();
 
 
     } else {
@@ -34,6 +35,7 @@ $('#connect').on('click', async () => {
         await generateScramble()
         $('#reset-gyro').show();
         $('#reset-state').show();
+        $('#battery').show();
     }
 });
 
