@@ -21,7 +21,7 @@ body {
 
 .app-container {
     display: flex;
-    height: calc(100vh);
+    /*height: calc(100vh);*/
 }
 
 .cube-container {
