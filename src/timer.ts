@@ -27,6 +27,7 @@ function setTimerState(state: typeof timerState) {
             setTimerValue(0);
             $('#timer').show();
             $('#timer').css('color', '#0f0');
+            $('.scramble-container').hide()
             break;
         case 'RUNNING':
             solutionMoves = [];
@@ -35,7 +36,7 @@ function setTimerState(state: typeof timerState) {
             break;
         case 'STOPPED':
             stopLocalTimer();
-            $('#timer').css('color', '#fff');
+            $('.scramble-container').show()
             var fittedMoves = cubeTimestampLinearFit(solutionMoves);
             var lastMove = fittedMoves.slice(-1).pop();
             const time = setTimerValue(lastMove ? lastMove.cubeTimestamp! : 0);
