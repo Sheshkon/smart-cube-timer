@@ -1,0 +1,96 @@
+@use "../../shared/styles/constants/colors" as c;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls {
+  display: flex;
+  gap: 4px;
+}
+
+.rubik-cube {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  padding: 40px;
+  transform-style: preserve-3d;
+  transform: rotateX(20deg) rotateY(20deg);
+  animation: rotateCube 10s infinite linear;
+}
+
+.face {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background-color: c.$gray_100;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.front {
+  transform: rotateY(0deg) translateZ(100px);
+}
+
+.back {
+  transform: rotateY(180deg) translateZ(100px);
+}
+
+.left {
+  transform: rotateY(-90deg) translateZ(100px);
+}
+
+.right {
+  transform: rotateY(90deg) translateZ(100px);
+}
+
+.top {
+  transform: rotateX(90deg) translateZ(100px);
+}
+
+.bottom {
+  transform: rotateX(-90deg) translateZ(100px);
+}
+
+.square {
+  width: 100%;
+  height: 100%;
+}
+
+.red {
+  background-color: #f44336;
+}
+
+.green {
+  background-color: #4caf50;
+}
+
+.blue {
+  background-color: #2196f3;
+}
+
+.yellow {
+  background-color: #ffeb3b;
+}
+
+.orange {
+  background-color: #ff9800;
+}
+
+.white {
+  background-color: #ffffff;
+}
+
+@keyframes rotateCube {
+  0% {
+    transform: rotateX(20deg) rotateY(0deg);
+  }
+  100% {
+    transform: rotateX(20deg) rotateY(360deg);
+  }
+}

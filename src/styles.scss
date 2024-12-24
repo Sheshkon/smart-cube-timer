@@ -1,0 +1,32 @@
+@use "@angular/material" as mat;
+@use "./app/shared/styles/theme/palette" as p;
+@use "./app/shared/styles/constants/colors" as c;
+
+html {
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: p.$primary-palette,
+        tertiary: p.$tertiary-palette,
+      ),
+      typography: (
+        plain-family: Roboto,
+        brand-family: sans-serif,
+        bold-weight: 900,
+        medium-weight: 500,
+        regular-weight: 300,
+      ),
+      density: 0,
+    )
+  );
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
