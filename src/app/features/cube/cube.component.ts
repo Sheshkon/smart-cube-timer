@@ -1,42 +1,103 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { CubeService } from '../../shared/services/cube.service';
 import { cubeQuaternion } from '../../shared/utilities/cube-util';
+import {
+  catchError,
+  from,
+  map,
+  Observable,
+  of,
+  switchMap,
+  tap,
+  throwError,
+} from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 import { TwistyPlayer } from 'cubing/twisty';
 
 @Component({
   selector: 'app-cube',
-  imports: [MatButtonModule],
+  imports: [MatButtonModule, AsyncPipe],
   templateUrl: './cube.component.html',
   styleUrl: './cube.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CubeComponent implements OnInit {
+export class CubeComponent implements AfterViewInit {
   @ViewChild('cubeContainer', { static: true }) cubeContainer!: ElementRef;
 
-  constructor(private _cubeService: CubeService) {}
+  private _cubeService = inject(CubeService);
 
-  ngOnInit(): void {
-    const twistyPlayerRef: any = this._cubeService.twistyPlayerRef;
+  isConnected$: Observable<boolean> = this._cubeService.connection$.pipe(
+    map(Boolean)
+  );
 
-    if (this.cubeContainer.nativeElement && twistyPlayerRef) {
-      this.cubeContainer.nativeElement.appendChild(twistyPlayerRef);
+  public ngAfterViewInit(): void {
+    const twistyPlayer: TwistyPlayer = this._cubeService.twistyPlayer;
 
-      this.startAnimation(twistyPlayerRef);
+    if (this.cubeContainer.nativeElement && twistyPlayer) {
+      this.cubeContainer.nativeElement.appendChild(twistyPlayer);
+
+      this.startAnimation(twistyPlayer);
     }
   }
 
-  private async startAnimation(twistyPlayerRef: any): Promise<void> {
-    const vantageList = await twistyPlayerRef.experimentalCurrentVantages();
-    const twistyVantage = vantageList[0];
-    const twistyScene = await twistyVantage?.scene?.scene();
+  public onConnect(): void {
+    this._cubeService.handleConnection();
+  }
 
-    const animateCubeOrientation = () => {
-      twistyScene?.quaternion.slerp(cubeQuaternion, 0.25);
-      twistyVantage?.render();
+  private startAnimation(twistyPlayer: TwistyPlayer): void {
+    let animationFrameId: number | null = null;
 
-      requestAnimationFrame(animateCubeOrientation);
-    };
+    this.isConnected$
+      .pipe(
+        switchMap((isConnected) => {
+          if (!isConnected) {
+            if (animationFrameId !== null) {
+              cancelAnimationFrame(animationFrameId);
+              animationFrameId = null;
+            }
+            return of(null);
+          }
+          return from(twistyPlayer.experimentalCurrentVantages()).pipe(
+            map((vantageList) => [...vantageList][0]),
+            switchMap((twistyVantage) =>
+              twistyVantage?.scene?.scene()
+                ? from(twistyVantage?.scene?.scene()).pipe(
+                    switchMap((twistyScene) =>
+                      of({ twistyVantage, twistyScene })
+                    )
+                  )
+                : throwError(() => new Error('No scene avaialble'))
+            ),
+            tap(({ twistyVantage, twistyScene }) => {
+              const animateCubeOrientation = () => {
+                twistyScene?.quaternion.slerp(cubeQuaternion, 0.25);
+                twistyVantage?.render();
+                animationFrameId = requestAnimationFrame(
+                  animateCubeOrientation
+                );
+              };
 
-    animateCubeOrientation();
+              if (animationFrameId !== null) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+              }
+              animateCubeOrientation();
+            }),
+            catchError((err) => {
+              console.error(err);
+              return of(null);
+            })
+          );
+        })
+      )
+      .subscribe();
   }
 }

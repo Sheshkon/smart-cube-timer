@@ -1,7 +1,12 @@
 <div id="cube" #cubeContainer></div>
 
 <div class="controls">
-  <button mat-raised-button id="connect">Connect</button>
+  @let isConnected = isConnected$ | async;
+  <button mat-raised-button id="connect" (click)="onConnect()">
+    {{ isConnected ? "Disconnect" : "Connect" }}
+  </button>
+  @if (isConnected) {
   <button mat-raised-button id="reset-state">Reset State</button>
   <button mat-raised-button id="reset-gyro">Reset Gyro</button>
+  }
 </div>
