@@ -1,9 +1,11 @@
 import {
-  AfterViewInit,
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
+  computed,
   ElementRef,
   inject,
+  Signal,
   ViewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,43 +21,44 @@ import {
   tap,
   throwError,
 } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
 import { TwistyPlayer } from 'cubing/twisty';
+import { GanCubeConnection } from 'gan-web-bluetooth';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-cube',
-  imports: [MatButtonModule, AsyncPipe],
+  imports: [MatButtonModule],
   templateUrl: './cube.component.html',
   styleUrl: './cube.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CubeComponent implements AfterViewInit {
+export class CubeComponent {
   @ViewChild('cubeContainer', { static: true }) cubeContainer!: ElementRef;
+  public isConnected = computed(() => !!this.#connection());
+  #isConnected$: Observable<boolean> = toObservable(this.isConnected);
 
-  private _cubeService = inject(CubeService);
+  #cubeService = inject(CubeService);
 
-  isConnected$: Observable<boolean> = this._cubeService.connection$.pipe(
-    map(Boolean)
-  );
+  #connection: Signal<GanCubeConnection | null> = this.#cubeService.connection;
 
-  public ngAfterViewInit(): void {
-    const twistyPlayer: TwistyPlayer = this._cubeService.twistyPlayer;
+  #afterNextRender = afterNextRender(() => {
+    const twistyPlayer: TwistyPlayer = this.#cubeService.twistyPlayer;
 
     if (this.cubeContainer.nativeElement && twistyPlayer) {
       this.cubeContainer.nativeElement.appendChild(twistyPlayer);
 
-      this.startAnimation(twistyPlayer);
+      this.#startAnimation(twistyPlayer);
     }
-  }
+  });
 
   public onConnect(): void {
-    this._cubeService.handleConnection();
+    this.#cubeService.handleConnection();
   }
 
-  private startAnimation(twistyPlayer: TwistyPlayer): void {
+  #startAnimation(twistyPlayer: TwistyPlayer): void {
     let animationFrameId: number | null = null;
 
-    this.isConnected$
+    this.#isConnected$
       .pipe(
         switchMap((isConnected) => {
           if (!isConnected) {

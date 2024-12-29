@@ -1,15 +1,11 @@
-import { ChangeDetectorRef, inject, Injectable } from '@angular/core';
 import {
-  BehaviorSubject,
-  catchError,
-  filter,
-  from,
-  Observable,
-  of,
-  take,
-  takeUntil,
-  tap,
-} from 'rxjs';
+  computed,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { catchError, from, of, Subject, take, takeUntil, tap } from 'rxjs';
 import { TwistyPlayer } from 'cubing/twisty';
 import { HardwareInfo } from '../models/hardwareInfo';
 import {
@@ -22,9 +18,20 @@ import { CubeEventType } from '../models/cube';
 import * as THREE from 'three';
 import { cubeQuaternion, HOME_ORIENTATION } from '../utilities/cube-util';
 
+interface CubeState {
+  connection: GanCubeConnection | null;
+  hardwareInfo: HardwareInfo;
+  batteryLevel: number;
+  scramble: string[];
+  timerState: GanTimerState;
+  lastMoves: string[];
+  solutionMoves: string[];
+  basis: THREE.Quaternion | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CubeService {
-  readonly twistyPlayer = new TwistyPlayer({
+  public readonly twistyPlayer = new TwistyPlayer({
     puzzle: '3x3x3',
     visualization: 'PG3D',
     alg: '',
@@ -39,7 +46,7 @@ export class CubeService {
     tempoScale: 5,
   });
 
-  private readonly hardwareInitialState: HardwareInfo = {
+  readonly #hardwareInitialState: HardwareInfo = {
     name: '- n/a -',
     version: '- n/a -',
     softwareVersion: '- n/a -',
@@ -47,81 +54,91 @@ export class CubeService {
     gyroSupported: 'NO',
   };
 
-  private readonly state = {
-    connection: new BehaviorSubject<GanCubeConnection | null>(null),
-    hardwareInfo: new BehaviorSubject<HardwareInfo>(this.hardwareInitialState),
-    batteryLevel: new BehaviorSubject<number>(0),
-    scramble: new BehaviorSubject<string[]>([]),
-    timerState: new BehaviorSubject<GanTimerState>(GanTimerState.IDLE),
-    lastMoves: new BehaviorSubject<string[]>([]),
-    solutionMoves: new BehaviorSubject<string[]>([]),
-    basis: new BehaviorSubject<THREE.Quaternion | null>(null),
-  };
+  #state: WritableSignal<CubeState> = signal({
+    connection: null,
+    hardwareInfo: this.#hardwareInitialState,
+    batteryLevel: 0,
+    scramble: [],
+    timerState: GanTimerState.IDLE,
+    lastMoves: [],
+    solutionMoves: [],
+    basis: null,
+  });
 
-  connection$: Observable<GanCubeConnection | null> =
-    this.state.connection.asObservable();
-  hardwareInfo$: Observable<HardwareInfo> =
-    this.state.hardwareInfo.asObservable();
-  batteryLevel$: Observable<number> = this.state.batteryLevel.asObservable();
-  scramble$: Observable<string[]> = this.state.scramble.asObservable();
-  timerState$: Observable<GanTimerState> = this.state.timerState.asObservable();
-  lastMoves$: Observable<string[]> = this.state.lastMoves.asObservable();
-  solutionMoves$: Observable<string[]> =
-    this.state.solutionMoves.asObservable();
+  public connection: Signal<GanCubeConnection | null> = computed(
+    () => this.#state().connection
+  );
+  public hardwareInfo: Signal<HardwareInfo> = computed(
+    () => this.#state().hardwareInfo
+  );
+  public batteryLevel: Signal<number> = computed(
+    () => this.#state().batteryLevel
+  );
+  public scramble: Signal<string[]> = computed(() => this.#state().scramble);
+  public timerState: Signal<GanTimerState> = computed(
+    () => this.#state().timerState
+  );
+  public lastMoves: Signal<string[]> = computed(() => this.#state().lastMoves);
+  public solutionMoves: Signal<string[]> = computed(
+    () => this.#state().solutionMoves
+  );
+  #basis: Signal<THREE.Quaternion | null> = computed(() => this.#state().basis);
 
-  setConnection(connection: GanCubeConnection | null): void {
-    this.state.connection.next(connection);
+  #disconnect: Subject<void> = new Subject();
+
+  public setConnection(connection: GanCubeConnection | null): void {
+    this.#state.update((state) => ({ ...state, connection }));
   }
 
-  setHardwareInfo(hardwareInfo: Partial<HardwareInfo>): void {
-    this.state.hardwareInfo.next({
-      ...this.state.hardwareInfo.value,
-      ...hardwareInfo,
-    });
+  public setHardwareInfo(hardwareInfo: HardwareInfo): void {
+    this.#state.update((state) => ({ ...state, hardwareInfo }));
   }
 
-  setBatteryLevel(batteryLevel: number): void {
-    this.state.batteryLevel.next(batteryLevel);
+  public setBatteryLevel(batteryLevel: number): void {
+    this.#state.update((state) => ({ ...state, batteryLevel }));
   }
 
-  setScramble(scramble: string[]): void {
-    this.state.scramble.next(scramble);
+  public setScramble(scramble: string[]): void {
+    this.#state.update((state) => ({ ...state, scramble }));
   }
 
-  setTimerState(timerState: GanTimerState): void {
-    this.state.timerState.next(timerState);
+  public setTimerState(timerState: GanTimerState): void {
+    this.#state.update((state) => ({ ...state, timerState }));
   }
 
-  setLastMoves(lastMoves: string[]): void {
-    this.state.lastMoves.next(lastMoves);
+  public setLastMoves(lastMoves: string[]): void {
+    this.#state.update((state) => ({ ...state, lastMoves }));
   }
 
-  setSolutionMoves(solutionMoves: string[]): void {
-    this.state.solutionMoves.next(solutionMoves);
+  public setSolutionMoves(solutionMoves: string[]): void {
+    this.#state.update((state) => ({ ...state, solutionMoves }));
   }
 
-  handleConnection(): void {
-    const currentConn = this.state.connection.value;
+  #setBasis(basis: THREE.Quaternion | null): void {
+    this.#state.update((state) => ({ ...state, basis }));
+  }
+
+  public handleConnection(): void {
+    const currentConn = this.connection();
 
     if (currentConn) {
       from(currentConn.disconnect()).subscribe(() => {
-        this.state.connection.next(null);
+        this.setConnection(null);
+        this.#disconnect.next();
       });
     } else {
-      from(connectGanCube(this.customMacAddressProvider))
+      from(connectGanCube(this.#customMacAddressProvider))
         .pipe(
           take(1),
           tap((conn) => {
             this.setConnection(conn);
             conn.events$
-              .pipe(takeUntil(this.connection$.pipe(filter((v) => v === null))))
-              .subscribe((e) => {
-                this.handleCubeEvent(e);
-              });
+              .pipe(takeUntil(this.#disconnect))
+              .subscribe((e) => this.#handleCubeEvent(e));
           }),
           catchError((err) => {
             console.error('Failed to connect', err);
-            this.state.connection.next(null);
+            this.setConnection(null);
             return of(null);
           })
         )
@@ -129,10 +146,10 @@ export class CubeService {
     }
   }
 
-  private handleCubeEvent(event: GanCubeEvent): void {
+  #handleCubeEvent(event: GanCubeEvent): void {
     switch (event.type) {
       case CubeEventType.GYRO:
-        this.handleGyroEvent(event);
+        this.#handleGyroEvent(event);
         break;
       case CubeEventType.MOVE:
         // handleMoveEvent(event);
@@ -143,17 +160,16 @@ export class CubeService {
     }
   }
 
-  private handleGyroEvent(event: any): void {
+  #handleGyroEvent(event: any): void {
     let { x: qx, y: qy, z: qz, w: qw } = event.quaternion;
     let quat = new THREE.Quaternion(qx, qz, -qy, qw).normalize();
-    if (!this.state.basis.value)
-      this.state.basis.next(quat.clone().conjugate());
+    if (!this.#basis()) this.#setBasis(quat.clone().conjugate());
     cubeQuaternion.copy(
-      quat.premultiply(this.state.basis.value!).premultiply(HOME_ORIENTATION)
+      quat.premultiply(this.#basis()!).premultiply(HOME_ORIENTATION)
     );
   }
 
-  private async customMacAddressProvider(
+  async #customMacAddressProvider(
     device: any,
     isFallbackCall?: boolean
   ): Promise<string | null> {
