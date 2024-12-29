@@ -22,8 +22,9 @@ import {
   throwError,
 } from 'rxjs';
 import { TwistyPlayer } from 'cubing/twisty';
-import { GanCubeConnection } from 'gan-web-bluetooth';
+import { GanCubeCommand, GanCubeConnection } from 'gan-web-bluetooth';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { CubeCommands, TimerState } from '../../shared/models/cube';
 
 @Component({
   selector: 'app-cube',
@@ -33,26 +34,41 @@ import { toObservable } from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CubeComponent {
+  #cubeService = inject(CubeService);
+
   @ViewChild('cubeContainer', { static: true }) cubeContainer!: ElementRef;
+
+  public timerState = this.#cubeService.timerState;
+  public timerStateEnum = TimerState;
+
+  public basis = this.#cubeService.basis;
+
   public isConnected = computed(() => !!this.#connection());
   #isConnected$: Observable<boolean> = toObservable(this.isConnected);
 
-  #cubeService = inject(CubeService);
-
   #connection: Signal<GanCubeConnection | null> = this.#cubeService.connection;
 
+  #twistyPlayer = this.#cubeService.twistyPlayer;
+
   #afterNextRender = afterNextRender(() => {
-    const twistyPlayer: TwistyPlayer = this.#cubeService.twistyPlayer;
+    if (this.cubeContainer.nativeElement && this.#twistyPlayer) {
+      this.cubeContainer.nativeElement.appendChild(this.#twistyPlayer);
 
-    if (this.cubeContainer.nativeElement && twistyPlayer) {
-      this.cubeContainer.nativeElement.appendChild(twistyPlayer);
-
-      this.#startAnimation(twistyPlayer);
+      this.#startAnimation(this.#twistyPlayer);
     }
   });
 
   public onConnect(): void {
     this.#cubeService.handleConnection();
+  }
+
+  public resetGyro(): void {
+    this.#cubeService.setBasis(null);
+  }
+
+  public resetState(): void {
+    this.#connection()?.sendCubeCommand(<GanCubeCommand>CubeCommands['RESET']);
+    this.#twistyPlayer.alg = '';
   }
 
   #startAnimation(twistyPlayer: TwistyPlayer): void {

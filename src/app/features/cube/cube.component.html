@@ -4,8 +4,13 @@
   <button mat-raised-button id="connect" (click)="onConnect()">
     {{ isConnected() ? "Disconnect" : "Connect" }}
   </button>
-  @if (isConnected()) {
-  <button mat-raised-button id="reset-state">Reset State</button>
-  <button mat-raised-button id="reset-gyro">Reset Gyro</button>
+  @if (isConnected()) { @if(timerState() === timerStateEnum.IDLE) {
+  <button mat-raised-button id="reset-state" (click)="resetState()">
+    Reset State
+  </button>
+  }
+  <button mat-raised-button id="reset-gyro" (click)="resetGyro()">
+    Reset Gyro
+  </button>
   }
 </div>

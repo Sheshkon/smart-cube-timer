@@ -14,3 +14,10 @@ export enum CubeEventType {
   MOVE = 'MOVE',
   GYRO = 'GYRO',
 }
+
+export enum TimerState {
+  IDLE,
+  READY,
+  RUNNING,
+  STOPPED,
+}

@@ -1,5 +1,7 @@
+import * as THREE from 'three';
 import {
   computed,
+  effect,
   Injectable,
   Signal,
   signal,
@@ -12,18 +14,22 @@ import {
   connectGanCube,
   GanCubeConnection,
   GanCubeEvent,
-  GanTimerState,
 } from 'gan-web-bluetooth';
-import { CubeEventType } from '../models/cube';
-import * as THREE from 'three';
-import { cubeQuaternion, HOME_ORIENTATION } from '../utilities/cube-util';
+import { CubeEventType, TimerState } from '../models/cube';
+import {
+  cubeQuaternion,
+  faceletsToPattern,
+  HOME_ORIENTATION,
+  SOLVED_STATE,
+} from '../utilities/cube-util';
+import { experimentalSolve3x3x3IgnoringCenters } from 'cubing/search';
 
 interface CubeState {
   connection: GanCubeConnection | null;
   hardwareInfo: HardwareInfo;
   batteryLevel: number;
   scramble: string[];
-  timerState: GanTimerState;
+  timerState: TimerState;
   lastMoves: string[];
   solutionMoves: string[];
   basis: THREE.Quaternion | null;
@@ -59,7 +65,7 @@ export class CubeService {
     hardwareInfo: this.#hardwareInitialState,
     batteryLevel: 0,
     scramble: [],
-    timerState: GanTimerState.IDLE,
+    timerState: TimerState.IDLE,
     lastMoves: [],
     solutionMoves: [],
     basis: null,
@@ -75,16 +81,30 @@ export class CubeService {
     () => this.#state().batteryLevel
   );
   public scramble: Signal<string[]> = computed(() => this.#state().scramble);
-  public timerState: Signal<GanTimerState> = computed(
+  public timerState: Signal<TimerState> = computed(
     () => this.#state().timerState
   );
   public lastMoves: Signal<string[]> = computed(() => this.#state().lastMoves);
+  #lastMovesEffect = effect(() => {
+    if (this.lastMoves().length > 256) {
+      this.setLastMoves(this.lastMoves().slice(-256));
+    }
+    if (this.timerState() === TimerState.READY) {
+      this.setTimerState(TimerState.RUNNING);
+    }
+  });
+
   public solutionMoves: Signal<string[]> = computed(
     () => this.#state().solutionMoves
   );
-  #basis: Signal<THREE.Quaternion | null> = computed(() => this.#state().basis);
+
+  public basis: Signal<THREE.Quaternion | null> = computed(
+    () => this.#state().basis
+  );
 
   #disconnect: Subject<void> = new Subject();
+
+  #cubeInitialized: boolean = false;
 
   public setConnection(connection: GanCubeConnection | null): void {
     this.#state.update((state) => ({ ...state, connection }));
@@ -102,7 +122,7 @@ export class CubeService {
     this.#state.update((state) => ({ ...state, scramble }));
   }
 
-  public setTimerState(timerState: GanTimerState): void {
+  public setTimerState(timerState: TimerState): void {
     this.#state.update((state) => ({ ...state, timerState }));
   }
 
@@ -114,7 +134,7 @@ export class CubeService {
     this.#state.update((state) => ({ ...state, solutionMoves }));
   }
 
-  #setBasis(basis: THREE.Quaternion | null): void {
+  public setBasis(basis: THREE.Quaternion | null): void {
     this.#state.update((state) => ({ ...state, basis }));
   }
 
@@ -152,10 +172,10 @@ export class CubeService {
         this.#handleGyroEvent(event);
         break;
       case CubeEventType.MOVE:
-        // handleMoveEvent(event);
+        this.#handleMoveEvent(event);
         break;
       case CubeEventType.FACELETS:
-        // handleFaceletsEvent(event);
+        this.#handleFaceletsEvent(event);
         break;
     }
   }
@@ -163,10 +183,44 @@ export class CubeService {
   #handleGyroEvent(event: any): void {
     let { x: qx, y: qy, z: qz, w: qw } = event.quaternion;
     let quat = new THREE.Quaternion(qx, qz, -qy, qw).normalize();
-    if (!this.#basis()) this.#setBasis(quat.clone().conjugate());
+    if (!this.basis()) this.setBasis(quat.clone().conjugate());
     cubeQuaternion.copy(
-      quat.premultiply(this.#basis()!).premultiply(HOME_ORIENTATION)
+      quat.premultiply(this.basis()!).premultiply(HOME_ORIENTATION)
     );
+  }
+
+  #handleMoveEvent(event: any): void {
+    this.twistyPlayer.experimentalAddMove(event.move, { cancel: false });
+    this.setLastMoves([...this.lastMoves(), event]);
+
+    if (this.timerState() !== TimerState.IDLE) {
+      this.setSolutionMoves([...this.solutionMoves(), event]);
+    }
+  }
+
+  #handleFaceletsEvent(event: any): void {
+    if (event.facelets === SOLVED_STATE) {
+      this.setLastMoves([]);
+    }
+
+    if (!this.#cubeInitialized) {
+      if (event.facelets !== SOLVED_STATE) {
+        const kpattern = faceletsToPattern(event.facelets);
+        from(experimentalSolve3x3x3IgnoringCenters(kpattern))
+          .pipe(
+            tap((solution) => {
+              this.twistyPlayer.alg = solution.invert();
+            }),
+            tap(() => {
+              this.#cubeInitialized = true;
+            })
+          )
+          .subscribe();
+      } else {
+        this.twistyPlayer.alg = '';
+        this.#cubeInitialized = true;
+      }
+    }
   }
 
   async #customMacAddressProvider(
