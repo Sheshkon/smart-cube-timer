@@ -26,7 +26,6 @@ function setTimerState(state: typeof timerState) {
         case 'READY':
             setTimerValue(0);
             $('#timer').show();
-            $('#timer').css('color', '#0f0');
             $('.scramble-container').hide()
             break;
         case 'RUNNING':

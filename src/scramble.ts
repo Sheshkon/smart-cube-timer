@@ -9,11 +9,25 @@ const scrambleDiv = document.getElementById("scramble-display");
 
 let scramble: Alg | null = null
 
+interface ColoredMoveInterface {
+    move: string;
+    color: "white" | "gray" | "red" | "yellow"
+    isCurrent: boolean;
+}
+
+class ColoredMove implements ColoredMoveInterface{
+
+    constructor(
+        public move: string = "",
+        public color: "white" | "gray" | "red" | "yellow" = "white",
+        public isCurrent: boolean = false
+    ) {}
+}
 
 const generateScramble = async () => {
     scramble = await randomScrambleForEvent("333");
 
-    scrambleDiv!.innerHTML = scramble.toString().split(" ").map(move => colorizeMove(move)).join("");
+    scrambleDiv!.innerHTML = scramble.toString().split(" ").map((move, index) => colorizeMove(move, "white", index === 0)).join("");
     return scramble
 }
 
@@ -29,30 +43,35 @@ const checkScramble = (cubeMoves: string[]): string => {
     let inverseMoves = "";
     let startWrongIndex = 0
 
-    let coloredScramble = scrambleMoves?.map((move, index) => {
-        if (index > cubeMoves.length - 1 || cubeMoves[index] === "") {
-            return colorizeMove(move);
+    let coloredMoves: Array<ColoredMove>| undefined = scrambleMoves?.map((move, index) => {
+        if (move === cubeMoves[index] && wrongCounter === 0) {
+            return new ColoredMove(move, 'gray')
         }
 
-        if (move === cubeMoves[index] && wrongCounter === 0) {
-            return colorizeMove(move, "green");  // Правильный ход: зеленый
+        if ((index > cubeMoves.length - 1 || cubeMoves[index] === "")
+            || (move.includes('2') && move.replace("2", "") === cubeMoves[index].replace(/'/g, ""))) {
+            return new ColoredMove(move)
         }
 
         if (move !== cubeMoves[index] && wrongCounter === 0) {
             wrongCounter++
             startWrongIndex = index;
-            if (move.replace(/['2]/g, "") === cubeMoves[index].replace(/['2]/g, "")) {
-                return colorizeMove(move, "yellow");  // Совпали буквы, но направление неверное: желтый
+            if (move.replace(/'/g, "") === cubeMoves[index].replace(/'/g, "")) {
+                return new ColoredMove(move, "yellow");  // Совпали буквы, но направление неверное: желтый
             }
         }
 
         if (wrongCounter > 0) {
             wrongCounter++;
-            return colorizeMove(move, "red");
+            return new ColoredMove(move, "red");
         }
 
-        return colorizeMove(move);
-    }).join("");
+        return new ColoredMove(move)
+    });
+
+    const currentMoveIndex = coloredMoves ? coloredMoves.findIndex((el: ColoredMove) => el.color === "white") : 0;
+    console.log("current: ", currentMoveIndex)
+    const coloredScramble = coloredMoves?.map((el, index) => colorizeMove(el.move, el.color, index === currentMoveIndex)).join("")
 
     if (wrongCounter > 1) {
         inverseMoves = new Alg(cubeMoves.slice(startWrongIndex, cubeMoves.length).join(" "))
@@ -81,13 +100,14 @@ const checkScramble = (cubeMoves: string[]): string => {
         return ""
     }
 
-
     return <string>coloredScramble;
 };
 
 
-const colorizeMove = (move: string, color: string = "white"): string => {
-    return `<span style="color: ${color};">${move}&nbsp;</span>`;
+
+
+const colorizeMove = (move: string, color: string = "white", isCurrent = false): string => {
+    return `<span ${isCurrent ? "class='is-current-move'" : ""} style="color: ${color};">${move}</span>`;
 }
 
 
