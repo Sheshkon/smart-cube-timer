@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/smart-cube-timer/dev-sw.js?dev-sw', { scope: '/smart-cube-timer/', type: 'classic' })
