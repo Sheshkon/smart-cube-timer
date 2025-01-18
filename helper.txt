@@ -1,2 +1,0 @@
-AB:12:34:60:02:D1
-chrome://bluetooth-internals/#devices
