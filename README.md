@@ -1,10 +1,8 @@
-## gan-cube-sample
+# React + Vite
 
-This is simple one-page application which uses [gan-web-bluetooth](https://github.com/afedotov/gan-web-bluetooth) library.
-It provides simple demonstration of connectivity with GAN Smart Cubes using Gen2, Gen3 and Gen4 protocol versions.
-Demo includes approach to proper time measurement and gyroscope event handling.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Compiled live version of this application is available here:
- 
- - https://afedotov.github.io/gan-cube-sample/
+Currently, two official plugins are available:
 
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh

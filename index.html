@@ -1,110 +1,12 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>gan-cube-sample</title>
-    <link rel="stylesheet" type="text/css" href="/src/style.css">
-</head>
-
-<body>
-
-<div id="app">
-    <div class="scramble-container">
-        <div id="scramble-display"></div>
-    </div>
-    <div id="timer">0:00.000</div>
-
-
-    <div class="app-container">
-        <div class="left-info">
-            <div class="left-info-up"></div>
-            <div class="left-info-down">
-                <table class="stats-table">
-                    <thead>
-                    <tr>
-                        <th>Current AVG</th>
-                        <th>AVG 5</th>
-                        <th>AVG 12</th>
-                        <th>AVG 100</th>
-                    </tr>
-                    </thead>
-                    <tbody id="statsTableBody">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="cube-container">
-            <div id="cube"></div>
-            <div class="controls">
-                <button id="connect">Connect</button>
-                <button id="reset-state">Reset State</button>
-                <button id="reset-gyro">Reset Gyro</button>
-                <img id="battery">
-                <!--                <button id="show-full-info">Show Full Info</button>-->
-            </div>
-        </div>
-        <div class="right-info">
-            <div class="right-info-up"></div>
-            <div class="right-info-down">
-                <table>
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>Time</th>
-                        <th>Scramble</th>
-                    </tr>
-                    </thead>
-                    <tbody id="sessionTableBody" class="scrollbox">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-
-    <!--<div class="info" id="info">
-
-        <label for="deviceName">Device Name</label>
-        <input id="deviceName" type="text" readonly value="- n/a -">
-
-        <label for="deviceMAC">Device MAC</label>
-        <input id="deviceMAC" type="text" readonly value="- n/a -">
-
-        <label for="hardwareName">Hardware Name</label>
-        <input id="hardwareName" type="text" readonly value="- n/a -">
-
-        <label for="hardwareVersion">Hardware Version</label>
-        <input id="hardwareVersion" type="text" readonly value="- n/a -">
-
-        <label for="softwareVersion">Software Version</label>
-        <input id="softwareVersion" type="text" readonly value="- n/a -">
-
-        <label for="productDate">Product Date</label>
-        <input id="productDate" type="text" readonly value="- n/a -">
-
-        <label for="gyroSupported">Gyro Supported</label>
-        <input id="gyroSupported" type="text" readonly value="- n/a -">
-
-        <label for="batteryLevel">Battery</label>
-        <input id="batteryLevel" type="text" readonly value="- n/a -">
-
-        <label for="skew">Clock Skew</label>
-        <input id="skew" type="text" readonly value="- n/a -">
-
-        <label for="quaternion">Quaternion</label>
-        <input id="quaternion" type="text" readonly value="- n/a -">
-
-        <label for="velocity">Angular Velocity</label>
-        <input id="velocity" type="text" readonly value="- n/a -">
-
-    </div>-->
-
-</div>
-
-
-<script type="module" src="/src/import.ts"></script>
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timer</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
