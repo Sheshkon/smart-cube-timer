@@ -1,4 +1,5 @@
-import{p as R}from"./chunk-BQNTAVTA-J1ZAhVDh.js";import{c as B,p as D,K as F}from"./inside-KAVAZETT-DOYuNY0x.js";import"./search-worker-entry-D1DcXZec.js";var U=null;async function S(){return U??(U=e())}async function e(){return R(await B.kpuzzle(),`SubgroupSizes 24 21 18 15 12 9 6
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/index-QM5MBrvj.js","assets/index-C45-iC1Q.js","assets/index-GhdW8KGa.css"])))=>i.map(i=>d[i]);
+import{j as e,p as t,_ as B,i as D}from"./index-C45-iC1Q.js";import{p as R}from"./chunk-BQNTAVTA-CUG5ex1Z.js";var a=null;async function S(){return a??(a=n())}async function n(){return R(await e.kpuzzle(),`SubgroupSizes 24 21 18 15 12 9 6
 
 Alg F
 Alg F2
@@ -97,7 +98,7 @@ Alg F D' F L' D F R2 U2 F' U'
 Alg F D' L D' L F D2 L2 B' R'
 Alg F L' D F R2 D2 L D F' U2
 Alg F L' D F2 D' L F L2 F2 U
-Alg F D F' D L2 F R' F' D' B2 U'`)}async function a(){const{getPuzzleGeometryByName:l,ExperimentalPGNotation:g}=await import("./index-Cnz68Xng.js"),L=l("megaminx",{allMoves:!0,addRotations:!0}),A=new F(L.getKPuzzleDefinition(!0),{experimentalPGNotation:new g(L,L.getOrbitsDef(!0))});return A.definition.name="megaminx",A}var t=null;async function n(){return t??(t=a())}var r=null;async function w(){return r??(r=i())}async function i(){return R(await n(),`SubgroupSizes 12 5 60 58 60 56 54 57 52 50 54 48 46 51 44 42 48 40 45 38 36 42 34 32 39 30 36 28 26 33 24 30 22 20 27 18 24 16 14 21 12 18 10 15 8 6 2 12 9 3
+Alg F D F' D L2 F R' F' D' B2 U'`)}async function r(){const{getPuzzleGeometryByName:g,ExperimentalPGNotation:A}=await B(async()=>{const{getPuzzleGeometryByName:F,ExperimentalPGNotation:U}=await import("./index-QM5MBrvj.js");return{getPuzzleGeometryByName:F,ExperimentalPGNotation:U}},__vite__mapDeps([0,1,2])),L=g("megaminx",{allMoves:!0,addRotations:!0}),l=new D(L.getKPuzzleDefinition(!0),{experimentalPGNotation:new A(L,L.getOrbitsDef(!0))});return l.definition.name="megaminx",l}var i=null;async function u(){return i??(i=r())}var o=null;async function h(){return o??(o=c())}async function c(){return R(await u(),`SubgroupSizes 12 5 60 58 60 56 54 57 52 50 54 48 46 51 44 42 48 40 45 38 36 42 34 32 39 30 36 28 26 33 24 30 22 20 27 18 24 16 14 21 12 18 10 15 8 6 2 12 9 3
 
 Alg Rv
 Alg Rv2
@@ -1617,7 +1618,7 @@ Alg L' BL2 L2' F' L2 BL2' L2' F L2'
 Alg U BL2' U R U' BL2 U' L U2 R' U2' L'
 Alg U BR U' L2 F L' U BR' U' L F' L2'
 Alg U L' BL2 L' FL' L BL2' L U' L2' FL L2
-Alg U BR2' U R' U2' L U2 R U' BR2 U' L'`)}var u=null;async function o(){return u??(u=c())}async function h(){return{ordering:(await o()).ordering.slice(2)}}async function c(){return R(await D.pyraminx.kpuzzle(),`SubgroupSizes 12 9 12 3 10 3 8 6 2 3 3 3 3
+Alg U BR2' U R' U2' L U2 R U' BR2 U' L'`)}var s=null;async function y(){return s??(s=m())}async function b(){return{ordering:(await y()).ordering.slice(2)}}async function m(){return R(await t.pyraminx.kpuzzle(),`SubgroupSizes 12 9 12 3 10 3 8 6 2 3 3 3 3
 
 Alg B
 Alg B'
@@ -1694,7 +1695,7 @@ Alg r
 Alg r'
 
 Alg u
-Alg u'`)}async function s(){const{getPuzzleGeometryByName:l,ExperimentalPGNotation:g}=await import("./index-Cnz68Xng.js"),L=l("skewb",{allMoves:!0,addRotations:!0});return new F(L.getKPuzzleDefinition(!0),{experimentalPGNotation:new g(L,L.getOrbitsDef(!0))})}var y=null;async function z(){return y??(y=s())}var m=null;async function d(){return m??(m=p())}async function P(){return{ordering:(await d()).ordering.slice(1)}}async function p(){return R(await z(),`SubgroupSizes 24 6 5 12 9 3 4 9 3 3
+Alg u'`)}async function z(){const{getPuzzleGeometryByName:g,ExperimentalPGNotation:A}=await B(async()=>{const{getPuzzleGeometryByName:l,ExperimentalPGNotation:F}=await import("./index-QM5MBrvj.js");return{getPuzzleGeometryByName:l,ExperimentalPGNotation:F}},__vite__mapDeps([0,1,2])),L=g("skewb",{allMoves:!0,addRotations:!0});return new D(L.getKPuzzleDefinition(!0),{experimentalPGNotation:new A(L,L.getOrbitsDef(!0))})}var d=null;async function v(){return d??(d=z())}var p=null;async function f(){return p??(p=P())}async function G(){return{ordering:(await f()).ordering.slice(1)}}async function P(){return R(await v(),`SubgroupSizes 24 6 5 12 9 3 4 9 3 3
 
 Alg y
 Alg y2
@@ -1772,4 +1773,4 @@ Alg U L U' B' U L' U' B
 Alg U' B L U L B' U' L'
 
 Alg U R' U' L B R' B' R
-Alg R' U' R U B' U' B L`)}export{S as cachedData222,n as cachedMegaminxKPuzzleWithoutMO,w as cachedSGSDataMegaminx,o as sgsDataPyraminx,h as sgsDataPyraminxFixedOrientation,d as sgsDataSkewb,P as sgsDataSkewbFixedCorner,z as skewbKPuzzleWithoutMOCached};
+Alg R' U' R U B' U' B L`)}export{S as cachedData222,u as cachedMegaminxKPuzzleWithoutMO,h as cachedSGSDataMegaminx,y as sgsDataPyraminx,b as sgsDataPyraminxFixedOrientation,f as sgsDataSkewb,G as sgsDataSkewbFixedCorner,v as skewbKPuzzleWithoutMOCached};
