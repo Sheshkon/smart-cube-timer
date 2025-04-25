@@ -14,7 +14,7 @@ export default defineConfig({
         description: 'Smart Cube Timer',
         icons: [
           {
-            src: 'icons/icon.png', // Changed path
+            src: 'icons/logo.png', // Changed path
             sizes: '512x512',
             type: 'image/png'
           }
