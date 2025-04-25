@@ -8,4 +8,21 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+
+  worker: {
+    format: 'es',
+    plugins: () => [
+      {
+        name: 'fix-worker-urls',
+        transform(code) {
+          // Fix worker instantiation for cubing.js
+          return code.replace(
+              /import\.meta\.resolve\((['"]\.\/[^'"]+['"])\)/g,
+              'new URL($1, import.meta.url).href'
+          )
+        }
+      }
+    ]
+  }
 });
+
