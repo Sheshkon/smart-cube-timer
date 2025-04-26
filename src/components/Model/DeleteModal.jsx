@@ -1,17 +1,15 @@
-
-const ModalComponent = ({ isOpen, onClose, onDelete, isDeleting }) => {
+const DeleteModal = ({isOpen, onClose, onDelete, isDeleting}) => {
     const closeModal = () => {
-        onClose();  // Close modal via parent's handler
+        onClose();
     };
 
     const handleDelete = () => {
-        onDelete();  // Call parent function to delete all items
-        closeModal();  // Close the modal after deleting
+        onDelete();
+        closeModal();
     };
 
     return (
         <div>
-            {/* Modal dialog */}
             {isOpen && (
                 <dialog open className="modal">
                     <div className="modal-box">
@@ -27,7 +25,9 @@ const ModalComponent = ({ isOpen, onClose, onDelete, isDeleting }) => {
                             >
                                 {isDeleting ? "Deleting..." : "Delete All"}
                             </button>
-                            <button  className="p-1.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors" onClick={closeModal}>
+                            <button
+                                className="p-1.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+                                onClick={closeModal}>
                                 Cancel
                             </button>
                         </div>
@@ -38,4 +38,4 @@ const ModalComponent = ({ isOpen, onClose, onDelete, isDeleting }) => {
     );
 };
 
-export default ModalComponent;
+export default DeleteModal;

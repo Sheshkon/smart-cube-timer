@@ -1,12 +1,11 @@
-import {cubeQuaternion, faceletsToPattern, HOME_ORIENTATION, SOLVED_STATE} from "../../utils/util.ts";
 import {experimentalSolve3x3x3IgnoringCenters} from "cubing/search";
-import {cubeTimestampCalcSkew} from "gan-web-bluetooth";
 import {connectGanCube} from "gan-web-bluetooth";
 import {useEffect, useRef} from "react";
-import {CubeCommand, CubeEventType, customMacAddressProvider} from "../../components/cubeControls/util.js";
+import * as THREE from "three";
+import {CubeCommand, CubeEventType, customMacAddressProvider} from ".//util.js";
 import {TimerState} from "../../components/timer/util.js";
 import {useCubeState} from "../../contexts/CubeContext.jsx";
-import * as THREE from "three";
+import {cubeQuaternion, faceletsToPattern, HOME_ORIENTATION, SOLVED_STATE} from "../../utils/util.ts";
 
 const cubeControls = () => {
     const {
@@ -80,8 +79,7 @@ const cubeControls = () => {
             }
 
             if (lastMoves.length > 10) {
-                const skew = cubeTimestampCalcSkew(lastMoves);
-                // $('#skew').val(skew + '%');
+                // const skew = cubeTimestampCalcSkew(lastMoves);
             }
         }
     }
@@ -133,11 +131,11 @@ const cubeControls = () => {
                     </button>)}
                 <button
                     className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                    onClick={() => basisRef.current = null}>Reset Gyro</button>
+                    onClick={() => basisRef.current = null}>Reset Gyro
+                </button>
             </>
         )}
     </div>
-
 }
 
 export default cubeControls;

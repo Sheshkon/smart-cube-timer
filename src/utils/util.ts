@@ -102,7 +102,7 @@ const FACE_ORDER = "URFDLB";
 interface PieceInfo {
     piece: number;
     orientation: number;
-};
+}
 
 const PIECE_MAP: { [s: string]: PieceInfo } = {};
 

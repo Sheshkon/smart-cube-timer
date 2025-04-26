@@ -11,7 +11,6 @@ const CubeEventType = Object.freeze({
     GYRO: "GYRO",
 })
 
-
 const customMacAddressProvider = async (device, isFallbackCall) => {
     if (isFallbackCall) {
         return prompt('Unable do determine cube MAC address!\nPlease enter MAC address manually:');
@@ -26,4 +25,3 @@ export {
     CubeCommand,
     CubeEventType
 }
-

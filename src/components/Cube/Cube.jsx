@@ -1,13 +1,13 @@
-import { cubeQuaternion } from "../../utils/util.ts";
-import { useEffect, useRef } from "react";
-import { useCubeState } from "../../contexts/CubeContext";
+import {useEffect, useRef} from "react";
+import {useCubeState} from "../../contexts/CubeContext";
+import {cubeQuaternion} from "../../utils/util.ts";
 import '../../style.css'
 
 const Cube = () => {
     const initialized = useRef(false);
     const cubeRef = useRef(null);
-    const animationRef = useRef();
-    const { twistyPlayerRef } = useCubeState();
+    const animationRef = useRef(-1);
+    const {twistyPlayerRef} = useCubeState();
 
     const animateCubeOrientation = async () => {
         try {
@@ -37,8 +37,6 @@ const Cube = () => {
             animationRef.current = requestAnimationFrame(animateCubeOrientation);
         } catch (error) {
             console.error("Error in animation loop:", error);
-            // Optionally stop the animation on error
-            // cancelAnimationFrame(animationRef.current);
         }
     };
 
@@ -59,7 +57,7 @@ const Cube = () => {
     }, [twistyPlayerRef]);
 
     return (
-        <div id="cube" ref={cubeRef} />
+        <div id="cube" ref={cubeRef}/>
     );
 };
 

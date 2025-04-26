@@ -1,13 +1,12 @@
-import {mergeConsecutiveWords} from "../../utils/string.js";
-import {patternToFacelets, SOLVED_STATE} from "../../utils/util.ts";
 import {cubeTimestampLinearFit, makeTimeFromTimestamp} from "gan-web-bluetooth";
 import {useEffect, useRef, useState} from "react";
 import {interval} from "rxjs";
+import StatsResult from "../../components/StatsDisplay/util.js";
 import {TimerState} from "../../components/timer/util.js";
 import {useCubeState} from "../../contexts/CubeContext.jsx";
 import '../../style.css'
-import {StatsResult} from "../../components/stats/util.js";
-import {Alg} from "cubing/alg";
+import {formatTime, ganTimeToMilliseconds} from "../../utils/time.js";
+import {patternToFacelets, SOLVED_STATE} from "../../utils/util.ts";
 
 const Timer = ({onSaveTime}) => {
     const {
@@ -17,7 +16,6 @@ const Timer = ({onSaveTime}) => {
         timerStateRef,
         solutionMovesRef,
         setShowScramble,
-        setResults,
         setLastMoves,
         lastScrambleRef,
     } = useCubeState()
@@ -38,24 +36,47 @@ const Timer = ({onSaveTime}) => {
     });
 
     const getTimerValueFromTimestamp = (timestamp) => {
-        let t = makeTimeFromTimestamp(timestamp);
-        let time = `${t.minutes}:${t.seconds.toString(10).padStart(2, '0')}.${t.milliseconds.toString(10).padStart(3, '0')}`
-        setTimeValue(time);
-        return {time: time, originalTime: t}
+        let originalTime = makeTimeFromTimestamp(timestamp);
+        let formattedTime = formatTime(ganTimeToMilliseconds(originalTime))
+        setTimeValue(formattedTime);
+        return {formattedTime, originalTime}
     }
 
 
-    const startLocalTimer = () => {
+    const startTimer = () => {
         const startTime = new Date().getTime()
         localTimerRef.current = interval(30).subscribe(() => {
             getTimerValueFromTimestamp(new Date().getTime() - startTime);
         })
     }
 
-    const stopLocalTimer = () => {
+    const stopTimer = () => {
         localTimerRef.current?.unsubscribe();
         localTimerRef.current = null
     }
+
+    const handleSolvedState = () => {
+        stopTimer();
+
+        const fittedMoves = cubeTimestampLinearFit(solutionMovesRef.current);
+        const lastMove = fittedMoves.slice(-1).pop();
+        const {formattedTime, originalTime} = getTimerValueFromTimestamp(lastMove ? lastMove.cubeTimestamp : 0);
+
+        const solve = new StatsResult(
+            originalTime,
+            formattedTime,
+            lastScrambleRef.current.toString(),
+        );
+
+        console.log(solve, originalTime, formattedTime, lastScrambleRef.current)
+
+        onSaveTime(solve);
+        setShowTimer(false);
+        setLastMoves([]);
+        setShowScramble(true);
+        solutionMovesRef.current = [];
+        setTimerState(TimerState.IDLE);
+    };
 
 
     useEffect(() => {
@@ -65,36 +86,23 @@ const Timer = ({onSaveTime}) => {
                 setShowTimer(true);
                 break;
             case TimerState.RUNNING:
-                startLocalTimer();
+                startTimer();
                 break;
             case TimerState.STOPPED:
-                stopLocalTimer();
-                const fittedMoves = cubeTimestampLinearFit(solutionMovesRef.current);
-                const lastMove = fittedMoves.slice(-1).pop();
-                const t = getTimerValueFromTimestamp(lastMove ? lastMove.cubeTimestamp : 0);
-                const plainSolution = new Alg(solutionMovesRef.current.map(el => el.move).join(" ")).toString() // simplify
-                const solution = mergeConsecutiveWords(plainSolution)
-                const solve = new StatsResult(t.originalTime, t.time, lastScrambleRef.current.toString(), solution, plainSolution)
-                setResults((prev) => [solve, ...prev])
-                onSaveTime(t.time, t.originalTime)
-                setShowTimer(false);
-                setLastMoves([])
-                setShowScramble(true)
-                solutionMovesRef.current = []
-                setTimerState(TimerState.IDLE)
+                handleSolvedState()
                 break;
             case TimerState.IDLE:
                 break;
         }
     }, [timerState]);
 
-
     return (
         <>
-            {showTimer && (<div id="timer" className="font-mono font-semibold text-lg text-gray-900 dark:text-white">{timeValue}</div>)}
+            {showTimer && (
+                <div id="timer"
+                     className="font-mono font-semibold text-lg text-gray-900 dark:text-white">{timeValue}</div>)}
         </>
     )
-
 }
 
 export default Timer;
