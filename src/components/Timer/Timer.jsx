@@ -91,7 +91,7 @@ const Timer = ({onSaveTime}) => {
 
     return (
         <>
-            {showTimer && (<div id="timer">{timeValue}</div>)}
+            {showTimer && (<div id="timer" className="font-mono font-semibold text-lg text-gray-900 dark:text-white">{timeValue}</div>)}
         </>
     )
 

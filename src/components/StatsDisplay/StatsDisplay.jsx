@@ -1,9 +1,21 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useState} from 'react';
 import {TrendingUp, Clock, BarChart2, Award, Trash2} from 'lucide-react';
+import DeleteModal from "../../components/Model/Modal.jsx";
 import { formatTime } from '../../utils/timeUtils';
 
 const StatsDisplay = ({ onDeleteTimes, times, className = '' }) => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);  // Track modal open state
+  const [isDeleting, setIsDeleting] = useState(false);  // Track delete in progress state
+
+  const openModal = () => {
+    setIsModalOpen(true);  // Open the modal when trash button is clicked
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);  // Close the modal
+  };
+
   // Calculate statistics
   const calculateStats = () => {
     if (times.length === 0) return { current: 0, best: 0, avg5: 0, avg12: 0, avg100: 0 };
@@ -68,34 +80,26 @@ const StatsDisplay = ({ onDeleteTimes, times, className = '' }) => {
           </div>
         ))}
       </div>
-      
-      <div className="mt-4">
+
+      <div>
+        {/* Modal Component to Confirm Deletion of All Times */}
+        <DeleteModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            onDelete={() => onDeleteTimes()}
+            isDeleting={isDeleting}
+        />
+
         <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
           Session: {times.length} solves
           <button
-              onClick={() => onDeleteTimes()}
+              onClick={openModal}
               className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-              title="Delete time"
+              title="Delete all times"
           >
-            <Trash2 size={16}/>
+            <Trash2 size={16} />
           </button>
         </div>
-
-        {/*{times.length > 0 && (*/}
-        {/*  <div className="h-16 overflow-hidden relative">*/}
-        {/*    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white dark:to-gray-800 pointer-events-none z-10"></div>*/}
-        {/*    <div className="flex flex-wrap gap-1.5 overflow-y-auto max-h-full pr-2">*/}
-        {/*      {times.slice().reverse().map((time, index) => (*/}
-        {/*        <div */}
-        {/*          key={index} */}
-        {/*          className="inline-block px-2 py-1 bg-blue-50 dark:bg-blue-900/30 rounded text-xs font-mono text-blue-700 dark:text-blue-300"*/}
-        {/*        >*/}
-        {/*          {time}*/}
-        {/*        </div>*/}
-        {/*      ))}*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*)}*/}
       </div>
     </div>
   );

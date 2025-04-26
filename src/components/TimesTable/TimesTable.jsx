@@ -68,15 +68,4 @@ const TimesTable = ({ times, onDeleteTime, className = '' }) => {
   );
 };
 
-// TimesTable.propTypes = {
-//   times: PropTypes.arrayOf(PropTypes.shape({
-//     id: PropTypes.number.isRequired,
-//     time: PropTypes.string.isRequired,
-//     originalTime: PropTypes.object.isRequired,
-//     date: PropTypes.instanceOf(Date).isRequired
-//   })).isRequired,
-//   onDeleteTime: PropTypes.func.isRequired,
-//   className: PropTypes.string
-// };
-
 export default TimesTable;

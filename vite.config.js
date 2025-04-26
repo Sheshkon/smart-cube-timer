@@ -14,7 +14,7 @@ export default defineConfig({
         description: 'Smart Cube Timer',
         icons: [
           {
-            src: 'icons/logo.png', // Changed path
+            src: 'icons/logo.png',
             sizes: '512x512',
             type: 'image/png'
           }
@@ -25,10 +25,10 @@ export default defineConfig({
       },
       devOptions: {
         enabled: true,
-        type: 'module' // Add this for development
+        type: 'module'
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg}'] // Ensure workers are cached
+        globPatterns: ['**/*.{js,css,html,png,svg}']
       }
     })
   ],

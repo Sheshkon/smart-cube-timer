@@ -46,6 +46,7 @@ export const CubeProvider = ({children}) => {
         const lastScrambleRef = useRef(scramble)
 
         const [scrambleDisplay, setScrambleDisplay] = useState([]);
+        const [isAnimating, setIsAnimating] = useState(false);
 
         useEffect(() => {
             connectionRef.current = connection
@@ -82,7 +83,9 @@ export const CubeProvider = ({children}) => {
                 setScrambleDisplay,
                 setTimerState,
                 setLastMoves,
-                setResults
+                setResults,
+                isAnimating,
+                setIsAnimating
             }}>
                 {children}
             </CubeContext.Provider>

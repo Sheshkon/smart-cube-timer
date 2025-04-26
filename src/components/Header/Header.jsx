@@ -1,17 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Sun, Moon, Cuboid as Cube } from 'lucide-react';
+import { Sun, Moon} from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const Header = ({ className = '' }) => {
   const { theme, toggleTheme } = useTheme();
   
   return (
+
     <header className={`bg-white dark:bg-gray-800 shadow-sm px-4 py-3 ${className}`}>
+
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
-          <Cube className="text-blue-500 dark:text-blue-400 mr-2" size={24} />
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">CubeTimer</h1>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">SmartTimer</h1>
         </div>
         
         <div className="flex items-center space-x-4">

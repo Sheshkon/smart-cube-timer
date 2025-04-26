@@ -20,6 +20,7 @@ export const ThemeProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
     // Update DOM based on current theme
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');

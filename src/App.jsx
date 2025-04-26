@@ -76,7 +76,7 @@ function App() {
                                     <div className="flex flex-col md:flex-row items-center w-full">
                                         <div className="w-full md:w-1/2 flex justify-center md:mb-0">
                                             <div className="cube-container">
-                                                <Cube/>
+                                                <Cube containerId="main"/>
 
                                             </div>
 
