@@ -27,7 +27,8 @@ function App() {
             formattedTime: solve?.formattedTime,
             originalTime: solve?.originalTime,
             scramble: solve?.scramble,
-            date: new Date()
+            date: new Date(),
+            solution: solve.solution
         };
 
         setStoredTimes(prevTimes => [...prevTimes, result]);

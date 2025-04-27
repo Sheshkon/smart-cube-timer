@@ -1,5 +1,6 @@
 import {Award, BarChart2, Clock, TrendingUp} from 'lucide-react';
 import React from 'react';
+import {getDiffWithLastSolve} from "src/components/StatsDisplay/util.js";
 import {formatTime} from '../../utils/time.js';
 
 const StatsDisplay = ({times, className = ''}) => {
@@ -18,7 +19,11 @@ const StatsDisplay = ({times, className = ''}) => {
 
         const avg100 = calculateAverage(times.slice(-100));
 
-        return {current, best, avg5, avg12, avg100};
+        const diff = times.length > 1 ? getDiffWithLastSolve(current, times[times.length - 2]) : {}
+
+        console.log(diff)
+
+        return {current, best, avg5, avg12, avg100, diff};
     };
 
     const calculateAverage = (times) => {
@@ -55,8 +60,24 @@ const StatsDisplay = ({times, className = ''}) => {
                             {item.icon}
                             <span className="ml-1 text-xs font-medium">{item.label}</span>
                         </div>
-                        <div className="font-mono font-semibold text-lg text-gray-900 dark:text-white">
-                            {item.value}
+                        <div className="font-mono font-semibold flex-col text-lg text-gray-900 dark:text-white">
+                            <p className="flex justify-center">{item.value}</p>
+                            {item.label === "Current" && stats?.diff?.formattedTimeDiff && (
+                                <>
+                                    <p
+                                        className={
+                                            stats.diff.formattedTimeDiff.sign === 1
+                                                ? "text-green-600 dark:text-green-400 text-sm"  // Зелёный для "+"
+                                                : "text-red-600 dark:text-red-400  text-sm"       // Красный для "-"
+                                        }
+                                    >{`(${stats.diff.formattedTimeDiff.sign === 1 ? '+' : '-'}${stats.diff.formattedTimeDiff.formattedTime})`}
+                                    </p>
+
+                                    <p className="flex justify-center text-gray-500 dark:text-gray-400 text-sm">
+                                        {stats.diff?.movesDiff} moves
+                                    </p>
+                                </>
+                            )}
                         </div>
                     </div>
                 ))}

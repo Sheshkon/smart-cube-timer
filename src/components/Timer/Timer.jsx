@@ -1,6 +1,7 @@
 import {cubeTimestampLinearFit, makeTimeFromTimestamp} from "gan-web-bluetooth";
 import {useEffect, useRef, useState} from "react";
 import {interval} from "rxjs";
+import {mergeConsecutiveWords} from "src/utils/string.js";
 import StatsResult from "../../components/StatsDisplay/util.js";
 import {TimerState} from "../../components/timer/util.js";
 import {useCubeState} from "../../contexts/CubeContext.jsx";
@@ -69,10 +70,18 @@ const Timer = ({onSaveTime}) => {
         const lastMove = fittedMoves.slice(-1).pop();
         const {formattedTime, originalTime} = getTimerValueFromTimestamp(lastMove ? lastMove.cubeTimestamp : 0);
 
+        const solution = solutionMovesRef.current.map(el => el.move).join(' ')
+        const filteredSolution = mergeConsecutiveWords(solution)
+
+        console.log("scramble: ", lastScrambleRef.current.toString())
+        console.log("plain: ", solution)
+        console.log("filtered", filteredSolution)
+
         const solve = new StatsResult(
             originalTime,
             formattedTime,
             lastScrambleRef.current.toString(),
+            filteredSolution
         );
 
         console.log(solve, originalTime, formattedTime, lastScrambleRef.current)

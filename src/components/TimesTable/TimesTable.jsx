@@ -45,25 +45,25 @@ const TimesTable = ({onDeleteTimes, times, onDeleteTime, className = ''}) => {
 
         <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}>
             <div className="flex mb-4">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Session</h3>
-            <div className="flex items-center">
-                <DeleteModal
-                    isOpen={isModalOpen}
-                    onClose={closeModal}
-                    onDelete={() => onDeleteTimes()}
-                    isDeleting={isDeleting}
-                />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Session</h3>
+                <div className="flex items-center">
+                    <DeleteModal
+                        isOpen={isModalOpen}
+                        onClose={closeModal}
+                        onDelete={() => onDeleteTimes()}
+                        isDeleting={isDeleting}
+                    />
 
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                    <button
-                        onClick={openModal}
-                        className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                        title="Delete all times"
-                    >
-                        <Trash2 size={16}/>
-                    </button>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <button
+                            onClick={openModal}
+                            className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                            title="Delete all times"
+                        >
+                            <Trash2 size={16}/>
+                        </button>
+                    </div>
                 </div>
-            </div>
             </div>
 
             {times.length === 0 ? (
@@ -116,16 +116,59 @@ const TimesTable = ({onDeleteTimes, times, onDeleteTime, className = ''}) => {
                         <dialog open className="modal">
                             <div className="modal-box">
                                 <div onClick={() => handleCopy(popupContent)}>
-                                    <p>
-                                        <b>Time: </b><i>{popupContent.formattedTime}</i>
-                                        {isCopied && <span className="copied-message text-green-800">  Copied!</span>}
-                                    </p>
-                                    <p>
-                                        <b>Scramble: </b><i>{popupContent?.scramble}</i>
-                                    </p>
-                                    <p>
-                                        <b>Date: </b><i>{formatDate(popupContent?.date)}</i>
-                                    </p>
+                                    <div className="flex justify-between items-center gap-16">
+                                        <b><label htmlFor="Time">Time:</label></b>
+                                        <input
+                                            id="time"
+                                            type="text"
+                                            readOnly
+                                            value={popupContent.formattedTime}
+                                            className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1 w-full"
+                                        />
+                                    </div>
+                                    <div className="flex justify-between gap-8">
+                                        <b><label htmlFor="Scramble" >Scramble:</label></b>
+                                        <input
+                                            id="time"
+                                            type="text"
+                                            readOnly
+                                            value={popupContent?.scramble}
+                                            className="bg-gray-100 dark:bg-gray-800 p-1 rounded flex-1 w-full"
+                                        />
+                                    </div>
+                                    <div className="flex justify-between gap-16">
+                                        <b><label className="x" htmlFor="date">Date:</label></b>
+                                        <input
+                                            id="time"
+                                            type="text"
+                                            readOnly
+                                            value={popupContent?.date}
+                                            className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1 w-full"
+                                        />
+                                    </div>
+                                    <div className="flex justify-between gap-1">
+                                        <b><label htmlFor="Moves count" >Moves count:</label></b>
+                                        <input
+                                            id="time"
+                                            type="text"
+                                            readOnly
+                                            value={popupContent?.solution?.split(' ')?.length}
+                                            className="bg-gray-100 dark:bg-gray-800 p-1 rounded flex-1 w-full"
+                                        />
+                                    </div>
+                                    <div className="flex justify-between gap-9">
+                                        <b><label htmlFor="Solution" >Solution: </label></b>
+                                        <input
+                                            id="time"
+                                            type="text"
+                                            readOnly
+                                            value={popupContent?.solution}
+                                            className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1"
+                                        />
+                                    </div>
+                                    {isCopied && <div className="absolute center flex right-4">
+                                        <span className="copied-message text-green-800">Copied!</span>
+                                    </div>}
                                 </div>
                             </div>
                             <form method="dialog" className="modal-backdrop">
