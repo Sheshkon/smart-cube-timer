@@ -18,6 +18,9 @@ const cubeControls = () => {
         lastMoves,
         setLastMoves,
         solutionMovesRef,
+        batteryLevelRef,
+        batteryLevel,
+        setBatteryLevel
     } = useCubeState()
 
     const basisRef = useRef(null);
@@ -42,7 +45,6 @@ const cubeControls = () => {
         twistyPlayerRef.current.alg = '';
     }
 
-
     const handleCubeEvent = async event => {
         switch (event.type) {
             case CubeEventType.GYRO:
@@ -54,6 +56,11 @@ const cubeControls = () => {
             case CubeEventType.FACELETS:
                 await handleFaceletsEvent(event);
                 break;
+            case CubeEventType.BATTERY:
+                console.log("level", event.batteryLevel)
+                setBatteryLevel(event.batteryLevel)
+                batteryLevelRef.current = event.batteryLevel
+                break
         }
     }
 
@@ -104,19 +111,19 @@ const cubeControls = () => {
         }
     }
 
-    useEffect(() => {
-        console.log("controls initialize")
-    }, [])
+        useEffect(() => {
+            console.log("controls initialize")
+        }, [])
 
-    useEffect(() => {
-        if (lastMoves.length > 256) {
-            setLastMoves(lastMoves.slice(-256));
-        }
-        if (timerStateRef.current === TimerState.READY) {
-            setTimerState(TimerState.RUNNING);
-        }
+        useEffect(() => {
+            if (lastMoves.length > 256) {
+                setLastMoves(lastMoves.slice(-256));
+            }
+            if (timerStateRef.current === TimerState.READY) {
+                setTimerState(TimerState.RUNNING);
+            }
 
-    }, [lastMoves]);
+        }, [lastMoves]);
 
     return <div className="controls">
         <button

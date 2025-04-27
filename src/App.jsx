@@ -55,7 +55,7 @@ function App() {
                                     <div className="absolute -right-16 -top-16 opacity-5 transform rotate-12">
                                         <Cuboid size={200}/>
                                     </div>
-                                    <div>
+                                    <div className="py-4">
                                         <CubeControls/>
                                     </div>
                                     <div className="flex flex-col md:flex-row items-center w-full">

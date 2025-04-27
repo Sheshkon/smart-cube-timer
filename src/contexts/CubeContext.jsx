@@ -44,6 +44,7 @@ export const CubeProvider = ({children}) => {
         const solutionMovesRef = useRef([]);
         const [results, setResults] = useState([])
         const lastScrambleRef = useRef(scramble)
+        const batteryLevelRef = useRef(batteryLevel)
 
         const [scrambleDisplay, setScrambleDisplay] = useState([]);
         const [isAnimating, setIsAnimating] = useState(false);
@@ -74,6 +75,7 @@ export const CubeProvider = ({children}) => {
                 timerStateRef,
                 twistyPlayerRef,
                 solutionMovesRef,
+                batteryLevelRef,
 
                 setConnection,
                 setHardwareInfo,

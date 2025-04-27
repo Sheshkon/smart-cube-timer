@@ -9,6 +9,15 @@ const Cube = () => {
     const animationRef = useRef(-1);
     const {twistyPlayerRef} = useCubeState();
 
+    const {connection, batteryLevel} = useCubeState()
+
+    const getBatteryColor = (batteryLevel) => {
+        if (batteryLevel > 80) return "text-success"
+        if (batteryLevel > 40) return "text-warning"
+        if (batteryLevel > 15) return "text-error"
+        return "text-error"
+    }
+
     const animateCubeOrientation = async () => {
         try {
             if (!twistyPlayerRef.current) return;
@@ -56,8 +65,24 @@ const Cube = () => {
         };
     }, [twistyPlayerRef]);
 
-    return (
-        <div id="cube" ref={cubeRef}/>
+    return (<>
+        <div className="relative" id="cube" ref={cubeRef}>
+
+            {connection &&
+                <div className="absolute" style={{flexDirection: "column-reverse", right: "0.25rem", top: "1.25rem"}}>
+                    {/*<p>Battery</p>*/}
+                    <div className={`radial-progress ${getBatteryColor(batteryLevel)}       `}
+                         style={{
+                             "--value": batteryLevel,
+                             "--size": "45px",
+                             "--thickness": "5px",
+                         } /* as React.CSSProperties */}
+                         aria-valuenow={batteryLevel} role="progressbar">
+                        <p className="text-black dark:text-white" style={{fontSize: "12px"}}>{batteryLevel}%</p>
+                    </div>
+                </div>}
+        </div>
+        </>
     );
 };
 
