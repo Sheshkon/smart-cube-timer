@@ -7,6 +7,10 @@
     scrollbar-width: none;
 }
 
+html, body {
+    overscroll-behavior: none;
+}
+
 twisty-player {
     width: 256px;
     height: 256px;

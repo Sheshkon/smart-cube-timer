@@ -4,14 +4,6 @@ import {TimerState} from "../components/timer/util.js";
 
 const CubeContext = createContext(null);
 
-const hardwareInitialState = {
-    name: '- n/a -',
-    version: '- n/a -',
-    softwareVersion: '- n/a -',
-    productDate: '- n/a -',
-    gyroSupported: 'NO',
-}
-
 const twistyPlayer = new TwistyPlayer({
     puzzle: '3x3x3',
     visualization: 'PG3D',
@@ -30,13 +22,14 @@ const twistyPlayer = new TwistyPlayer({
 
 export const CubeProvider = ({children}) => {
         const [connection, setConnection] = useState(false);
-        const [hardwareInfo, setHardwareInfo] = useState(hardwareInitialState);
+        const [hardwareInfo, setHardwareInfo] = useState({});
+        const [deviceName, setDeviceName] = useState("");
+        const [deviceMac, setDeviceMac] = useState("");
         const [batteryLevel, setBatteryLevel] = useState(0);
         const [scramble, setScramble] = useState([]);
         const [timerState, setTimerState] = useState(TimerState.IDLE);
         const [lastMoves, setLastMoves] = useState([]);
         const [showScramble, setShowScramble] = useState(false)
-
 
         const twistyPlayerRef = useRef(twistyPlayer);
         const connectionRef = useRef(connection);
@@ -45,6 +38,9 @@ export const CubeProvider = ({children}) => {
         const [results, setResults] = useState([])
         const lastScrambleRef = useRef(scramble)
         const batteryLevelRef = useRef(batteryLevel)
+        const hardwareInfoRef = useRef(hardwareInfo)
+        const deviceNameRef = useRef(deviceName)
+        const deviceMacRef = useRef(deviceMac)
 
         const [scrambleDisplay, setScrambleDisplay] = useState([]);
         const [isAnimating, setIsAnimating] = useState(false);
@@ -52,6 +48,7 @@ export const CubeProvider = ({children}) => {
         useEffect(() => {
             connectionRef.current = connection
         }, [connection])
+
 
         useEffect(() => {
             timerStateRef.current = timerState
@@ -76,6 +73,9 @@ export const CubeProvider = ({children}) => {
                 twistyPlayerRef,
                 solutionMovesRef,
                 batteryLevelRef,
+                hardwareInfoRef,
+                deviceMacRef,
+                deviceNameRef,
 
                 setConnection,
                 setHardwareInfo,
@@ -87,7 +87,9 @@ export const CubeProvider = ({children}) => {
                 setLastMoves,
                 setResults,
                 isAnimating,
-                setIsAnimating
+                setIsAnimating,
+                setDeviceMac,
+                setDeviceName
             }}>
                 {children}
             </CubeContext.Provider>

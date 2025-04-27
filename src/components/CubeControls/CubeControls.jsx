@@ -2,10 +2,10 @@ import {experimentalSolve3x3x3IgnoringCenters} from "cubing/search";
 import {connectGanCube} from "gan-web-bluetooth";
 import {useEffect, useRef} from "react";
 import * as THREE from "three";
-import {CubeCommand, CubeEventType, customMacAddressProvider} from ".//util.js";
 import {TimerState} from "../../components/timer/util.js";
 import {useCubeState} from "../../contexts/CubeContext.jsx";
 import {cubeQuaternion, faceletsToPattern, HOME_ORIENTATION, SOLVED_STATE} from "../../utils/util.ts";
+import {CubeCommand, CubeEventType, customMacAddressProvider} from ".//util.js";
 
 const cubeControls = () => {
     const {
@@ -19,21 +19,34 @@ const cubeControls = () => {
         setLastMoves,
         solutionMovesRef,
         batteryLevelRef,
-        batteryLevel,
+        hardwareInfoRef,
+        setHardwareInfo,
         setBatteryLevel
     } = useCubeState()
 
     const basisRef = useRef(null);
 
+    const batteryPollIntervalRef = useRef(null);
 
     const handleConnect = async () => {
         if (connection) {
             await connection.disconnect();
             setConnection(null)
         } else {
+            if (batteryPollIntervalRef.current) {
+                clearInterval(batteryPollIntervalRef.current);
+                batteryPollIntervalRef.current = null;
+            }
             const cn = await connectGanCube(customMacAddressProvider)
             setConnection(cn);
             cn?.events$?.subscribe(handleCubeEvent);
+
+            batteryPollIntervalRef.current = setInterval(() => {
+                console.log("send battery command")
+                cn?.sendCubeCommand(CubeCommand.BATTERY)
+                    .catch(err => console.error('Battery poll error:', err));
+            }, 60000);
+
             await cn?.sendCubeCommand(CubeCommand.HARDWARE);
             await cn?.sendCubeCommand(CubeCommand.FACELETS);
             await cn?.sendCubeCommand(CubeCommand.BATTERY);
@@ -60,10 +73,12 @@ const cubeControls = () => {
                 console.log("level", event.batteryLevel)
                 setBatteryLevel(event.batteryLevel)
                 batteryLevelRef.current = event.batteryLevel
+                break;
+            case CubeEventType.HARDWARE:
+                await handleHardwareEvent(event);
                 break
         }
     }
-
 
     async function handleGyroEvent(event) {
         if (event.type === CubeEventType.GYRO) {
@@ -111,19 +126,33 @@ const cubeControls = () => {
         }
     }
 
-        useEffect(() => {
-            console.log("controls initialize")
-        }, [])
+    async function handleHardwareEvent(event) {
+        console.log(event)
 
-        useEffect(() => {
-            if (lastMoves.length > 256) {
-                setLastMoves(lastMoves.slice(-256));
-            }
-            if (timerStateRef.current === TimerState.READY) {
-                setTimerState(TimerState.RUNNING);
-            }
+        const updatedHardwareInfo = {
+            hardwareName: event?.hardwareName || '- n/a -',
+            hardwareVersion: event?.hardwareVersion || '- n/a -',
+            softwareVersion: event?.softwareVersion || '- n/a -',
+            productDate: event?.productDate || '- n/a -',
+            gyroSupported: event?.gyroSupported ? "YES" : "NO"
+        }
+        hardwareInfoRef.current = updatedHardwareInfo
+        setHardwareInfo(updatedHardwareInfo)
+    }
 
-        }, [lastMoves]);
+    useEffect(() => {
+        console.log("controls initialize")
+    }, [])
+
+    useEffect(() => {
+        if (lastMoves.length > 256) {
+            setLastMoves(lastMoves.slice(-256));
+        }
+        if (timerStateRef.current === TimerState.READY) {
+            setTimerState(TimerState.RUNNING);
+        }
+
+    }, [lastMoves]);
 
     return <div className="controls">
         <button

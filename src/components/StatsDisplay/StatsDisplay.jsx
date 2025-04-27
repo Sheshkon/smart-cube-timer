@@ -5,16 +5,6 @@ import {formatTime} from '../../utils/time.js';
 
 const StatsDisplay = ({onDeleteTimes, times, className = ''}) => {
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
-
-    const openModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
 
     const calculateStats = () => {
         if (times.length === 0) return {current: 0, best: 0, avg5: 0, avg12: 0, avg100: 0};
@@ -72,26 +62,6 @@ const StatsDisplay = ({onDeleteTimes, times, className = ''}) => {
                         </div>
                     </div>
                 ))}
-            </div>
-
-            <div>
-                <DeleteModal
-                    isOpen={isModalOpen}
-                    onClose={closeModal}
-                    onDelete={() => onDeleteTimes()}
-                    isDeleting={isDeleting}
-                />
-
-                <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                    Session: {times.length} solves
-                    <button
-                        onClick={openModal}
-                        className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                        title="Delete all times"
-                    >
-                        <Trash2 size={16}/>
-                    </button>
-                </div>
             </div>
         </div>
     );

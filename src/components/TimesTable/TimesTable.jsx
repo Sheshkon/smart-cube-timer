@@ -1,11 +1,23 @@
 import {Trash2} from 'lucide-react';
 import React, {useState} from 'react';
+import DeleteModal from "src/components/Model/DeleteModal.jsx";
 
 
 const TimesTable = ({times, onDeleteTime, className = ''}) => {
 
     const [popupContent, setPopupContent] = useState(null);
     const [isCopied, setIsCopied] = useState(false);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
 
     const sortedTimes = [...times].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -20,16 +32,39 @@ const TimesTable = ({times, onDeleteTime, className = ''}) => {
         setPopupContent(null);
     };
 
-    const handleCopy = (textToCopy) => {
+    const handleCopy = (result) => {
+        const textToCopy = JSON.stringify(result)
+
         navigator.clipboard.writeText(textToCopy).then(() => {
             setIsCopied(true);
-            setTimeout(() => setIsCopied(false), 2000); // Hide "Copied" after 2 seconds
+            setTimeout(() => setIsCopied(false), 1000);
         });
     };
 
     return (
+
         <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Session</h3>
+            <div className="flex mb-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Session</h3>
+            <div className="flex items-center">
+                <DeleteModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                    onDelete={() => onDeleteTimes()}
+                    isDeleting={isDeleting}
+                />
+
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                    <button
+                        onClick={openModal}
+                        className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                        title="Delete all times"
+                    >
+                        <Trash2 size={16}/>
+                    </button>
+                </div>
+            </div>
+            </div>
 
             {times.length === 0 ? (
                 <div className="text-center py-8 text-gray-500 dark:text-gray-400">
@@ -80,10 +115,10 @@ const TimesTable = ({times, onDeleteTime, className = ''}) => {
                     {popupContent && (
                         <dialog open className="modal">
                             <div className="modal-box">
-                                <div onClick={() => handleCopy(popupContent?.dir)}>
+                                <div onClick={() => handleCopy(popupContent)}>
                                     <p>
                                         <b>Time: </b><i>{popupContent.formattedTime}</i>
-                                        {isCopied && <span className="copied-message">Copied!</span>}
+                                        {isCopied && <span className="copied-message text-green-800">  Copied!</span>}
                                     </p>
                                     <p>
                                         <b>Scramble: </b><i>{popupContent?.scramble}</i>

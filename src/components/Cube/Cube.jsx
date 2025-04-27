@@ -1,4 +1,7 @@
-import {useEffect, useRef} from "react";
+import {Info} from 'lucide-react';
+import {Settings} from 'lucide-react';
+import React, {useEffect, useRef, useState} from "react";
+import {CubeInfoModel} from "../../components/Model/CubeInfoModel"
 import {useCubeState} from "../../contexts/CubeContext";
 import {cubeQuaternion} from "../../utils/util.ts";
 import '../../style.css'
@@ -7,16 +10,16 @@ const Cube = () => {
     const initialized = useRef(false);
     const cubeRef = useRef(null);
     const animationRef = useRef(-1);
-    const {twistyPlayerRef} = useCubeState();
+    const [infoModelOpen, setInfoModelOpen] = useState(false)
 
-    const {connection, batteryLevel} = useCubeState()
+    const {
+        twistyPlayerRef,
+        hardwareInfo,
+        connection,
+        batteryLevel
+    } = useCubeState()
 
-    const getBatteryColor = (batteryLevel) => {
-        if (batteryLevel > 80) return "text-success"
-        if (batteryLevel > 40) return "text-warning"
-        if (batteryLevel > 15) return "text-error"
-        return "text-error"
-    }
+    const handleInfoModelOpen = () => setInfoModelOpen(!infoModelOpen)
 
     const animateCubeOrientation = async () => {
         try {
@@ -66,22 +69,40 @@ const Cube = () => {
     }, [twistyPlayerRef]);
 
     return (<>
-        <div className="relative" id="cube" ref={cubeRef}>
+            <div className="relative" id="cube" ref={cubeRef}>
 
-            {connection &&
-                <div className="absolute" style={{flexDirection: "column-reverse", right: "0.25rem", top: "1.25rem"}}>
-                    {/*<p>Battery</p>*/}
-                    <div className={`radial-progress ${getBatteryColor(batteryLevel)}       `}
-                         style={{
-                             "--value": batteryLevel,
-                             "--size": "45px",
-                             "--thickness": "5px",
-                         } /* as React.CSSProperties */}
-                         aria-valuenow={batteryLevel} role="progressbar">
-                        <p className="text-black dark:text-white" style={{fontSize: "12px"}}>{batteryLevel}%</p>
-                    </div>
-                </div>}
-        </div>
+                {connection &&
+                    <div className="absolute flex"
+                         style={{flexDirection: "column", right: "-0.80rem", top: "1.25rem"}}>
+                        <button
+                            onClick={handleInfoModelOpen}
+                            className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            title="Cube info"
+                        >
+                            <Info size={18}/>
+                        </button>
+
+                        <button
+                            // onClick={handleSettingsModelOpen}
+                            className="p-1.5 rounded-full my-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                            title="Settings"
+                        >
+                            <Settings size={18}/>
+                        </button>
+
+                        <CubeInfoModel
+                            info={{
+                                ...hardwareInfo,
+                                batteryLevel,
+                                deviceMAC: connection?.deviceMAC,
+                                deviceName: connection?.deviceName
+                            }}
+                            isOpen={infoModelOpen}
+                            onClose={handleInfoModelOpen}
+
+                        />
+                    </div>}
+            </div>
         </>
     );
 };
