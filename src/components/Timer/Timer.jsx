@@ -18,6 +18,8 @@ const Timer = ({onSaveTime}) => {
         setShowScramble,
         setLastMoves,
         lastScrambleRef,
+        connection,
+        connectionRef,
     } = useCubeState()
 
     const localTimerRef = useRef(null);
@@ -46,7 +48,12 @@ const Timer = ({onSaveTime}) => {
     const startTimer = () => {
         const startTime = new Date().getTime()
         localTimerRef.current = interval(30).subscribe(() => {
-            getTimerValueFromTimestamp(new Date().getTime() - startTime);
+            if (connectionRef.current) return getTimerValueFromTimestamp(new Date().getTime() - startTime);
+
+            stopTimer()
+            setShowTimer(false)
+            setTimerState(TimerState.IDLE)
+            setTimeValue(formatTime(0));
         })
     }
 
@@ -77,7 +84,6 @@ const Timer = ({onSaveTime}) => {
         solutionMovesRef.current = [];
         setTimerState(TimerState.IDLE);
     };
-
 
     useEffect(() => {
         switch (timerState) {

@@ -73,8 +73,9 @@ function App() {
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                                    <StatsDisplay onDeleteTimes={handleDeleteTimes} times={storedTimes}/>
+                                    <StatsDisplay times={storedTimes}/>
                                     <TimesTable
+                                        onDeleteTimes={handleDeleteTimes}
                                         times={storedTimes}
                                         onDeleteTime={handleDeleteTime}
                                     />

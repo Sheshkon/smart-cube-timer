@@ -1,10 +1,8 @@
-import {Award, BarChart2, Clock, Trash2, TrendingUp} from 'lucide-react';
-import React, {useState} from 'react';
-import DeleteModal from "../../components/Model/DeleteModal.jsx";
+import {Award, BarChart2, Clock, TrendingUp} from 'lucide-react';
+import React from 'react';
 import {formatTime} from '../../utils/time.js';
 
-const StatsDisplay = ({onDeleteTimes, times, className = ''}) => {
-
+const StatsDisplay = ({times, className = ''}) => {
 
     const calculateStats = () => {
         if (times.length === 0) return {current: 0, best: 0, avg5: 0, avg12: 0, avg100: 0};

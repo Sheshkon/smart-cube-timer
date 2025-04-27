@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import DeleteModal from "src/components/Model/DeleteModal.jsx";
 
 
-const TimesTable = ({times, onDeleteTime, className = ''}) => {
+const TimesTable = ({onDeleteTimes, times, onDeleteTime, className = ''}) => {
 
     const [popupContent, setPopupContent] = useState(null);
     const [isCopied, setIsCopied] = useState(false);

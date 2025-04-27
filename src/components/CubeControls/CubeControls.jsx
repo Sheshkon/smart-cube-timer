@@ -1,6 +1,7 @@
 import {experimentalSolve3x3x3IgnoringCenters} from "cubing/search";
 import {connectGanCube} from "gan-web-bluetooth";
 import {useEffect, useRef} from "react";
+import {generateScramble} from "src/components/Scramble/util.js";
 import * as THREE from "three";
 import {TimerState} from "../../components/timer/util.js";
 import {useCubeState} from "../../contexts/CubeContext.jsx";
@@ -21,7 +22,8 @@ const cubeControls = () => {
         batteryLevelRef,
         hardwareInfoRef,
         setHardwareInfo,
-        setBatteryLevel
+        setBatteryLevel,
+        connectionRef
     } = useCubeState()
 
     const basisRef = useRef(null);
@@ -32,6 +34,10 @@ const cubeControls = () => {
         if (connection) {
             await connection.disconnect();
             setConnection(null)
+            connectionRef.current = null
+            setLastMoves([]);
+            generateScramble()
+            // window.location.reload()
         } else {
             if (batteryPollIntervalRef.current) {
                 clearInterval(batteryPollIntervalRef.current);
@@ -138,6 +144,14 @@ const cubeControls = () => {
         }
         hardwareInfoRef.current = updatedHardwareInfo
         setHardwareInfo(updatedHardwareInfo)
+    }
+
+    const handleRefresh = () => {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+            registrations.forEach((registration) => {
+                registration.unregister().then(r => console.log("refreshed"));
+            });
+        });
     }
 
     useEffect(() => {

@@ -108,15 +108,6 @@ const Scramble = ({className = ''}) => {
             <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}>
                 <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white">Scramble</h3>
-                    <div className="flex space-x-2">
-                        <button
-                            onClick={copyToClipboard}
-                            className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                            title="Copy scramble"
-                        >
-                            <Copy size={16}/>
-                        </button>
-                    </div>
                 </div>
 
                 <div
