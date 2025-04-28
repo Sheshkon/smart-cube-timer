@@ -1,6 +1,7 @@
 import {Trash2} from 'lucide-react';
 import React, {useState} from 'react';
-import DeleteModal from "src/components/Model/DeleteModal.jsx";
+import DeleteModal from "../../components/Model/DeleteModal";
+import {formatSolveData} from "../../components/StatsDisplay/util";
 
 
 const TimesTable = ({onDeleteTimes, times, onDeleteTime, className = ''}) => {
@@ -32,8 +33,8 @@ const TimesTable = ({onDeleteTimes, times, onDeleteTime, className = ''}) => {
         setPopupContent(null);
     };
 
-    const handleCopy = (result) => {
-        const textToCopy = JSON.stringify(result)
+    const handleCopy = (textToCopy) => {
+        // const textToCopy = JSON.stringify(textToCopy)
 
         navigator.clipboard.writeText(textToCopy).then(() => {
             setIsCopied(true);
@@ -115,7 +116,7 @@ const TimesTable = ({onDeleteTimes, times, onDeleteTime, className = ''}) => {
                     {popupContent && (
                         <dialog open className="modal">
                             <div className="modal-box">
-                                <div onClick={() => handleCopy(popupContent)}>
+                                <div onClick={() => handleCopy(formatSolveData(popupContent))}>
                                     <div className="flex justify-between items-center gap-16">
                                         <b><label htmlFor="Time">Time:</label></b>
                                         <input

@@ -14,7 +14,7 @@ export default class StatsResult {
     }
 }
 
-export const getDiffWithLastSolve = (lastSolve, preLastSolve) => {
+export const getCurrentSolveStats = (lastSolve, preLastSolve) => {
     const timestampDiff = lastSolve.originalTime.asTimestamp - preLastSolve.originalTime.asTimestamp
 
     const formattedTimeDiff = {
@@ -22,11 +22,31 @@ export const getDiffWithLastSolve = (lastSolve, preLastSolve) => {
         sign: Math.sign(timestampDiff)
     }
 
-    const movesDiff = lastSolve.solution?.split(' ')?.length
+    const movesCount = lastSolve.solution?.split(' ')?.length
+    const tps = getTPS(lastSolve.originalTime.asTimestamp, movesCount)
 
     return {
         formattedTimeDiff,
-        movesDiff,
+        movesCount,
+        tps
     }
+}
 
+export const formatSolveData = (solve) => {
+    console.log(solve)
+    const movesCount = solve.solution.split(' ').length;
+    const tps = getTPS(solve.originalTime.asTimestamp, movesCount)
+    const dateObj = new Date(solve.date);
+    const formattedDate = dateObj.toLocaleString();
+
+    return `Time: ${solve.formattedTime}
+Date: ${formattedDate}
+Scramble: ${solve.scramble}
+Solution: ${solve?.solution}
+Moves: ${movesCount}
+TPS: ${tps}`;
+}
+
+const getTPS = (timeMls, movesCount) => {
+    return ((movesCount * 1.0) / Math.floor(timeMls / 1000)).toFixed(1)
 }

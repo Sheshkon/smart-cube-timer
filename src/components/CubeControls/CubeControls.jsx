@@ -32,12 +32,7 @@ const cubeControls = () => {
 
     const handleConnect = async () => {
         if (connection) {
-            await connection.disconnect();
-            setConnection(null)
-            connectionRef.current = null
-            setLastMoves([]);
-            generateScramble()
-            // window.location.reload()
+            await disconnect();
         } else {
             if (batteryPollIntervalRef.current) {
                 clearInterval(batteryPollIntervalRef.current);
@@ -57,6 +52,17 @@ const cubeControls = () => {
             await cn?.sendCubeCommand(CubeCommand.FACELETS);
             await cn?.sendCubeCommand(CubeCommand.BATTERY);
         }
+    }
+
+    async function disconnect() {
+        await connection.disconnect()
+            .catch(() => console.log("no connection"));
+
+        setConnection(null)
+        connectionRef.current = null
+        setLastMoves([]);
+        generateScramble()
+        // window.location.reload()
     }
 
     const handleResetCubeState = () => {

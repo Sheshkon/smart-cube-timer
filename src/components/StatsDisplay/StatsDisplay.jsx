@@ -1,11 +1,12 @@
 import {Award, BarChart2, Clock, TrendingUp} from 'lucide-react';
 import React from 'react';
-import {getDiffWithLastSolve} from "src/components/StatsDisplay/util.js";
+import {getCurrentSolveStats} from "src/components/StatsDisplay/util.js";
 import {formatTime} from '../../utils/time.js';
 
 const StatsDisplay = ({times, className = ''}) => {
 
     const calculateStats = () => {
+        console.log("calculating stats")
         if (times.length === 0) return {current: 0, best: 0, avg5: 0, avg12: 0, avg100: 0};
 
         const sortedTimes = [...times].sort((a, b) => a.originalTime.asTimestamp - b.originalTime.asTimestamp);
@@ -19,7 +20,7 @@ const StatsDisplay = ({times, className = ''}) => {
 
         const avg100 = calculateAverage(times.slice(-100));
 
-        const diff = times.length > 1 ? getDiffWithLastSolve(current, times[times.length - 2]) : {}
+        const diff = times.length > 1 ? getCurrentSolveStats(current, times[times.length - 2]) : {}
 
         console.log(diff)
 
@@ -61,21 +62,25 @@ const StatsDisplay = ({times, className = ''}) => {
                             <span className="ml-1 text-xs font-medium">{item.label}</span>
                         </div>
                         <div className="font-mono font-semibold flex-col text-lg text-gray-900 dark:text-white">
-                            <p className="flex justify-center">{item.value}</p>
+                            <div className="flex justify-center">{item.value}</div>
                             {item.label === "Current" && stats?.diff?.formattedTimeDiff && (
                                 <>
-                                    <p
+                                    <div
                                         className={
                                             stats.diff.formattedTimeDiff.sign === 1
-                                                ? "text-green-600 dark:text-green-400 text-sm"  // Зелёный для "+"
-                                                : "text-red-600 dark:text-red-400  text-sm"       // Красный для "-"
+                                                ? "text-red-600 dark:text-red-400 text-xs flex justify-center"
+                                                : "text-green-600 dark:text-green-400 text-xs flex justify-center"
                                         }
-                                    >{`(${stats.diff.formattedTimeDiff.sign === 1 ? '+' : '-'}${stats.diff.formattedTimeDiff.formattedTime})`}
-                                    </p>
+                                    >
+                                        <p>{`(${stats.diff.formattedTimeDiff.sign === 1 ? '+' : '-'}${stats.diff.formattedTimeDiff.formattedTime})`}</p>
+                                    </div>
 
-                                    <p className="flex justify-center text-gray-500 dark:text-gray-400 text-sm">
-                                        {stats.diff?.movesDiff} moves
-                                    </p>
+                                    <div className="flex justify-center ml-1 text-xs text-gray-500 dark:text-gray-400">
+                                        Moves: <p className="text-gray-900 dark:text-white text-xs">{stats.diff?.movesCount}</p>
+                                    </div>
+                                    <div className="flex justify-center ml-1 text-xs text-gray-500 dark:text-gray-400">
+                                        TPS: <p className="text-gray-900 text-xs dark:text-white">{stats.diff?.tps}</p>
+                                    </div>
                                 </>
                             )}
                         </div>
