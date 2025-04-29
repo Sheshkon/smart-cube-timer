@@ -1,10 +1,10 @@
 import {Moon, Sun} from 'lucide-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {useTheme} from '../../contexts/ThemeContext';
+import {useSettings} from '../../contexts/SettingsContext';
 
 const Header = ({className = ''}) => {
-    const {theme, toggleTheme} = useTheme();
+    const { settings, updateSetting } = useSettings();
 
     return (
         <>
@@ -17,11 +17,11 @@ const Header = ({className = ''}) => {
 
                     <div className="flex items-center space-x-4">
                         <button
-                            onClick={() => toggleTheme()}
+                            onClick={() => updateSetting('theme', settings.theme === 'light' ? 'dark' : 'light')}
                             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
-                            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                            title={settings.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                         >
-                            {theme === 'dark' ? <Sun size={20}/> : <Moon size={20}/>}
+                            {settings.theme === 'dark' ? <Sun size={20}/> : <Moon size={20}/>}
                         </button>
                     </div>
                 </div>

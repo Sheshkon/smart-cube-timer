@@ -1,6 +1,6 @@
 import {Trash2} from 'lucide-react';
 import React, {useState} from 'react';
-import DeleteModal from "../../components/Model/DeleteModal";
+import DeleteModal from "../Modal/DeleteModal";
 import {formatSolveData} from "../../components/StatsDisplay/util";
 
 

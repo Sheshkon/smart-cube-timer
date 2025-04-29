@@ -1,10 +1,12 @@
 import {randomScrambleForEvent} from "cubing/scramble";
-import {Copy} from "lucide-react";
 import React, {useEffect} from "react";
-import {ColoredMove, getInverseMoves, MoveColor} from ".//util.js";
+import {useSettings} from "../../contexts/SettingsContext.jsx";
+import {getMoveComponent} from "../../components/Scramble/svgMapper.js";
+
 import {TimerState} from "../../components/timer/util.js";
 import {useCubeState} from "../../contexts/CubeContext.jsx";
 import {prepareMoves} from "../../utils/util.ts";
+import {ColoredMove, getInverseMoves, MoveColor} from ".//util.js";
 import '../../style.css'
 
 const isReadyTimerCondition = (wrongCounter, scrambleMoves, cubeMoves, timerState) => wrongCounter === 0 && scrambleMoves.length > 1 && cubeMoves.length === scrambleMoves.length && cubeMoves.every((move, index) => move === scrambleMoves[index]) && timerState !== TimerState.RUNNING;
@@ -23,6 +25,8 @@ const Scramble = ({className = ''}) => {
         setScrambleDisplay,
         lastScrambleRef,
     } = useCubeState();
+
+    const {settings} = useSettings()
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(scramble)
@@ -115,7 +119,7 @@ const Scramble = ({className = ''}) => {
                     <span
                         className="whitespace-normal break-all leading-relaxed text-gray-900 dark:text-gray-50 truncate-multiline">
                       {
-                          scrambleDisplay.length > 35? (
+                          scrambleDisplay.length > 35 ? (
                               <div className="text-red-500 px-10 py-2">
                                   Cube should be solved
                               </div>
@@ -123,11 +127,35 @@ const Scramble = ({className = ''}) => {
                               scrambleDisplay.map((el) => (
                                   <span
                                       key={el.index}
-                                      style={el.color !== MoveColor.WHITE ? {color: el.color} : {}}
-                                      className={`${el.isCurrent ? 'is-current-move text-gray-50' : ''} inline-block px-1 text-black-700`}
+                                      className={`${el.isCurrent ? 'is-current-move' : ''} inline-block px-1`}
                                   >
-                                    {el.move}
-                                  </span>
+    {settings.imageNotation   ? (
+        (() => {
+            const MoveComponent = getMoveComponent(el.move.replace('2', ''));
+            const color = settings.theme == "dark" ? "white" : "black"
+
+            return MoveComponent ? (
+
+                <div style={{position: "relative"}}>
+                    {el.move.includes('2') && <span style={{position: "absolute", right: '-8px', top: '-15px'}}>x2</span>}
+                    <MoveComponent
+                        fill={el.color !== MoveColor.WHITE ? el.color : color} stroke={el.color !== MoveColor.WHITE ? el.color : color}
+                        style={{width: '3rem', height: '3rem', color: "red"}}
+
+                    />
+                </div>
+            ) : (
+                <span style={{color: el.color !== MoveColor.WHITE ? el.color : 'inherit'}}>
+        {el.move}
+      </span>
+            );
+        })()
+    ) : (
+        <span style={{color: el.color !== MoveColor.WHITE ? el.color : 'inherit'}}>
+    {el.move}
+  </span>
+    )}
+  </span>
                               ))
                           )
                       }

@@ -1,5 +1,6 @@
 import react from "@vitejs/plugin-react";
 import path from "path";
+import svgr from 'vite-plugin-svgr';
 import {defineConfig} from 'vite'
 import {VitePWA} from "vite-plugin-pwa";
 
@@ -7,6 +8,7 @@ export default defineConfig({
     base: "/smart-cube-timer",
     plugins: [
         react(),
+        svgr(),
         VitePWA({
             manifest: {
                 name: 'Smart Cube Timer',

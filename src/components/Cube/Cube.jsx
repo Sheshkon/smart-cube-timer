@@ -1,7 +1,8 @@
 import {Info} from 'lucide-react';
 import {Settings} from 'lucide-react';
 import React, {useEffect, useRef, useState} from "react";
-import {CubeInfoModel} from "../../components/Model/CubeInfoModel"
+import {CubeInfoModal} from "src/components/Modal/CubeInfoModal.jsx"
+import {SettingsModal} from "src/components/Modal/SettingsModal.jsx";
 import {useCubeState} from "../../contexts/CubeContext";
 import {cubeQuaternion} from "../../utils/util.ts";
 import '../../style.css'
@@ -10,7 +11,8 @@ const Cube = () => {
     const initialized = useRef(false);
     const cubeRef = useRef(null);
     const animationRef = useRef(-1);
-    const [infoModelOpen, setInfoModelOpen] = useState(false)
+    const [infoModalOpen, setInfoModalOpen] = useState(false)
+    const [settingsModalOpen, setSettingsModalOpen] = useState(false)
 
     const {
         twistyPlayerRef,
@@ -19,7 +21,8 @@ const Cube = () => {
         batteryLevel
     } = useCubeState()
 
-    const handleInfoModelOpen = () => setInfoModelOpen(!infoModelOpen)
+    const handleInfoModalOpen = () => setInfoModalOpen(!infoModalOpen)
+    const handleSettingsModalOpen = () =>  setSettingsModalOpen(!settingsModalOpen)
 
     const animateCubeOrientation = async () => {
         try {
@@ -75,7 +78,7 @@ const Cube = () => {
                     <div className="absolute flex"
                          style={{flexDirection: "column", right: "-0.80rem", top: "1.25rem"}}>
                         <button
-                            onClick={handleInfoModelOpen}
+                            onClick={handleInfoModalOpen}
                             className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                             title="Cube info"
                         >
@@ -83,23 +86,28 @@ const Cube = () => {
                         </button>
 
                         <button
-                            // onClick={handleSettingsModelOpen}
+                            onClick={handleSettingsModalOpen}
                             className="p-1.5 rounded-full my-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                             title="Settings"
                         >
                             <Settings size={18}/>
                         </button>
 
-                        <CubeInfoModel
+                        <CubeInfoModal
                             info={{
                                 ...hardwareInfo,
                                 batteryLevel,
                                 deviceMAC: connection?.deviceMAC,
                                 deviceName: connection?.deviceName
                             }}
-                            isOpen={infoModelOpen}
-                            onClose={handleInfoModelOpen}
+                            isOpen={infoModalOpen}
+                            onClose={handleInfoModalOpen}
 
+                        />
+
+                        <SettingsModal
+                            isOpen={settingsModalOpen}
+                            onClose={handleSettingsModalOpen}
                         />
                     </div>}
             </div>

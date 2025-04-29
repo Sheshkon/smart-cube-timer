@@ -30,7 +30,8 @@ twisty-player {
 
 .is-current-move {
     position: relative;
-    background-color: rgba(0, 0, 0, 100);
+    background-color: rgb(189, 186, 186);
+    border-radius: 2px;
 }
 
 .is-current-move::before,
@@ -39,7 +40,8 @@ twisty-player {
     position: absolute;
     top: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 100);
+    background-color: rgb(189, 186, 186);
+    border-radius: 2px;
 }
 
 .is-current-move::before {

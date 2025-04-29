@@ -1,6 +1,6 @@
 import React from "react";
 
-export const CubeInfoModel = ({info, isOpen, onClose}) => {
+export const CubeInfoModal = ({info, isOpen, onClose}) => {
 
     const getValue = (value, fallback = '- n/a -') => value ?? fallback;
 

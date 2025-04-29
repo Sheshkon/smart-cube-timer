@@ -1,5 +1,6 @@
 import {Cuboid} from 'lucide-react';
 import React, {useState} from 'react';
+import {SettingsProvider} from "src/contexts/SettingsContext.jsx";
 import Cube from "./components/Cube/Cube.jsx";
 import CubeControls from "./components/CubeControls/CubeControls.jsx";
 import Footer from './components/Footer/Footer';
@@ -10,7 +11,6 @@ import StatsDisplay from './components/StatsDisplay/StatsDisplay';
 import Timer from './components/Timer/Timer';
 import TimesTable from './components/TimesTable/TimesTable';
 import {CubeProvider} from "./contexts/CubeContext.jsx";
-import {ThemeProvider} from './contexts/ThemeContext';
 import useLocalStorage from './hooks/useLocalStorage';
 
 function App() {
@@ -45,8 +45,8 @@ function App() {
 
     return (
         <>
-            <CubeProvider>
-                <ThemeProvider>
+            <SettingsProvider>
+                <CubeProvider>
                     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
                         <Header/>
                         <main className="flex-grow container mx-auto px-4 py-6">
@@ -85,8 +85,8 @@ function App() {
                         </main>
                         <Footer/>
                     </div>
-                </ThemeProvider>
-            </CubeProvider>
+                </CubeProvider>
+            </SettingsProvider>
         </>
     );
 }

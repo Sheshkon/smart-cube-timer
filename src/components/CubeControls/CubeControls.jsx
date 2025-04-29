@@ -2,6 +2,7 @@ import {experimentalSolve3x3x3IgnoringCenters} from "cubing/search";
 import {connectGanCube} from "gan-web-bluetooth";
 import {useEffect, useRef} from "react";
 import {generateScramble} from "src/components/Scramble/util.js";
+import {useSettings} from "src/contexts/SettingsContext.jsx";
 import * as THREE from "three";
 import {TimerState} from "../../components/timer/util.js";
 import {useCubeState} from "../../contexts/CubeContext.jsx";
@@ -25,6 +26,8 @@ const cubeControls = () => {
         setBatteryLevel,
         connectionRef
     } = useCubeState()
+
+    const { settingsRef } = useSettings();
 
     const basisRef = useRef(null);
 
@@ -73,7 +76,9 @@ const cubeControls = () => {
     const handleCubeEvent = async event => {
         switch (event.type) {
             case CubeEventType.GYRO:
-                await handleGyroEvent(event);
+                if (settingsRef.current.useGyroscope) {
+                    await handleGyroEvent(event);
+                }
                 break;
             case CubeEventType.MOVE:
                 await handleMoveEvent(event);
