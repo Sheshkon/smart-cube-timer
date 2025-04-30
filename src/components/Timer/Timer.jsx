@@ -86,7 +86,6 @@ const Timer = ({ onSaveTime }) => {
   useEffect(() => {
     const handleFreshPattern = async (kpattern) => {
       const facelets = patternToFacelets(kpattern);
-      console.log('fresh listener');
       if (
         facelets === SOLVED_STATE &&
         timerStateRef.current === TimerState.RUNNING

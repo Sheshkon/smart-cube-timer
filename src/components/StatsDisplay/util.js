@@ -42,7 +42,6 @@ export const getCurrentSolveStats = (lastSolve, preLastSolve) => {
 };
 
 export const formatSolveData = (solve) => {
-  console.log(solve);
   const movesCount = solve.solution.split(' ').length;
   const tps = getTPS(solve.originalTime.asTimestamp, movesCount);
   const dateObj = new Date(solve.date);

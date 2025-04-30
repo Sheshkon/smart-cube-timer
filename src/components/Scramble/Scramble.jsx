@@ -102,21 +102,18 @@ const Scramble = ({ className = '' }) => {
     ) {
       setTimerState(TimerState.READY);
       setShowScramble(false);
-      console.log('timer ready');
       await generateScramble();
     }
   };
 
   useEffect(() => {
     if (timerState === TimerState.IDLE) {
-      checkScramble(prepareMoves(lastMoves.map((move) => move.move))).then(() =>
-        console.log('Check Scramble'),
-      );
+      checkScramble(prepareMoves(lastMoves.map((move) => move.move))).then();
     }
   }, [lastMoves, timerState]);
 
   useEffect(() => {
-    generateScramble().then(() => console.log('Scramble generated'));
+    generateScramble().then();
   }, []);
 
   useEffect(() => {

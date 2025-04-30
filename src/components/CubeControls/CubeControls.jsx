@@ -45,7 +45,6 @@ const cubeControls = () => {
       cn?.events$?.subscribe(handleCubeEvent);
 
       batteryPollIntervalRef.current = setInterval(() => {
-        console.log('send battery command');
         cn?.sendCubeCommand(CubeCommand.BATTERY).catch((err) =>
           console.error('Battery poll error:', err),
         );
@@ -63,7 +62,6 @@ const cubeControls = () => {
     setConnection(null);
     connectionRef.current = null;
     setLastMoves([]);
-    // generateScramble()
     // window.location.reload()
   }
 
@@ -150,8 +148,6 @@ const cubeControls = () => {
   }
 
   async function handleHardwareEvent(event) {
-    console.log(event);
-
     const updatedHardwareInfo = {
       hardwareName: event?.hardwareName || '- n/a -',
       hardwareVersion: event?.hardwareVersion || '- n/a -',
@@ -162,10 +158,6 @@ const cubeControls = () => {
     hardwareInfoRef.current = updatedHardwareInfo;
     setHardwareInfo(updatedHardwareInfo);
   }
-
-  useEffect(() => {
-    console.log('controls initialize');
-  }, []);
 
   useEffect(() => {
     if (lastMoves.length > 256) {
