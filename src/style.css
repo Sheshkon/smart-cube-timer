@@ -7,7 +7,8 @@
     scrollbar-width: none;
 }
 
-html, body {
+html,
+body {
     overscroll-behavior: none;
 }
 
@@ -36,7 +37,7 @@ twisty-player {
 
 .is-current-move::before,
 .is-current-move::after {
-    content: ""; /* Creates an empty pseudo-element */
+    content: ''; /* Creates an empty pseudo-element */
     position: absolute;
     top: 0;
     bottom: 0;

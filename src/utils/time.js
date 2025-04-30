@@ -19,4 +19,4 @@ export const formatTime = (timeMs) => {
 };
 
 export const ganTimeToMilliseconds = (time) =>
-    time.minutes * 60 * 1000 + time.seconds * 1000 + time.milliseconds
+  time.minutes * 60 * 1000 + time.seconds * 1000 + time.milliseconds;
