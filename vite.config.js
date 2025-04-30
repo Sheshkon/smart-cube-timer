@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
+import globals from 'globals';
 
 export default defineConfig({
   base: '/smart-cube-timer',
