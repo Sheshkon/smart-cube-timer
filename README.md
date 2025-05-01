@@ -49,8 +49,9 @@
 | Deployment     | GitHub Pages |
 
 ## 🚀 Getting Started
-
+## dev branch
 ```bash
+## Dev branch
 git clone https://github.com/sheshkon/smart-cube-timer.git
 cd smart-cube-timer
 npm install
