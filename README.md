@@ -42,9 +42,8 @@
 
 | Category       | Technologies |
 |----------------|-------------|
-| Frontend       | React, Vite, TypeScript |
+| Frontend       | React, Vite, JavaScript, PWA |
 | Styling        | Tailwind CSS, CSS Modules |
-| State          | Context API, Zustand |
 | 3D Rendering   | Three.js |
 | Bluetooth      | Web Bluetooth API |
 | Deployment     | GitHub Pages |
