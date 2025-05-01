@@ -132,7 +132,13 @@ const Scramble = ({ className = '' }) => {
             </h3>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 p-3 rounded-md font-mono text-sm md:text-base overflow-x-auto">
+          <div className={`
+                bg-white dark:bg-gray-800 
+                p-3 rounded-md font-mono 
+                md:text-base
+                ${settings.scrambleSize}
+                overflow-x-auto
+          `}>
             <div className="whitespace-normal break-all leading-relaxed text-gray-900 dark:text-gray-50">
               {scrambleDisplay.length > 35 ? (
                 <div className="text-red-500 px-10 py-2">

@@ -57,6 +57,27 @@ export const SettingsModal = ({ isOpen, onClose }) => {
                 }
               />
             </div>
+            <div className="flex justify-between items-center mb-3">
+              <b>
+                <label htmlFor="scrambleSize">Scramble Size</label>
+              </b>
+              <select
+                defaultValue="Default"
+                className="select select-xs w-32"
+                value={settings.scrambleSize || 'Default'}
+                onChange={(e) => updateSetting('scrambleSize', e.target.value)}
+              >
+                <option value="text-xs">Small</option>
+                <option value="text-sm">Default</option>
+                <option value="text-lg">Large</option>
+                <option value="text-xl">X-Large</option>
+                <option value="text-2xl">2XL</option>
+                <option value="text-3xl">3XL</option>
+                <option value="text-4xl">4XL</option>
+                <option value="text-5xl">5XL</option>
+
+              </select>
+            </div>
             <div className="modal-action">
               <form method="dialog">
                 <button
