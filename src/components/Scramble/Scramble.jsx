@@ -20,6 +20,21 @@ const isReadyTimerCondition = (
   cubeMoves.every((move, index) => move === scrambleMoves[index]) &&
   timerState !== TimerState.RUNNING;
 
+const getImageScrambleSizeClass = (textSize) => {
+  const sizeMap= {
+    'text-xs': 'w-8 h-8',
+    'text-sm': 'w-12 h-12',
+    'text-lg': 'w-16 h-16',
+    'text-xl': 'w-20 h-20',
+    'text-2xl': 'w-24 h-24',
+    'text-3xl': 'w-28 h-28',
+    'text-4xl': 'w-32 h-32',
+    'text-5xl': 'w-36 h-36'
+  };
+
+  return sizeMap[textSize || 'text-sm'] || sizeMap['text-sm'];
+};
+
 const Scramble = ({ className = '' }) => {
   const {
     scramble,
@@ -135,7 +150,6 @@ const Scramble = ({ className = '' }) => {
           <div className={`
                 bg-white dark:bg-gray-800 
                 p-3 rounded-md font-mono 
-                md:text-base
                 ${settings.scrambleSize}
                 overflow-x-auto
           `}>
@@ -179,7 +193,7 @@ const Scramble = ({ className = '' }) => {
                               stroke={
                                 el.color !== MoveColor.WHITE ? el.color : color
                               }
-                              className="w-12 h-12"
+                              className={getImageScrambleSizeClass(settings.scrambleSize)}
                             />
                           </div>
                         </span>

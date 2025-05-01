@@ -62,9 +62,8 @@ export const SettingsModal = ({ isOpen, onClose }) => {
                 <label htmlFor="scrambleSize">Scramble Size</label>
               </b>
               <select
-                defaultValue="Default"
+                value={settings?.scrambleSize || 'text-sm'}
                 className="select select-xs w-32"
-                value={settings.scrambleSize || 'Default'}
                 onChange={(e) => updateSetting('scrambleSize', e.target.value)}
               >
                 <option value="text-xs">Small</option>
