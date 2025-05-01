@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { FiRefreshCw, FiX } from 'react-icons/fi';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
-export default function ReloadPrompt() {
+export default function RefreshPrompt() {
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
@@ -33,7 +33,7 @@ export default function ReloadPrompt() {
   const handleUpdate = () => {
     updateServiceWorker(true).then(() => {
       console.log('Update completed');
-      window.location.reload(); // Force reload if needed
+      // window.location.reload(); // Force reload if needed
     });
   };
 

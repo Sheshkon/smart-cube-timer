@@ -4,7 +4,7 @@ import Cube from 'src/components/Cube/Cube.jsx';
 import CubeControls from 'src/components/CubeControls/CubeControls.jsx';
 import Footer from 'src/components/Footer/Footer';
 import Header from 'src/components/Header/Header';
-import ReloadPrompt from 'src/components/Prompts/ReloadPrompt.jsx';
+import RefreshPrompt from 'src/components/Prompts/RefreshPrompt.jsx';
 import Scramble from 'src/components/Scramble/Scramble.jsx';
 import StatsDisplay from 'src/components/StatsDisplay/StatsDisplay';
 import Timer from 'src/components/Timer/Timer';
@@ -39,7 +39,7 @@ function App() {
 
   return (
     <>
-      <ReloadPrompt />
+      <RefreshPrompt />
       <SettingsProvider>
         <CubeProvider>
           <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
