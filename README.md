@@ -17,6 +17,14 @@
   *Fig 2. Timer Desktop interface in dark/light modes*
 </div>
 
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/0e4523d0-7479-48b1-a494-3f48a78ba399"  width="250px" alt="Info"/>
+    <img src="https://github.com/user-attachments/assets/8b41aa31-0bdb-470b-8309-b83b23387754"  width="250px" alt="Info"/>
+    <img src="https://github.com/user-attachments/assets/bcdfbdad-a21d-4500-a3ed-067bb5ac2eb8"  width="250px" alt="Info"/>
+  
+  *Fig 3. Additional screenshots*
+</div>
+
 ## ✨ Features
 
 ### ⏱️ Core Timer
