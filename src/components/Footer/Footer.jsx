@@ -14,7 +14,7 @@ const Footer = ({ className = '' }) => (
 
         <div className="flex items-center space-x-4">
           <a
-            href="#"
+            href="https://github.com/Sheshkon/smart-cube-timer"
             className="inline-flex items-center hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
             target="https://github.com/Sheshkon/smart-cube-timer"
             rel="noopener noreferrer"

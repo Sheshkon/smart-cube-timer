@@ -1,11 +1,11 @@
 import react from '@vitejs/plugin-react';
 import prettier from 'eslint-config-prettier';
+import globals from 'globals';
 import path from 'path';
 import { defineConfig } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
-import globals from 'globals';
 
 export default defineConfig({
   base: '/smart-cube-timer',
@@ -46,6 +46,7 @@ export default defineConfig({
       },
     },
     VitePWA({
+      registerType: 'prompt',
       manifest: {
         name: 'Smart Cube Timer',
         short_name: 'Smart Cube Timer',
@@ -57,15 +58,46 @@ export default defineConfig({
             type: 'image/png',
           },
         ],
+        screenshots: [
+
+          {
+            src: 'screenshots/dark-screenshot-desktop.jpg',
+            sizes: '1280x782',
+            type: 'image/jpg',
+            form_factor: 'wide',
+            label: 'Desktop dark',
+          },
+          {
+            src: 'screenshots/light-screenshot-desktop.jpg',
+            sizes: '1280x782',
+            type: 'image/jpg',
+            form_factor: 'wide',
+            label: 'Desktop light',
+          },
+          {
+            src: 'screenshots/dark-screenshot-mobile.jpg',
+            sizes: '575x1280',
+            type: 'image/jpg',
+            label: 'Mobile dark',
+          },
+          {
+            src: 'screenshots/light-screenshot-mobile.jpg',
+            sizes: '575x1280',
+            type: 'image/jpg',
+            label: 'Mobile light',
+          },
+        ],
         display: 'standalone',
         theme_color: '#000000',
-        background_color: '#ffffff',
+        background_color: '#000000',
       },
       devOptions: {
         enabled: true,
         type: 'module',
       },
       workbox: {
+        clientsClaim: true,
+        skipWaiting: false,
         globPatterns: ['**/*.{js,css,html,png,svg}'],
       },
     }),

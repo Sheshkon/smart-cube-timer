@@ -1,7 +1,7 @@
 import { Info, Settings } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { CubeInfoModal } from 'src/components/Modal/CubeInfoModal.jsx';
-import { SettingsModal } from 'src/components/Modal/SettingsModal.jsx';
+import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
+import { SettingsModal } from 'src/components/Modals/SettingsModal.jsx';
 import { useCube } from 'src/hooks/useCube';
 import { cubeQuaternion } from 'src/utils/util.ts';
 import 'src/style.css';
