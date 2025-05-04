@@ -12,6 +12,7 @@ import TimesTable from 'src/components/TimesTable/TimesTable';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { CubeProvider } from 'src/providers/CubeProvider';
 import { SettingsProvider } from 'src/providers/settingsProvider';
+import { mergeConsecutiveWords } from 'src/utils/string.js';
 
 function App() {
   const [storedTimes, setStoredTimes] = useLocalStorage('cube-timer-times', []);
@@ -21,9 +22,10 @@ function App() {
       id: Date.now(),
       formattedTime: solve?.formattedTime,
       originalTime: solve?.originalTime,
-      scramble: solve?.scramble,
+      scramble: mergeConsecutiveWords(solve?.reconstruction?.scramble?.plain),
       date: new Date(),
-      solution: solve.solution,
+      solution: mergeConsecutiveWords(solve?.reconstruction?.solution?.plain),
+      reconstruction: solve?.reconstruction
     };
 
     setStoredTimes((prevTimes) => [...prevTimes, result]);

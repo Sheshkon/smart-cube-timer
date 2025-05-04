@@ -124,69 +124,79 @@ const TimesTable = ({ onDeleteTimes, times, onDeleteTime, className = '' }) => {
           {popupContent && (
             <dialog open className="modal">
               <div className="modal-box">
-                <div onClick={() => handleCopy(formatSolveData(popupContent))}>
-                  <div className="flex justify-between items-center gap-16">
-                    <b>
-                      <label htmlFor="Time">Time:</label>
-                    </b>
-                    <input
-                      id="time"
-                      type="text"
-                      readOnly
-                      value={popupContent.formattedTime}
-                      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1 w-full"
-                    />
-                  </div>
-                  <div className="flex justify-between gap-8">
-                    <b>
-                      <label htmlFor="Scramble">Scramble:</label>
-                    </b>
-                    <input
-                      id="time"
-                      type="text"
-                      readOnly
-                      value={popupContent?.scramble}
-                      className="bg-gray-100 dark:bg-gray-800 p-1 rounded flex-1 w-full"
-                    />
-                  </div>
-                  <div className="flex justify-between gap-16">
-                    <b>
-                      <label className="x" htmlFor="date">
-                        Date:
-                      </label>
-                    </b>
-                    <input
-                      id="time"
-                      type="text"
-                      readOnly
-                      value={popupContent?.date}
-                      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1 w-full"
-                    />
-                  </div>
-                  <div className="flex justify-between gap-1">
-                    <b>
-                      <label htmlFor="Moves count">Moves count:</label>
-                    </b>
-                    <input
-                      id="time"
-                      type="text"
-                      readOnly
-                      value={popupContent?.solution?.split(' ')?.length}
-                      className="bg-gray-100 dark:bg-gray-800 p-1 rounded flex-1 w-full"
-                    />
-                  </div>
-                  <div className="flex justify-between gap-9">
-                    <b>
-                      <label htmlFor="Solution">Solution: </label>
-                    </b>
-                    <input
-                      id="time"
-                      type="text"
-                      readOnly
-                      value={popupContent?.solution}
-                      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1"
-                    />
-                  </div>
+
+                <textarea
+                  defaultValue={formatSolveData(popupContent)}
+                  onClick={() => handleCopy(formatSolveData(popupContent))}
+                  className='w-full h-full'
+                  name="Text1" cols="10" rows={formatSolveData(popupContent).split('\n').length}
+                >
+                  {/*{formatSolveData(popupContent)}*/}
+                </textarea>
+
+                {/*<div onClick={() => handleCopy(formatSolveData(popupContent))}>*/}
+                {/*  <div className="flex justify-between items-center gap-16">*/}
+                {/*    <b>*/}
+                {/*      <label htmlFor="Time">Time:</label>*/}
+                {/*    </b>*/}
+                {/*    <input*/}
+                {/*      id="time"*/}
+                {/*      type="text"*/}
+                {/*      readOnly*/}
+                {/*      value={popupContent.formattedTime}*/}
+                {/*      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1 w-full"*/}
+                {/*    />*/}
+                {/*  </div>*/}
+                {/*  <div className="flex justify-between gap-8">*/}
+                {/*    <b>*/}
+                {/*      <label htmlFor="Scramble">Scramble:</label>*/}
+                {/*    </b>*/}
+                {/*    <input*/}
+                {/*      id="time"*/}
+                {/*      type="text"*/}
+                {/*      readOnly*/}
+                {/*      value={popupContent?.scramble}*/}
+                {/*      className="bg-gray-100 dark:bg-gray-800 p-1 rounded flex-1 w-full"*/}
+                {/*    />*/}
+                {/*  </div>*/}
+                {/*  <div className="flex justify-between gap-16">*/}
+                {/*    <b>*/}
+                {/*      <label className="x" htmlFor="date">*/}
+                {/*        Date:*/}
+                {/*      </label>*/}
+                {/*    </b>*/}
+                {/*    <input*/}
+                {/*      id="time"*/}
+                {/*      type="text"*/}
+                {/*      readOnly*/}
+                {/*      value={popupContent?.date}*/}
+                {/*      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1 w-full"*/}
+                {/*    />*/}
+                {/*  </div>*/}
+                {/*  <div className="flex justify-between gap-1">*/}
+                {/*    <b>*/}
+                {/*      <label htmlFor="Moves count">Moves count:</label>*/}
+                {/*    </b>*/}
+                {/*    <input*/}
+                {/*      id="time"*/}
+                {/*      type="text"*/}
+                {/*      readOnly*/}
+                {/*      value={popupContent?.solution?.split(' ')?.length}*/}
+                {/*      className="bg-gray-100 dark:bg-gray-800 p-1 rounded flex-1 w-full"*/}
+                {/*    />*/}
+                {/*  </div>*/}
+                {/*  <div className="flex justify-between gap-9">*/}
+                {/*    <b>*/}
+                {/*      <label htmlFor="Solution">Solution: </label>*/}
+                {/*    </b>*/}
+                {/*    <input*/}
+                {/*      id="time"*/}
+                {/*      type="text"*/}
+                {/*      readOnly*/}
+                {/*      value={popupContent?.solution}*/}
+                {/*      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1"*/}
+                {/*    />*/}
+                {/*  </div>*/}
                   {isCopied && (
                     <div className="absolute center flex right-4">
                       <span className="copied-message text-green-800">
@@ -195,7 +205,6 @@ const TimesTable = ({ onDeleteTimes, times, onDeleteTime, className = '' }) => {
                     </div>
                   )}
                 </div>
-              </div>
               <form method="dialog" className="modal-backdrop">
                 <button onClick={handleClosePopup}>Close</button>
               </form>

@@ -5,9 +5,29 @@ import StatsResult from 'src/components/StatsDisplay/util.js';
 import { TimerState } from 'src/components/timer/util.js';
 import { useCube } from 'src/hooks/useCube';
 import 'src/style.css';
-import { mergeConsecutiveWords } from 'src/utils/string.js';
+import { CubeSolveAnalyzer } from 'src/utils/solve-analizer/cube-solve-analyzer.js';
 import { formatTime, ganTimeToMilliseconds } from 'src/utils/time.js';
 import { patternToFacelets, SOLVED_STATE } from 'src/utils/util.ts';
+
+const getReconstruction = (scramble, fittedMoves, method = 'AUTO') => {
+  const methods = ['ROUX', 'CFOP'];
+
+  if (method !== 'AUTO') {
+    const cube = new CubeSolveAnalyzer();
+    return cube.analyzeSolve(scramble, fittedMoves, method);
+  }
+
+  const results = methods.map(m => {
+    const cube = new CubeSolveAnalyzer();
+    return cube.analyzeSolve(scramble, fittedMoves, m);
+  });
+
+  return results.reduce((best, current) => {
+    const currentSuccess = Object.values(current.steps).filter(s => s.found).length;
+    const bestSuccess = Object.values(best.steps).filter(s => s.found).length;
+    return currentSuccess > bestSuccess ? current : best;
+  });
+};
 
 const Timer = ({ onSaveTime }) => {
   const {
@@ -36,14 +56,10 @@ const Timer = ({ onSaveTime }) => {
       lastMove ? lastMove.cubeTimestamp : 0,
     );
 
-    const solution = solutionMovesRef.current.map((el) => el.move).join(' ');
-    const filteredSolution = mergeConsecutiveWords(solution);
-
     const solve = new StatsResult(
       originalTime,
       formattedTime,
-      lastScrambleRef.current.toString(),
-      filteredSolution,
+      getReconstruction(lastScrambleRef.current.toString(), solutionMovesRef.current),
     );
 
     setShowTimer(false);

@@ -1,17 +1,19 @@
 const mergeConsecutiveWords = (input) => {
-  const words = input.split(' ');
+  const words = input.split(' ').filter(word => word.trim());
 
   const result = [];
-  let currentWord = words[0];
-  let count = 1;
+  let i = 0;
 
-  for (let i = 1; i <= words.length; i++) {
-    if (words[i] === currentWord) {
-      count++;
+  while (i < words.length) {
+    const current = words[i];
+    const next = words[i+1];
+
+    if (next && current === next && !current.includes('2')) {
+      result.push(current.replace(/'?$/, '2'));
+      i += 2;
     } else {
-      result.push(count > 1 ? `${currentWord}${count}` : currentWord);
-      currentWord = words[i];
-      count = 1;
+      result.push(current);
+      i++;
     }
   }
 
