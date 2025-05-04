@@ -72,7 +72,7 @@ const formatReconstruction = (reconstruction) => {
     .map(([stepName, stepData]) => {
       if (!stepData.found) return null;
 
-      let stepLine = `\x1b[1m${stepName}:\x1b[0m ${mergeConsecutiveWords(stepData.plain)}`;
+      let stepLine = `${stepName}: ${mergeConsecutiveWords(stepData.plain)}`;
 
       if (stepData.duration !== null) {
         const start = (stepData.relativeTime / 1000).toFixed(3);

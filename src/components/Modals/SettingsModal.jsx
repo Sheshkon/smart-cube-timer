@@ -59,6 +59,20 @@ export const SettingsModal = ({ isOpen, onClose }) => {
             </div>
             <div className="flex justify-between items-center mb-3">
               <b>
+                <label htmlFor="solutionChart">Solve analyse chart</label>
+              </b>
+              <input
+                id="solutionChart"
+                type="checkbox"
+                className="toggle"
+                checked={settings.solutionChart || false}
+                onChange={(e) =>
+                  updateSetting('solutionChart', e.target.checked)
+                }
+              />
+            </div>
+            <div className="flex justify-between items-center mb-3">
+              <b>
                 <label htmlFor="scrambleSize">Scramble Size</label>
               </b>
               <select

@@ -1,9 +1,13 @@
 import { Award, BarChart2, Clock, TrendingUp } from 'lucide-react';
 import React from 'react';
+import { SolveReconstructionChart } from 'src/components/Chart/SolveChart.jsx';
 import { getCurrentSolveStats } from 'src/components/StatsDisplay/util.js';
+import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime } from 'src/utils/time.js';
 
 const StatsDisplay = ({ times, className = '' }) => {
+  const { settings } = useSettings();
+
   const calculateStats = () => {
     if (times.length === 0) {
       return {};
@@ -73,66 +77,77 @@ const StatsDisplay = ({ times, className = '' }) => {
   ];
 
   return (
-    <div
-      className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
-    >
-      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-        Statistics
-      </h3>
+    <>
+      <div
+        className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
+      >
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          Statistics
+        </h3>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {statItems.map((item, index) => (
-          <div
-            key={index}
-            className="bg-gray-50 dark:bg-gray-900 p-3 rounded-md flex flex-col items-center justify-center"
-          >
-            <div className="flex items-center text-gray-600 dark:text-gray-400 mb-1">
-              {item.icon}
-              <span className="ml-1 text-xs font-medium">{item.label}</span>
-            </div>
-            <div className="font-mono font-semibold flex-col text-lg text-gray-900 dark:text-white">
-              <div className={
-                item.value === stats.best?.formattedTime && item.label === 'Current'
-                  ? 'flex justify-center text-green-600 dark:text-green-400'
-                  : 'flex justify-center'
-              }>
-                {item.value}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {statItems.map((item, index) => (
+            <div
+              key={index}
+              className="bg-gray-50 dark:bg-gray-900 p-3 rounded-md flex flex-col items-center justify-center"
+            >
+              <div className="flex items-center text-gray-600 dark:text-gray-400 mb-1">
+                {item.icon}
+                <span className="ml-1 text-xs font-medium">{item.label}</span>
               </div>
-              {item.label === 'Current' && stats?.currentStats?.formattedTimeDiff && (
-                <>
-                  <div
-                    className={
-                      stats.currentStats.formattedTimeDiff.sign === 1
-                        ? 'text-red-600 dark:text-red-400 text-xs flex justify-center'
-                        : 'text-green-600 dark:text-green-400 text-xs flex justify-center'
-                    }
-                  >
-                    <p>{`(${stats.currentStats.formattedTimeDiff.sign === 1 ? '+' : '-'}${stats.currentStats.formattedTimeDiff.formattedTime})`}</p>
-                  </div>
-                </>
-              )}
-              {item.label === 'Current' && item.value && (
-                <>
-                  <div className="flex justify-center ml-1 text-xs text-gray-500 dark:text-gray-400">
-                    Moves:{' '}
-                    <p className="text-gray-900 dark:text-white text-xs">
-                      {stats.currentStats?.movesCount}
-                    </p>
-                  </div>
-                  <div className="flex justify-center ml-1 text-xs text-gray-500 dark:text-gray-400">
-                    TPS:{' '}
-                    <p className="text-gray-900 text-xs dark:text-white">
-                      {stats.currentStats?.tps}
-                    </p>
-                  </div>
-                </>
-              )}
+              <div className="font-mono font-semibold flex-col text-lg text-gray-900 dark:text-white">
+                <div className={
+                  item.value === stats.best?.formattedTime && item.label === 'Current'
+                    ? 'flex justify-center text-green-600 dark:text-green-400'
+                    : 'flex justify-center'
+                }>
+                  {item.value}
+                </div>
+                {item.label === 'Current' && stats?.currentStats?.formattedTimeDiff && (
+                  <>
+                    <div
+                      className={
+                        stats.currentStats.formattedTimeDiff.sign === 1
+                          ? 'text-red-600 dark:text-red-400 text-xs flex justify-center'
+                          : 'text-green-600 dark:text-green-400 text-xs flex justify-center'
+                      }
+                    >
+                      <p>{`(${stats.currentStats.formattedTimeDiff.sign === 1 ? '+' : '-'}${stats.currentStats.formattedTimeDiff.formattedTime})`}</p>
+                    </div>
+                  </>
+                )}
+                {item.label === 'Current' && item.value && (
+                  <>
+                    <div className="flex justify-center ml-1 text-xs text-gray-500 dark:text-gray-400">
+                      Moves:{' '}
+                      <p className="text-gray-900 dark:text-white text-xs">
+                        {stats.currentStats?.movesCount}
+                      </p>
+                    </div>
+                    <div className="flex justify-center ml-1 text-xs text-gray-500 dark:text-gray-400">
+                      TPS:{' '}
+                      <p className="text-gray-900 text-xs dark:text-white">
+                        {stats.currentStats?.tps}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+      {settings['solutionChart'] && (
+      <div
+        className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
+      >
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white">Solve Step Analysis</h3>
+        <SolveReconstructionChart className="flex-col" reconstruction={times?.[times?.length - 1].reconstruction} />
+      </div>
+        )}
+    </>
   );
 };
+
 
 export default StatsDisplay;
