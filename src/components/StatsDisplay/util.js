@@ -1,16 +1,16 @@
+import { makeTimeFromTimestamp } from 'gan-web-bluetooth';
+import { mergeConsecutiveWords } from 'src/utils/string.js';
 import { formatTime } from 'src/utils/time.js';
 
 export default class StatsResult {
-  constructor(originalTime, time, scramble, solution, plainSolution) {
+  constructor(originalTime, time, reconstruction) {
     this.originalTime = originalTime;
     this.formattedTime = time;
-    this.scramble = scramble;
-    this.solution = solution;
-    this.plainSolution = plainSolution;
+    this.reconstruction = reconstruction;
   }
 
   toString() {
-    return `Original Time: ${this.originalTime}, Time: ${this.formattedTime}, Scramble: ${this.scramble}, Solution: ${this.solution}, Plain Solution: ${this.plainSolution}`;
+    return `Original Time: ${this.originalTime}, Time: ${this.formattedTime}, Scramble: ${this?.reconstruction?.scramble?.plain}, Solution: ${this?.reconstruction?.solution?.plain}`;
   }
 }
 
@@ -21,7 +21,7 @@ export const getCurrentSolveStats = (lastSolve, preLastSolve) => {
 
   const stats = {
     movesCount,
-    tps
+    tps,
   };
 
   if (!preLastSolve)
@@ -46,14 +46,45 @@ export const formatSolveData = (solve) => {
   const tps = getTPS(solve.originalTime.asTimestamp, movesCount);
   const dateObj = new Date(solve.date);
   const formattedDate = dateObj.toLocaleString();
+  const reconstruction = formatReconstruction(solve?.reconstruction);
 
-  return `Time: ${solve.formattedTime}
-Date: ${formattedDate}
-Scramble: ${solve.scramble}
-Solution: ${solve?.solution}
-Moves: ${movesCount}
-TPS: ${tps}`;
+
+  return `𝙏𝙞𝙢𝙚: ${solve.formattedTime}
+𝙈𝙤𝙫𝙚𝙨: ${movesCount}
+𝙏𝙋𝙎: ${tps}
+𝘿𝙖𝙩𝙚: ${formattedDate}
+𝙎𝙘𝙧𝙖𝙢𝙗𝙡𝙚: ${solve.scramble}
+𝙎𝙤𝙡𝙪𝙩𝙞𝙤𝙣: ${solve?.solution}
+𝙍𝙚𝙘𝙤𝙣𝙨𝙩𝙧𝙪𝙘𝙩𝙞𝙤𝙣: ${reconstruction}`;
 };
 
 const getTPS = (timeMls, movesCount) =>
   ((movesCount * 1.0) / Math.floor(timeMls / 1000)).toFixed(1);
+
+const formatReconstruction = (reconstruction) => {
+  if (!reconstruction || !reconstruction.method || !reconstruction.steps) {
+    return 'Invalid reconstruction data';
+  }
+
+  const { method, steps, totalDuration } = reconstruction;
+
+  const stepsText = Object.entries(steps)
+    .map(([stepName, stepData]) => {
+      if (!stepData.found) return null;
+
+      let stepLine = `\x1b[1m${stepName}:\x1b[0m ${mergeConsecutiveWords(stepData.plain)}`;
+
+      if (stepData.duration !== null) {
+        const start = (stepData.relativeTime / 1000).toFixed(3);
+        const duration = (stepData.duration / 1000).toFixed(3);
+        stepLine += ` (${duration}s)`;
+      }
+
+      return stepLine;
+    })
+    .filter(Boolean)
+    .join('\n');
+
+  return `\n𝙈𝙚𝙩𝙝𝙤𝙙: ${method}
+${stepsText}`;
+};
