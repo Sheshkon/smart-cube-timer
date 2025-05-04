@@ -1,6 +1,7 @@
 // cube-solver.js
-import { CubeCore } from '../solve-analizer/cube-core.js';
-import { TEMPLATES } from '../templates.js';
+
+import { CubeCore } from 'src/utils/solve-analizer/cube-core.js';
+import { TEMPLATES } from 'src/utils/templates.js';
 
 export class CubeSolveAnalyzer extends CubeCore {
   matchesTemplate(template) {
