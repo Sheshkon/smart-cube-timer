@@ -1,0 +1,42 @@
+name: Build and Deploy Dist
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'src/**'  # Trigger only when source files change
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies and build
+        run: |
+          npm install 
+          npm run build
+
+      - name: Deploy dist to main
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Checkout main branch
+          git fetch origin main
+          git checkout main
+          
+          # Delete old dist and copy new one
+          git rm -rf dist/
+          mkdir -p dist
+          cp -R ../repo/dist/ ./dist/  # Adjust path if needed
+          
+          # Commit and push
+          git add dist/
+          if git diff --cached --quiet; then
+            echo "No changes to deploy"
+          else
+            git commit -m "Deploy: Update dist folder from build [skip ci]"
+            git push origin main
+          fi
