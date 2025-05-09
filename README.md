@@ -4,15 +4,15 @@
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Open-green?style=for-the-badge)](https://sheshkon.github.io/smart-cube-timer/)
 
 <div align="center">
-  <img src="./dist/screenshots/light-screenshot-mobile.jpg"  width="75px" alt="Light Mode Timer"/>
-   <img src="./dist/screenshots/dark-screenshot-mobile.jpg"  width="75px" alt="Dark Mode Timer"/>
+  <img src="./public/screenshots/light-screenshot-mobile.jpg"  width="75px" alt="Light Mode Timer"/>
+   <img src="./public/screenshots/dark-screenshot-mobile.jpg"  width="75px" alt="Dark Mode Timer"/>
   
   *Fig 1. Timer Mobile interface in dark/light modes*
 </div>
 
 <div align="center">
-  <img src="./dist/screenshots/dark-screenshot-desktop.jpg"  width="250px" alt="Dark Mode Timer"/>
-    <img src="./dist/screenshots/light-screenshot-desktop.jpg"  width="250px" alt="Light Mode Timer"/>
+  <img src="./public/screenshots/dark-screenshot-desktop.jpg"  width="250px" alt="Dark Mode Timer"/>
+    <img src="./public/screenshots/light-screenshot-desktop.jpg"  width="250px" alt="Light Mode Timer"/>
   
   *Fig 2. Timer Desktop interface in dark/light modes*
 </div>
