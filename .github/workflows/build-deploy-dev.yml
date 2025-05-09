@@ -1,4 +1,4 @@
-name: Build and Deploy Dist
+name: Build and Deploy
 
 on:
   push:
