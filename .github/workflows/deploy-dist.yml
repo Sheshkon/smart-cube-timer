@@ -1,0 +1,37 @@
+name: Deploy Dist to Main
+
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'dist/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git config
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Deploy dist to main
+        run: |
+          git fetch origin main
+          git checkout main
+          git rm -r dist/ || true
+          git checkout dev -- dist/
+          git add dist/
+          
+          if git diff --cached --quiet; then
+            echo "No changes to deploy"
+          else
+            git commit -m "Deploy dist folder from dev [ci skip]"
+            git push origin main
+          fi
