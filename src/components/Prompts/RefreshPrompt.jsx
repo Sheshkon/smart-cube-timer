@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FiRefreshCw, FiX, FiDownload } from 'react-icons/fi';
+import { FiDownload, FiRefreshCw, FiX } from 'react-icons/fi';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export default function RefreshPrompt() {
@@ -16,11 +16,9 @@ export default function RefreshPrompt() {
     },
   });
 
-  // State for install prompt
   const [installPromptEvent, setInstallPromptEvent] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
 
-  // Listen for install prompt
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
@@ -41,7 +39,6 @@ export default function RefreshPrompt() {
     setIsInstallable(false);
   };
 
-  // Auto-close offline ready notification
   useEffect(() => {
     if (offlineReady) {
       const timer = setTimeout(closePrompt, 5000);
@@ -49,7 +46,6 @@ export default function RefreshPrompt() {
     }
   }, [offlineReady]);
 
-  // Handle PWA installation
   const handleInstall = async () => {
     if (!installPromptEvent) return;
 
@@ -64,17 +60,16 @@ export default function RefreshPrompt() {
     setIsInstallable(false);
   };
 
-  // Handle SW update
   const handleUpdate = () => {
     updateServiceWorker(true);
   };
 
-  // Don't show if nothing to display
   if (!offlineReady && !needRefresh && !isInstallable) return null;
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden w-72">
+      <div
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden w-72">
         <div className="p-4">
           <div className="flex items-start">
             <div className="flex-1">
