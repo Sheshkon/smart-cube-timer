@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { Coffee, Github } from 'lucide-react';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 const Footer = ({ className = '' }) => (
   <footer

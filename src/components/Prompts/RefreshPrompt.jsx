@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+
 import { FiDownload, FiRefreshCw, FiX } from 'react-icons/fi';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 

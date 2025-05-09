@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { Moon, Sun } from 'lucide-react';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { useSettings } from 'src/hooks/useSettings';
 
 const Header = ({ className = '' }) => {

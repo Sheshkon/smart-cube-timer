@@ -1,7 +1,8 @@
+import path from 'path';
+
 import react from '@vitejs/plugin-react';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
-import path from 'path';
 import { defineConfig } from 'vite';
 import eslint from 'vite-plugin-eslint';
 import { VitePWA } from 'vite-plugin-pwa';

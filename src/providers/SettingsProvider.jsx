@@ -1,5 +1,7 @@
-import PropTypes from 'prop-types';
 import React, { useEffect, useRef, useState } from 'react';
+
+import PropTypes from 'prop-types';
+
 import { SettingsContext } from '../contexts/SettingsContext';
 
 const defaultSettings = {

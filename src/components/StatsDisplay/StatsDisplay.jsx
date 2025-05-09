@@ -1,5 +1,6 @@
-import { Award, BarChart2, Clock, TrendingUp } from 'lucide-react';
 import React from 'react';
+
+import { Award, BarChart2, Clock, TrendingUp } from 'lucide-react';
 import { SolveReconstructionChart } from 'src/components/Chart/SolveChart.jsx';
 import { getCurrentSolveStats } from 'src/components/StatsDisplay/util.js';
 import { useSettings } from 'src/hooks/useSettings.js';

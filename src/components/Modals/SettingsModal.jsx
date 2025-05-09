@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { useSettings } from 'src/hooks/useSettings';
 
 export const SettingsModal = ({ isOpen, onClose }) => {

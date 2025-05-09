@@ -1,5 +1,6 @@
-import { Cuboid } from 'lucide-react';
 import React from 'react';
+
+import { Cuboid } from 'lucide-react';
 import Cube from 'src/components/Cube/Cube.jsx';
 import CubeControls from 'src/components/CubeControls/CubeControls.jsx';
 import Footer from 'src/components/Footer/Footer';

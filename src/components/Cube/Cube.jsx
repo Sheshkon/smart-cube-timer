@@ -1,5 +1,6 @@
-import { Info, Settings } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+
+import { Info, Settings } from 'lucide-react';
 import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
 import { SettingsModal } from 'src/components/Modals/SettingsModal.jsx';
 import { useCube } from 'src/hooks/useCube';

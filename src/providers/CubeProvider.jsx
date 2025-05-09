@@ -1,5 +1,6 @@
-import { TwistyPlayer } from 'cubing/twisty';
 import React, { useEffect, useRef, useState } from 'react';
+
+import { TwistyPlayer } from 'cubing/twisty';
 import { TimerState } from 'src/components/Timer/util.js';
 import { CubeContext } from 'src/contexts/CubeContext.jsx';
 

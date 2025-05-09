@@ -1,5 +1,6 @@
-import { cubeTimestampLinearFit, makeTimeFromTimestamp } from 'gan-web-bluetooth';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { cubeTimestampLinearFit, makeTimeFromTimestamp } from 'gan-web-bluetooth';
 import { interval } from 'rxjs';
 import StatsResult from 'src/components/StatsDisplay/util.js';
 import { TimerState } from 'src/components/timer/util.js';
