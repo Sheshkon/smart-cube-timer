@@ -8,7 +8,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
-  base: '/smart-cube-timer',
+  base: '/smart-cube-timer/',
   esbuild: {
     loader: 'tsx',
     include: /\.(ts|tsx|js|jsx)$/,
@@ -96,7 +96,6 @@ export default defineConfig({
         ],
         orientation: 'any',
         display: 'standalone',
-        dir: 'auto',
         lang: 'en-US',
         background_color: '#ffffff',
       },
@@ -105,10 +104,14 @@ export default defineConfig({
         type: 'module',
       },
       workbox: {
+        cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: false,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}'],
-        navigateFallback: '/smart-cube-timer/index.html',
+        dontCacheBustURLsMatching: /\.\w{8}\./,
+        modifyURLPrefix: {
+        '': '/smart-cube-timer/',
+        },
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -177,6 +180,10 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
+    include: [
+      'cubing/twisty',
+      'cubing/worker',
+    ],
     exclude: ['cubing'],
   },
   worker: {
