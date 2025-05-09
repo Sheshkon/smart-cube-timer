@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { FiRefreshCw, FiX } from 'react-icons/fi';
+import { useEffect, useState } from 'react';
+import { FiRefreshCw, FiX, FiDownload } from 'react-icons/fi';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export default function RefreshPrompt() {
@@ -16,11 +16,32 @@ export default function RefreshPrompt() {
     },
   });
 
+  // State for install prompt
+  const [installPromptEvent, setInstallPromptEvent] = useState(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+
+  // Listen for install prompt
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setInstallPromptEvent(e);
+      setIsInstallable(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
   const closePrompt = () => {
     setOfflineReady(false);
     setNeedRefresh(false);
+    setIsInstallable(false);
   };
 
+  // Auto-close offline ready notification
   useEffect(() => {
     if (offlineReady) {
       const timer = setTimeout(closePrompt, 5000);
@@ -28,29 +49,48 @@ export default function RefreshPrompt() {
     }
   }, [offlineReady]);
 
-  if (!offlineReady && !needRefresh) return null;
+  // Handle PWA installation
+  const handleInstall = async () => {
+    if (!installPromptEvent) return;
 
-  const handleUpdate = () => {
-    updateServiceWorker(true).then(() => {
-      console.log('Update completed');
-      // window.location.reload(); // Force reload if needed
-    });
+    installPromptEvent.prompt();
+    const { outcome } = await installPromptEvent.userChoice;
+
+    console.log(outcome === 'accepted'
+      ? 'User accepted install'
+      : 'User dismissed install');
+
+    setInstallPromptEvent(null);
+    setIsInstallable(false);
   };
+
+  // Handle SW update
+  const handleUpdate = () => {
+    updateServiceWorker(true);
+  };
+
+  // Don't show if nothing to display
+  if (!offlineReady && !needRefresh && !isInstallable) return null;
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden w-72">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden w-72">
         <div className="p-4">
           <div className="flex items-start">
             <div className="flex-1">
               <h3 className="font-medium text-gray-900 dark:text-white">
-                {offlineReady ? 'App Ready' : 'New Version'}
+                {offlineReady
+                  ? 'App Ready'
+                  : needRefresh
+                    ? 'New Version'
+                    : 'Install App'}
               </h3>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {offlineReady
                   ? 'Your app is now ready to work offline'
-                  : 'A new version is available!'}
+                  : needRefresh
+                    ? 'A new version is available!'
+                    : 'Add this app to your home screen'}
               </p>
             </div>
             <button
@@ -62,8 +102,8 @@ export default function RefreshPrompt() {
             </button>
           </div>
 
-          {needRefresh && (
-            <div className="mt-4 flex justify-end space-x-3">
+          <div className="mt-4 flex justify-end space-x-3">
+            {needRefresh && (
               <button
                 onClick={handleUpdate}
                 className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -71,8 +111,17 @@ export default function RefreshPrompt() {
                 <FiRefreshCw className="mr-2 h-4 w-4" />
                 Update
               </button>
-            </div>
-          )}
+            )}
+            {isInstallable && (
+              <button
+                onClick={handleInstall}
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                <FiDownload className="mr-2 h-4 w-4" />
+                Install
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

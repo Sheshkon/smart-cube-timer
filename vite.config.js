@@ -50,11 +50,18 @@ export default defineConfig({
       manifest: {
         name: 'Smart Cube Timer',
         short_name: 'Smart Cube Timer',
-        description: 'Smart Cube Timer',
+        description: 'Timer for GAN smart cubes',
         icons: [
           {
-            src: 'icons/logo.png',
+            purpose: 'maskable',
             sizes: '512x512',
+            src: 'icons/icon512_maskable.png',
+            type: 'image/png',
+          },
+          {
+            purpose: 'any',
+            sizes: '512x512',
+            src: 'icons/icon512_rounded.png',
             type: 'image/png',
           },
         ],
@@ -87,9 +94,11 @@ export default defineConfig({
             label: 'Mobile light',
           },
         ],
+        orientation: 'any',
         display: 'standalone',
-        theme_color: '#000000',
-        background_color: '#000000',
+        dir: 'auto',
+        lang: 'en-US',
+        background_color: '#ffffff',
       },
       devOptions: {
         enabled: true,
@@ -98,7 +107,62 @@ export default defineConfig({
       workbox: {
         clientsClaim: true,
         skipWaiting: false,
-        globPatterns: ['**/*.{js,css,html,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}'],
+        navigateFallback: '/smart-cube-timer/index.html',
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'gstatic-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'image-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+            },
+          },
+          {
+            urlPattern: /\.(?:js|css)$/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources',
+            },
+          },
+          {
+            urlPattern: /\/smart-cube-timer\/.*/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'app-cache',
+              networkTimeoutSeconds: 10,
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 60, // 60 days
+              },
+            },
+          },
+        ],
       },
     }),
   ],
