@@ -11,7 +11,7 @@ import Timer from 'src/components/Timer/Timer';
 import TimesTable from 'src/components/TimesTable/TimesTable';
 import useLocalStorage from 'src/hooks/useLocalStorage';
 import { CubeProvider } from 'src/providers/CubeProvider';
-import { SettingsProvider } from 'src/providers/settingsProvider';
+import { SettingsProvider } from 'src/providers/SettingsProvider';
 import { mergeConsecutiveWords } from 'src/utils/string.js';
 
 function App() {
