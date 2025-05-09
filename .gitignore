@@ -1,4 +1,4 @@
-/*
-!.gitignore
-!/dist
-!/dist/**
+node_modules
+.idea
+dev-dist
+dist
