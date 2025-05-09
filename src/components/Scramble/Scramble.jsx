@@ -1,8 +1,8 @@
-import { randomScrambleForEvent } from 'cubing/scramble';
 import React, { useEffect } from 'react';
+
+import { randomScrambleForEvent } from 'cubing/scramble';
 import { getMoveComponent } from 'src/components/Scramble/svgMapper.js';
 import { TimerState } from 'src/components/Timer/util.js';
-
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
 import { prepareMoves } from 'src/utils/util.ts';
