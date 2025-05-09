@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { cubeTimestampLinearFit, makeTimeFromTimestamp } from 'gan-web-bluetooth';
 import { interval } from 'rxjs';
 import StatsResult from 'src/components/StatsDisplay/util.js';
-import { TimerState } from 'src/components/timer/util.js';
+import { TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
 import 'src/style.css';
 import { CubeSolveAnalyzer } from 'src/utils/solve-analizer/cube-solve-analyzer.js';

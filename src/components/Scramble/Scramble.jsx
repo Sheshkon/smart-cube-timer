@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-
 import { randomScrambleForEvent } from 'cubing/scramble';
+import React, { useEffect } from 'react';
 import { getMoveComponent } from 'src/components/Scramble/svgMapper.js';
-import { TimerState } from 'src/components/timer/util.js';
+import { TimerState } from 'src/components/Timer/util.js';
+
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
 import { prepareMoves } from 'src/utils/util.ts';
@@ -23,7 +23,7 @@ const isReadyTimerCondition = (
   timerState !== TimerState.RUNNING;
 
 const getImageScrambleSizeClass = (textSize) => {
-  const sizeMap= {
+  const sizeMap = {
     'text-xs': 'w-8 h-8',
     'text-sm': 'w-12 h-12',
     'text-lg': 'w-16 h-16',
@@ -31,7 +31,7 @@ const getImageScrambleSizeClass = (textSize) => {
     'text-2xl': 'w-24 h-24',
     'text-3xl': 'w-28 h-28',
     'text-4xl': 'w-32 h-32',
-    'text-5xl': 'w-36 h-36'
+    'text-5xl': 'w-36 h-36',
   };
 
   return sizeMap[textSize || 'text-sm'] || sizeMap['text-sm'];

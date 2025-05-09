@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import { experimentalSolve3x3x3IgnoringCenters } from 'cubing/search';
 import { connectGanCube } from 'gan-web-bluetooth';
-import { TimerState } from 'src/components/timer/util.js';
+import { TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
 import { cubeQuaternion, faceletsToPattern, HOME_ORIENTATION, SOLVED_STATE } from 'src/utils/util.ts';
