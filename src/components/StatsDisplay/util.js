@@ -14,9 +14,8 @@ export default class StatsResult {
 }
 
 export const getCurrentSolveStats = (lastSolve, preLastSolve) => {
-
   const movesCount = lastSolve.solution?.split(' ')?.length;
-  const tps = getTPS(lastSolve.originalTime.asTimestamp, movesCount);
+  const tps = getTPS(lastSolve.timestamp, movesCount);
 
   const stats = {
     movesCount,
@@ -27,7 +26,7 @@ export const getCurrentSolveStats = (lastSolve, preLastSolve) => {
     return stats;
 
   const timestampDiff =
-    lastSolve.originalTime.asTimestamp - preLastSolve.originalTime.asTimestamp;
+    lastSolve.timestamp - preLastSolve.timestamp;
 
   const formattedTimeDiff = {
     formattedTime: formatTime(Math.abs(timestampDiff)),
@@ -42,13 +41,12 @@ export const getCurrentSolveStats = (lastSolve, preLastSolve) => {
 
 export const formatSolveData = (solve) => {
   const movesCount = solve.solution.split(' ').length;
-  const tps = getTPS(solve.originalTime.asTimestamp, movesCount);
+  const tps = getTPS(solve.timestamp, movesCount);
   const dateObj = new Date(solve.date);
   const formattedDate = dateObj.toLocaleString();
   const reconstruction = formatReconstruction(solve?.reconstruction);
 
-
-  return `𝙏𝙞𝙢𝙚: ${solve.formattedTime}
+  return `𝙏𝙞𝙢𝙚: ${solve.time}
 𝙈𝙤𝙫𝙚𝙨: ${movesCount}
 𝙏𝙋𝙎: ${tps}
 𝘿𝙖𝙩𝙚: ${formattedDate}
@@ -65,7 +63,7 @@ const formatReconstruction = (reconstruction) => {
     return 'Invalid reconstruction data';
   }
 
-  const { method, steps, totalDuration } = reconstruction;
+  const { method, steps } = reconstruction;
 
   const stepsText = Object.entries(steps)
     .map(([stepName, stepData]) => {
@@ -73,9 +71,8 @@ const formatReconstruction = (reconstruction) => {
 
       let stepLine = `${stepName}: ${mergeConsecutiveWords(stepData.plain)}`;
 
-      if (stepData.duration !== null) {
-        const start = (stepData.relativeTime / 1000).toFixed(3);
-        const duration = (stepData.duration / 1000).toFixed(3);
+      if (stepData.endTime !== null) {
+        const duration = ((stepData.endTime - stepData.startTime) / 1000).toFixed(3);
         stepLine += ` (${duration}s)`;
       }
 

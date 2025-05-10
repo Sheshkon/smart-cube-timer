@@ -1,27 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Award, BarChart2, Clock, TrendingUp } from 'lucide-react';
 import { SolveReconstructionChart } from 'src/components/Chart/SolveChart.jsx';
 import { getCurrentSolveStats } from 'src/components/StatsDisplay/util.js';
+import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime } from 'src/utils/time.js';
 
 const StatsDisplay = ({ times, className = '' }) => {
   const { settings } = useSettings();
 
-  const calculateStats = () => {
+  const [stats, setStats] = useState({});
+
+
+  useEffect(() => {
+    calculateStats()
+      .then(setStats);
+  }, [times]);
+
+  const calculateStats = async () => {
     if (times.length === 0) {
       return {};
     }
 
     const best = times.reduce((min, time) =>
-      time.originalTime.asTimestamp < min.originalTime.asTimestamp ? time : min,
+      time.timestamp < min.timestamp ? time : min,
     );
 
-    const current = times[times.length - 1];
+    const last = times[times.length - 1];
 
-    const avg5 = times.length >= 5 && calculateAverage(times.slice(-5));
-    const avg12 = times.length >= 12 && calculateAverage(times.slice(-12));
+    const current = await sessionService.getSolveWithReconstructionBySolveId(last?.id);
+
+    const avg5 = times.length >= 5 && await calculateAverage(times.slice(-5));
+    const avg12 = times.length >= 12 && await calculateAverage(times.slice(-12));
 
     const currentStats = times.length > 1
       ? getCurrentSolveStats(current, times[times.length - 2])
@@ -30,11 +41,11 @@ const StatsDisplay = ({ times, className = '' }) => {
     return { current, best, avg5, avg12, currentStats };
   };
 
-  const calculateAverage = (times) => {
+  const calculateAverage = async (times) => {
     if (times.length === 0) return 0;
 
     if (times.length < 3) {
-      return times.reduce((sum, time) => sum + time.originalTime.asTimestamp, 0) / times.length;
+      return times.reduce((sum, time) => sum + time.timestamp, 0) / times.length;
     }
 
     let min = times[0];
@@ -42,27 +53,24 @@ const StatsDisplay = ({ times, className = '' }) => {
     let sum = 0;
 
     times.forEach(time => {
-      const val = time.originalTime.asTimestamp;
+      const val = time.timestamp;
       sum += val;
-      if (val < min.originalTime.asTimestamp) min = time;
-      if (val > max.originalTime.asTimestamp) max = time;
+      if (val < min.timestamp) min = time;
+      if (val > max.timestamp) max = time;
     });
 
-    return (sum - min.originalTime.asTimestamp - max.originalTime.asTimestamp) / (times.length - 2);
+    return (sum - min.timestamp - max.timestamp) / (times.length - 2);
   };
-
-  const stats = calculateStats();
-
 
   const statItems = [
     {
       label: 'Current',
-      value: stats.current?.formattedTime,
+      value: stats.current?.time,
       icon: <Clock size={18} />,
     },
     {
       label: 'Best',
-      value: stats.best?.formattedTime,
+      value: stats.best?.time,
       icon: <Award size={18} />,
     },
     {
@@ -143,7 +151,7 @@ const StatsDisplay = ({ times, className = '' }) => {
         className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
       >
         <h3 className="text-lg font-medium text-gray-900 dark:text-white">Solve Step Analysis</h3>
-        <SolveReconstructionChart className="flex-col" reconstruction={times?.[times?.length - 1]?.reconstruction} />
+        <SolveReconstructionChart className="flex-col" reconstruction={stats?.current?.reconstruction} />
       </div>
         )}
     </>

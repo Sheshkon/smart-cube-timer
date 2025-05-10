@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useSettings } from 'src/hooks/useSettings.js';
 
@@ -9,7 +11,8 @@ export const SolveReconstructionChart = ({ reconstruction }) => {
   const { method, steps } = reconstruction;
 
   const stepNames = Object.keys(steps).filter(step => steps[step].found);
-  const durations = stepNames.map(step => steps[step].duration / 1000); // Convert to seconds
+  const durations = stepNames.map(step => (steps[step]?.endTime -  steps[step]?.startTime) / 1000); // Convert to seconds
+
 
   const textColor = settings['theme'] === 'dark' ? 'white' : 'black';
 
@@ -33,8 +36,8 @@ export const SolveReconstructionChart = ({ reconstruction }) => {
         },
         colorMap: {
           type: 'ordinal',
-          colors: ['#2266ff', '#44ee00', '#ff8000', '#ff0000', '#f4f400']
-        }
+          colors: ['#2266ff', '#44ee00', '#ff8000', '#ff0000', '#f4f400'],
+        },
       },
     ],
     yAxis: [
@@ -59,7 +62,7 @@ export const SolveReconstructionChart = ({ reconstruction }) => {
       },
     ],
     height: 300,
-    borderRadius: 10
+    borderRadius: 10,
   };
 
   return (

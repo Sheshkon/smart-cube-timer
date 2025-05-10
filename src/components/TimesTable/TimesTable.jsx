@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import DeleteModal from 'src/components/Modals/DeleteModal';
 import { formatSolveData } from 'src/components/StatsDisplay/util';
+import { sessionService } from 'src/db/sessionService.js';
 
 const TimesTable = ({ onDeleteTimes, times, onDeleteTime, className = '' }) => {
   const [popupContent, setPopupContent] = useState(null);
@@ -27,8 +28,9 @@ const TimesTable = ({ onDeleteTimes, times, onDeleteTime, className = '' }) => {
     ' ' +
     new Date(date).toLocaleTimeString();
 
-  const handleCellClick = (content) => {
-    setPopupContent(content);
+  const handleCellClick = async (id) => {
+    const data = await sessionService.getSolveWithReconstructionBySolveId(id);
+    setPopupContent(data);
   };
   const handleClosePopup = () => {
     setPopupContent(null);
@@ -101,13 +103,13 @@ const TimesTable = ({ onDeleteTimes, times, onDeleteTime, className = '' }) => {
                   {sortedTimes.length - index}
                 </td>
                 <td
-                  onClick={() => handleCellClick(item)}
+                  onClick={() => handleCellClick(item.id)}
                   className="px-4 py-3 font-mono font-medium text-gray-900 dark:text-white"
                 >
-                  {item.formattedTime}
+                  {item.time}
                 </td>
                 <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
-                  {formatDate(item.date)}
+                  {formatDate(new Date(item.date))}
                 </td>
                 <td className="px-4 py-3">
                   <button

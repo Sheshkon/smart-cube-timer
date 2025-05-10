@@ -98,6 +98,7 @@ export default defineConfig({
         orientation: 'any',
         display: 'standalone',
         lang: 'en-US',
+        theme_color: '#000000',
         background_color: '#ffffff',
       },
       devOptions: {
@@ -111,7 +112,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}'],
         dontCacheBustURLsMatching: /\.\w{8}\./,
         modifyURLPrefix: {
-        '': '/smart-cube-timer/',
+          '': '/smart-cube-timer/',
         },
         runtimeCaching: [
           {
@@ -183,9 +184,12 @@ export default defineConfig({
   optimizeDeps: {
     include: [
       'cubing/twisty',
-      'cubing/worker',
+      // 'cubing/worker',
     ],
-    exclude: ['cubing'],
+    exclude: [
+      'search-worker-entry',
+      // 'cubing'
+    ]
   },
   worker: {
     format: 'es',

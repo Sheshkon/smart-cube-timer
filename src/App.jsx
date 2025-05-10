@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Cuboid } from 'lucide-react';
 import Cube from 'src/components/Cube/Cube.jsx';
@@ -10,35 +10,35 @@ import Scramble from 'src/components/Scramble/Scramble.jsx';
 import StatsDisplay from 'src/components/StatsDisplay/StatsDisplay';
 import Timer from 'src/components/Timer/Timer';
 import TimesTable from 'src/components/TimesTable/TimesTable';
-import useLocalStorage from 'src/hooks/useLocalStorage';
+import { sessionService } from 'src/db/sessionService.js';
 import { CubeProvider } from 'src/providers/CubeProvider';
 import { SettingsProvider } from 'src/providers/SettingsProvider';
 import { mergeConsecutiveWords } from 'src/utils/string.js';
 
 function App() {
-  const [storedTimes, setStoredTimes] = useLocalStorage('cube-timer-times', []);
+  const [storedTimes, setStoredTimes] = useState([]);
 
-  const handleSaveTime = (solve) => {
-    const result = {
-      id: Date.now(),
-      formattedTime: solve?.formattedTime,
-      originalTime: solve?.originalTime,
-      scramble: mergeConsecutiveWords(solve?.reconstruction?.scramble?.plain),
-      date: new Date(),
-      solution: mergeConsecutiveWords(solve?.reconstruction?.solution?.plain),
-      reconstruction: solve?.reconstruction
-    };
-
-    setStoredTimes((prevTimes) => [...prevTimes, result]);
+  const handleSaveTime = async (solve) => {
+    const storedTime = await sessionService.addSolveToSession(1, solve);
+    setStoredTimes((prevTimes) => [...prevTimes, storedTime]);
   };
 
   const handleDeleteTime = (id) => {
+    sessionService.deleteSolve(id);
     setStoredTimes((prevTimes) => prevTimes.filter((time) => time.id !== id));
   };
 
   const handleDeleteTimes = () => {
+    sessionService.deleteSolvesBySession(1);
     setStoredTimes(() => []);
   };
+
+  useEffect(() => {
+    sessionService.getSolvesBySessionId(1)
+      .then(session => {
+        setStoredTimes(session);
+      });
+  }, []);
 
   return (
     <>
