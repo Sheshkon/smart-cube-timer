@@ -51,14 +51,6 @@ function App() {
       .then(session => {
         setStoredTimes(session);
       });
-  }, []);
-
-  useEffect(() => {
-    console.log('session id changed');
-    sessionService.getSolvesBySessionId(settings.selectedSessionId)
-      .then(session => {
-        setStoredTimes(session);
-      });
   }, [settings.selectedSessionId]);
 
   useEffect(() => {
