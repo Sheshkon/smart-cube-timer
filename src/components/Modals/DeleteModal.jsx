@@ -1,10 +1,21 @@
-const DeleteModal = ({ isOpen, onClose, onDelete }) => {
+import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
+import { useSettings } from 'src/hooks/useSettings.js';
+
+const DeleteModal = ({ isOpen, onClose, onDeleteSolves, onDeleteSession }) => {
+  const { settings, updateSetting } = useSettings();
+
   const closeModal = () => {
     onClose();
   };
 
-  const handleDelete = () => {
-    onDelete();
+  const handleDeleteSolves = () => {
+    onDeleteSolves();
+    closeModal();
+  };
+
+  const handleDeleteSession = () => {
+    onDeleteSession();
+    updateSetting('selectedSessionId', DEFAULT_SESSION_ID);
     closeModal();
   };
 
@@ -16,11 +27,20 @@ const DeleteModal = ({ isOpen, onClose, onDelete }) => {
             <h3 className="font-bold text-lg">Delete All Solves</h3>
             <p className="py-4">Are you sure you want to delete session?</p>
             <div className="modal-action">
+
+              {settings.selectedSessionId !== DEFAULT_SESSION_ID &&
+                <button
+                  className="p-2 rounded bg-red-700 dark:bg-red-700 text-gray-100 dark:text-gray-300  transition-colors"
+                  onClick={() => handleDeleteSession()}
+                >
+                  Delete Session
+                </button>}
+
               <button
-                className="p-2 rounded bg-red-700 dark:bg-red-700 text-gray-100 dark:text-gray-300  transition-colors"
-                onClick={handleDelete}
+                className="p-2 rounded bg-red-700 dark:bg-orange-700 text-gray-100 dark:text-gray-300  transition-colors"
+                onClick={() => handleDeleteSolves(onDeleteSolves)}
               >
-                Delete All
+                Delete Solves
               </button>
               <button
                 className="p-1.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"

@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { DB_NAME, DB_SCHEMA, DB_VERSION } from 'src/db/configDB.js';
+import { DB_NAME, DB_SCHEMA, DB_VERSION, DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 
 const db = new Dexie(DB_NAME);
 
@@ -22,6 +22,7 @@ export async function initializeDefaultSession() {
   const count = await db.sessions.count();
   if (count === 0) {
     await db.sessions.add({
+      id: DEFAULT_SESSION_ID,
       name: 'Default Session',
       createdAt: new Date(),
       solves: []

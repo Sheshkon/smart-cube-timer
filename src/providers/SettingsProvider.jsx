@@ -1,15 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import PropTypes from 'prop-types';
+import { SettingsContext } from 'src/contexts/SettingsContext';
+import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 
-import { SettingsContext } from '../contexts/SettingsContext';
 
 const defaultSettings = {
   theme: 'light',
   language: 'en',
   notifications: true,
   fontSize: 16,
-  selectedSessionId: 1
+  selectedSessionId: DEFAULT_SESSION_ID
 };
 
 export const SettingsProvider = ({ children }) => {

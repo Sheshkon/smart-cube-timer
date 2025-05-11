@@ -15,22 +15,22 @@ export const sessionService = {
       .toArray();
   },
 
-  async createSession(name) {
-    try {
-      return await db.sessions.add({
+  async addSession(name) {
+    return db.transaction('rw', db.sessions, async () => {
+      const sessionId = await db.sessions.add({
         name,
         createdAt: new Date().toISOString(),
         solves: [],
       });
-    } catch (error) {
-      console.error('Error creating session:', error);
-      throw error;
-    }
+
+     return await db.sessions
+       .where('id')
+       .equals(sessionId)
+       .first();
+    });
   },
 
   async addSolveToSession(sessionId, solveData) {
-    console.log('data: ', sessionId, solveData);
-
     return db.transaction('rw', db.sessions, db.solves, db.reconstructionSteps, async () => {
       const solveId = await db.solves.add({
         sessionId: sessionId,
@@ -121,7 +121,6 @@ export const sessionService = {
       await db.sessions.delete(sessionId);
     });
   },
-
 
   async getSolveWithReconstructionBySolveId(solveId) {
     return db.transaction('r', db.solves, db.reconstructionSteps, async () => {

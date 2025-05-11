@@ -11,10 +11,11 @@ import StatsDisplay from 'src/components/StatsDisplay/StatsDisplay';
 import Timer from 'src/components/Timer/Timer';
 import TimesTable from 'src/components/TimesTable/TimesTable';
 import { sessionService } from 'src/db/sessionService.js';
+import { useSettings } from 'src/hooks/useSettings.js';
 import { CubeProvider } from 'src/providers/CubeProvider';
-import { SettingsProvider } from 'src/providers/SettingsProvider';
 
 function App() {
+  const { settings, updateSetting } = useSettings();
   const [sessions, setSessions] = useState([]);
   const [storedTimes, setStoredTimes] = useState([]);
 
@@ -28,13 +29,24 @@ function App() {
     setStoredTimes((prevTimes) => prevTimes.filter((time) => time.id !== id));
   };
 
+  const handleDeleteSession = (sessionId) => {
+    sessionService.deleteSession(sessionId);
+    setSessions((prevSessions) => prevSessions.filter((session) => session.id !== sessionId));
+  };
+
+  const handleAddSession = async (name) => {
+    const newSession = await sessionService.addSession(name);
+    setSessions((prevSessions) => [...prevSessions, newSession]);
+    updateSetting('selectedSessionId', newSession.id);
+  };
+
   const handleDeleteTimes = (sessionId) => {
     sessionService.deleteSolvesBySession(sessionId);
     setStoredTimes(() => []);
   };
 
   useEffect(() => {
-    sessionService.getSolvesBySessionId(1)
+    sessionService.getSolvesBySessionId(settings.selectedSessionId)
       .then(session => {
         setStoredTimes(session);
       });
@@ -43,7 +55,6 @@ function App() {
   useEffect(() => {
     sessionService.getAllSessions()
       .then(sessions => {
-        console.log(sessions);
         setSessions(sessions);
       });
   }, []);
@@ -51,7 +62,6 @@ function App() {
   return (
     <>
       <RefreshPrompt />
-      <SettingsProvider>
         <CubeProvider>
           <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
             <Header />
@@ -84,6 +94,8 @@ function App() {
                     onDeleteTimes={handleDeleteTimes}
                     times={storedTimes}
                     onDeleteTime={handleDeleteTime}
+                    onDeleteSession={handleDeleteSession}
+                    onAddSession={handleAddSession}
                   />
                 </div>
               </div>
@@ -91,7 +103,6 @@ function App() {
             <Footer />
           </div>
         </CubeProvider>
-      </SettingsProvider>
     </>
   );
 }

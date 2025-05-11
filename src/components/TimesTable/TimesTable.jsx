@@ -1,26 +1,28 @@
 import React, { useState } from 'react';
 
-import { Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
+import AddModal from 'src/components/Modals/AddModal.jsx';
 import DeleteModal from 'src/components/Modals/DeleteModal';
 import { formatSolveData } from 'src/components/StatsDisplay/util';
 import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 
-const TimesTable = ({ sessions, onDeleteTimes, times, onDeleteTime, className = '' }) => {
+const TimesTable = ({
+                      sessions,
+                      onDeleteTimes,
+                      onDeleteSession,
+                      onAddSession,
+                      times,
+                      onDeleteTime,
+                      className = '',
+                    }) => {
   const { settings, updateSetting } = useSettings();
 
   const [popupContent, setPopupContent] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  const [isDeleteModelOpen, setIsDeleteModelOpen] = useState(false);
+  const [isAddModelOpen, setIsAddModelOpen] = useState(false);
 
   const sortedTimes = [...times].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
@@ -58,9 +60,16 @@ const TimesTable = ({ sessions, onDeleteTimes, times, onDeleteTime, className = 
         </h3>
         <div className="flex items-center">
           <DeleteModal
-            isOpen={isModalOpen}
-            onClose={closeModal}
-            onDelete={() => onDeleteTimes(settings?.selectedSessionId)}
+            isOpen={isDeleteModelOpen}
+            onClose={() => setIsDeleteModelOpen(false)}
+            onDeleteSolves={() => onDeleteTimes(settings?.selectedSessionId)}
+            onDeleteSession={() => onDeleteSession(settings?.selectedSessionId)}
+          />
+          
+          <AddModal
+            isOpen={isAddModelOpen}
+            onClose={() => setIsAddModelOpen(false)}
+            onAddSession={(name) => onAddSession(name)}
           />
 
           <select
@@ -78,7 +87,17 @@ const TimesTable = ({ sessions, onDeleteTimes, times, onDeleteTime, className = 
 
           <div className="text-sm text-gray-500 dark:text-gray-400">
             <button
-              onClick={openModal}
+              onClick={() => setIsAddModelOpen(true)}
+              className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+              title="Add session"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            <button
+              onClick={() => setIsDeleteModelOpen(true)}
               className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
               title="Delete all times"
             >
@@ -216,14 +235,14 @@ const TimesTable = ({ sessions, onDeleteTimes, times, onDeleteTime, className = 
                 {/*      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1"*/}
                 {/*    />*/}
                 {/*  </div>*/}
-                  {isCopied && (
-                    <div className="absolute center flex right-4">
+                {isCopied && (
+                  <div className="absolute center flex right-4">
                       <span className="copied-message text-green-800">
                         Copied!
                       </span>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
+              </div>
               <form method="dialog" className="modal-backdrop">
                 <button onClick={handleClosePopup}>Close</button>
               </form>
