@@ -53,11 +53,20 @@ function App() {
   }, []);
 
   useEffect(() => {
+    sessionService.getSolvesBySessionId(settings.selectedSessionId)
+      .then(session => {
+        setStoredTimes(session);
+      });
+  }, [setSessions]);
+
+  useEffect(() => {
     sessionService.getAllSessions()
       .then(sessions => {
         setSessions(sessions);
       });
   }, []);
+
+
 
   return (
     <>
