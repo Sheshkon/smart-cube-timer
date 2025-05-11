@@ -99,7 +99,7 @@ export default defineConfig({
         display: 'standalone',
         lang: 'en-US',
         theme_color: '#000000',
-        background_color: '#ffffff',
+        background_color: '#000000',
       },
       devOptions: {
         enabled: true,

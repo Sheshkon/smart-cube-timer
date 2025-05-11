@@ -4,8 +4,11 @@ import { Trash2 } from 'lucide-react';
 import DeleteModal from 'src/components/Modals/DeleteModal';
 import { formatSolveData } from 'src/components/StatsDisplay/util';
 import { sessionService } from 'src/db/sessionService.js';
+import { useSettings } from 'src/hooks/useSettings.js';
 
-const TimesTable = ({ onDeleteTimes, times, onDeleteTime, className = '' }) => {
+const TimesTable = ({ sessions, onDeleteTimes, times, onDeleteTime, className = '' }) => {
+  const { settings, updateSetting } = useSettings();
+
   const [popupContent, setPopupContent] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -57,8 +60,21 @@ const TimesTable = ({ onDeleteTimes, times, onDeleteTime, className = '' }) => {
           <DeleteModal
             isOpen={isModalOpen}
             onClose={closeModal}
-            onDelete={() => onDeleteTimes()}
+            onDelete={() => onDeleteTimes(settings?.selectedSessionId)}
           />
+
+          <select
+            value={settings?.selectedSessionId}
+            className="select select-xs w-32 ml-2"
+            onChange={(e) => updateSetting('selectedSessionId', e.target.value)}
+          >
+            {sessions.map((session) => (
+              <option key={session.id} value={session.id}>
+                {session.name}
+              </option>
+            ))}
+
+          </select>
 
           <div className="text-sm text-gray-500 dark:text-gray-400">
             <button

@@ -9,6 +9,7 @@ const defaultSettings = {
   language: 'en',
   notifications: true,
   fontSize: 16,
+  selectedSessionId: 1
 };
 
 export const SettingsProvider = ({ children }) => {

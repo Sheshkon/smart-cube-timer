@@ -13,9 +13,9 @@ import TimesTable from 'src/components/TimesTable/TimesTable';
 import { sessionService } from 'src/db/sessionService.js';
 import { CubeProvider } from 'src/providers/CubeProvider';
 import { SettingsProvider } from 'src/providers/SettingsProvider';
-import { mergeConsecutiveWords } from 'src/utils/string.js';
 
 function App() {
+  const [sessions, setSessions] = useState([]);
   const [storedTimes, setStoredTimes] = useState([]);
 
   const handleSaveTime = async (solve) => {
@@ -28,8 +28,8 @@ function App() {
     setStoredTimes((prevTimes) => prevTimes.filter((time) => time.id !== id));
   };
 
-  const handleDeleteTimes = () => {
-    sessionService.deleteSolvesBySession(1);
+  const handleDeleteTimes = (sessionId) => {
+    sessionService.deleteSolvesBySession(sessionId);
     setStoredTimes(() => []);
   };
 
@@ -37,6 +37,14 @@ function App() {
     sessionService.getSolvesBySessionId(1)
       .then(session => {
         setStoredTimes(session);
+      });
+  }, []);
+
+  useEffect(() => {
+    sessionService.getAllSessions()
+      .then(sessions => {
+        console.log(sessions);
+        setSessions(sessions);
       });
   }, []);
 
@@ -72,6 +80,7 @@ function App() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                   <StatsDisplay times={storedTimes} />
                   <TimesTable
+                    sessions={sessions}
                     onDeleteTimes={handleDeleteTimes}
                     times={storedTimes}
                     onDeleteTime={handleDeleteTime}

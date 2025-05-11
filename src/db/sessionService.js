@@ -10,6 +10,11 @@ export const sessionService = {
       .toArray();
   },
 
+  async getAllSessions() {
+    return db.sessions
+      .toArray();
+  },
+
   async createSession(name) {
     try {
       return await db.sessions.add({
@@ -69,7 +74,7 @@ export const sessionService = {
           plain: step.moves,
           startTime: step.startTime,
           endTime: step.endTime,
-          found: step.found
+          found: step.found,
         };
       });
 
@@ -77,8 +82,8 @@ export const sessionService = {
         ...solve,
         reconstruction: {
           method: solve.reconstruction?.method || '',
-          steps: stepsObject
-        }
+          steps: stepsObject,
+        },
       };
     });
   },
@@ -138,7 +143,7 @@ export const sessionService = {
           plain: step.moves,
           startTime: step.startTime,
           endTime: step.endTime,
-          found: step.found
+          found: step.found,
         };
       });
 
@@ -147,9 +152,9 @@ export const sessionService = {
         ...solve,
         reconstruction: {
           method: solve.reconstruction?.method || '',
-          steps: stepsObject
-        }
+          steps: stepsObject,
+        },
       };
     });
-  }
+  },
 };
