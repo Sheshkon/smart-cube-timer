@@ -6,7 +6,7 @@ export const sessionService = {
   async getSolvesBySessionId(sessionId) {
     return db.solves
       .where('sessionId')
-      .equals(sessionId)
+      .equals(parseInt(sessionId))
       .toArray();
   },
 
@@ -31,9 +31,11 @@ export const sessionService = {
   },
 
   async addSolveToSession(sessionId, solveData) {
+    const _sessionId = parseInt(sessionId);
+
     return db.transaction('rw', db.sessions, db.solves, db.reconstructionSteps, async () => {
       const solveId = await db.solves.add({
-        sessionId: sessionId,
+        sessionId: _sessionId,
         time: solveData.formattedTime,
         date: new Date().toISOString(),
         timestamp: solveData.originalTime.asTimestamp,
@@ -58,8 +60,8 @@ export const sessionService = {
         ),
       );
 
-      await db.sessions.update(sessionId, {
-        solves: [...(await db.sessions.get(sessionId)).solves, solveId],
+      await db.sessions.update(_sessionId, {
+        solves: [...(await db.sessions.get(_sessionId)).solves, solveId],
       });
 
       const solve = await db.solves.get(solveId);
@@ -97,10 +99,11 @@ export const sessionService = {
   },
 
   async deleteSolvesBySession(sessionId) {
+    const _sessionId = parseInt(sessionId);
     return db.transaction('rw', db.solves, db.reconstructionSteps, async () => {
       const solveIds = await db.solves
         .where('sessionId')
-        .equals(sessionId)
+        .equals(_sessionId)
         .primaryKeys();
 
       await db.reconstructionSteps
@@ -110,15 +113,17 @@ export const sessionService = {
 
       await db.solves
         .where('sessionId')
-        .equals(sessionId)
+        .equals(_sessionId)
         .delete();
     });
   },
 
   async deleteSession(sessionId) {
+    const _sessionId = parseInt(sessionId);
+
     return db.transaction('rw', db.sessions, db.solves, db.reconstructionSteps, async () => {
-      await this.deleteSolvesBySession(sessionId);
-      await db.sessions.delete(sessionId);
+      await this.deleteSolvesBySession(_sessionId);
+      await db.sessions.delete(_sessionId);
     });
   },
 
@@ -129,7 +134,6 @@ export const sessionService = {
         .equals(solveId)
         .toArray();
 
-      // Get the solve information
       const solve = await db.solves
         .where('id')
         .equals(solveId)

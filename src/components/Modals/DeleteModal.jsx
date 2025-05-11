@@ -19,6 +19,8 @@ const DeleteModal = ({ isOpen, onClose, onDeleteSolves, onDeleteSession }) => {
     closeModal();
   };
 
+  const isDefaultSession = ()  => parseInt(settings.selectedSessionId) !== DEFAULT_SESSION_ID;
+
   return (
     <div>
       {isOpen && (
@@ -28,7 +30,8 @@ const DeleteModal = ({ isOpen, onClose, onDeleteSolves, onDeleteSession }) => {
             <p className="py-4">Are you sure you want to delete session?</p>
             <div className="modal-action">
 
-              {settings.selectedSessionId !== DEFAULT_SESSION_ID &&
+              {
+                isDefaultSession() &&
                 <button
                   className="p-2 rounded bg-red-700 dark:bg-red-700 text-gray-100 dark:text-gray-300  transition-colors"
                   onClick={() => handleDeleteSession()}
@@ -37,7 +40,7 @@ const DeleteModal = ({ isOpen, onClose, onDeleteSolves, onDeleteSession }) => {
                 </button>}
 
               <button
-                className="p-2 rounded bg-red-700 dark:bg-orange-700 text-gray-100 dark:text-gray-300  transition-colors"
+                className={`p-2 rounded ${isDefaultSession() ? 'bg-orange-700' : 'bg-red-700'} text-gray-100 dark:text-gray-300  transition-colors`}
                 onClick={() => handleDeleteSolves(onDeleteSolves)}
               >
                 Delete Solves

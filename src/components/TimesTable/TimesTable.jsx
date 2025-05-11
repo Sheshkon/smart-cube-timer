@@ -75,7 +75,7 @@ const TimesTable = ({
           <select
             value={settings?.selectedSessionId}
             className="select select-xs w-32 ml-2"
-            onChange={(e) => updateSetting('selectedSessionId', parseInt(e.targept.value))}
+            onChange={(e) => updateSetting('selectedSessionId', e.target.value)}
           >
             {sessions.map((session) => (
               <option key={session.id} value={session.id}>

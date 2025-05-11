@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 
 import { experimentalSolve3x3x3IgnoringCenters } from 'cubing/search';
 import { connectGanCube } from 'gan-web-bluetooth';
+import { toast } from 'react-toastify';
 import { TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
@@ -35,31 +36,42 @@ const cubeControls = () => {
   const batteryPollIntervalRef = useRef(null);
 
   const handleConnect = async () => {
-    if (connection) {
-      await disconnect();
-    } else {
-      if (batteryPollIntervalRef.current) {
-        clearInterval(batteryPollIntervalRef.current);
-        batteryPollIntervalRef.current = null;
+    try {
+      if (connection) {
+        await disconnect();
+      } else {
+        if (batteryPollIntervalRef.current) {
+          clearInterval(batteryPollIntervalRef.current);
+          batteryPollIntervalRef.current = null;
+        }
+        const cn = await connectGanCube(customMacAddressProvider);
+        setConnection(cn);
+        cn?.events$?.subscribe(handleCubeEvent);
+
+        await cn?.sendCubeCommand(CubeCommand.HARDWARE);
+        await cn?.sendCubeCommand(CubeCommand.FACELETS);
+        await cn?.sendCubeCommand(CubeCommand.BATTERY);
+
+        batteryPollIntervalRef.current = setInterval(() => {
+          cn?.sendCubeCommand(CubeCommand.BATTERY).catch((err) => {
+              clearInterval(batteryPollIntervalRef.current);
+              console.error('Battery poll error:', err);
+              disconnect().then(() => toast.error('Cube disconnected', { theme: settingsRef.current.theme }));
+            },
+          );
+        }, 5000);
       }
-      const cn = await connectGanCube(customMacAddressProvider);
-      setConnection(cn);
-      cn?.events$?.subscribe(handleCubeEvent);
-
-      batteryPollIntervalRef.current = setInterval(() => {
-        cn?.sendCubeCommand(CubeCommand.BATTERY).catch((err) =>
-          console.error('Battery poll error:', err),
-        );
-      }, 60000);
-
-      await cn?.sendCubeCommand(CubeCommand.HARDWARE);
-      await cn?.sendCubeCommand(CubeCommand.FACELETS);
-      await cn?.sendCubeCommand(CubeCommand.BATTERY);
+    } catch (e) {
+      await disconnect();
+      console.error(e);
     }
   };
 
   async function disconnect() {
-    await connection.disconnect().catch(() => console.log('no connection'));
+    clearInterval(batteryPollIntervalRef.current);
+
+    if (connection)
+      await connection.disconnect().catch(() => console.log('no connection'));
 
     setConnection(null);
     connectionRef.current = null;
