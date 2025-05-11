@@ -57,7 +57,7 @@ function App() {
       .then(session => {
         setStoredTimes(session);
       });
-  }, [sessions]);
+  }, [setSessions]);
 
   useEffect(() => {
     sessionService.getAllSessions()
@@ -65,6 +65,8 @@ function App() {
         setSessions(sessions);
       });
   }, []);
+
+
 
   return (
     <>
