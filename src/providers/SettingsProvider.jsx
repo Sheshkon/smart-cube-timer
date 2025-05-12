@@ -10,7 +10,8 @@ const defaultSettings = {
   language: 'en',
   notifications: true,
   fontSize: 16,
-  selectedSessionId: DEFAULT_SESSION_ID
+  selectedSessionId: DEFAULT_SESSION_ID,
+  inspection: false
 };
 
 export const SettingsProvider = ({ children }) => {

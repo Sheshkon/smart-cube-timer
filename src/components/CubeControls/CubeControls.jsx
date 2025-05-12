@@ -28,6 +28,7 @@ const cubeControls = () => {
     setBatteryLevel,
     connectionRef,
     setShouldBeSolved,
+    setShowScramble
   } = useCube();
 
   const { settingsRef } = useSettings();
@@ -35,6 +36,10 @@ const cubeControls = () => {
   const basisRef = useRef(null);
 
   const batteryPollIntervalRef = useRef(null);
+
+  function cubeDisconnectedNotification() {
+    return toast.error('Cube disconnected', { theme: settingsRef.current.theme });
+  }
 
   const handleConnect = async () => {
     try {
@@ -57,13 +62,14 @@ const cubeControls = () => {
           cn?.sendCubeCommand(CubeCommand.BATTERY).catch((err) => {
               clearInterval(batteryPollIntervalRef.current);
               console.error('Battery poll error:', err);
-              disconnect().then(() => toast.error('Cube disconnected', { theme: settingsRef.current.theme }));
+              disconnect().then(() => cubeDisconnectedNotification());
             },
           );
         }, 5000);
       }
     } catch (e) {
       await disconnect();
+      cubeDisconnectedNotification();
       console.error(e);
     }
   };
@@ -183,9 +189,17 @@ const cubeControls = () => {
     if (lastMoves.length > 256) {
       setLastMoves(lastMoves.slice(-256));
     }
-    if (timerStateRef.current === TimerState.READY) {
+    console.log(timerStateRef.current);
+    if (timerStateRef.current === TimerState.READY || timerStateRef.current === TimerState.INSPECTION) {
       setTimerState(TimerState.RUNNING);
     }
+
+    if (timerStateRef.current === TimerState.DNS) {
+      setShowScramble(true);
+      setShouldBeSolved(true);
+      setTimerState(TimerState.IDLE);
+    }
+
   }, [lastMoves]);
 
   return (

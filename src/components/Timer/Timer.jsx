@@ -19,7 +19,7 @@ const Timer = ({ onSaveTime }) => {
     setShowScramble,
     setLastMoves,
     lastScrambleRef,
-    connectionRef,
+    connectionRef
   } = useCube();
 
   const localTimerRef = useRef(null);
@@ -112,9 +112,14 @@ const Timer = ({ onSaveTime }) => {
     switch (timerState) {
       case TimerState.READY:
         getTimerValueFromTimestamp(0);
+        stopTimer();
         setShowTimer(true);
         break;
+      case TimerState.INSPECTION:
+        getTimerValueFromTimestamp(0);
+        break;
       case TimerState.RUNNING:
+        setShowTimer(true);
         startTimer();
         break;
       case TimerState.STOPPED:

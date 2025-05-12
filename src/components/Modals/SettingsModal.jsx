@@ -60,6 +60,20 @@ export const SettingsModal = ({ isOpen, onClose }) => {
             </div>
             <div className="flex justify-between items-center mb-3">
               <b>
+                <label htmlFor="inspection">Use inspection</label>
+              </b>
+              <input
+                id="inspection"
+                type="checkbox"
+                className="toggle"
+                checked={settings.inspection || false}
+                onChange={(e) =>
+                  updateSetting('inspection', e.target.checked)
+                }
+              />
+            </div>
+            <div className="flex justify-between items-center mb-3">
+              <b>
                 <label htmlFor="solutionChart">Solve analyse chart</label>
               </b>
               <input

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { randomScrambleForEvent } from 'cubing/scramble';
+import Inspection from 'src/components/Inspection.jsx';
 import { getMoveComponent } from 'src/components/Scramble/svgMapper.js';
 import { TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
@@ -54,7 +55,7 @@ const Scramble = ({ className = '' }) => {
     setShouldBeSolved,
   } = useCube();
 
-  const { settings } = useSettings();
+  const { settings, settingsRef } = useSettings();
 
   const generateScramble = async () => {
     const newScramble = await randomScrambleForEvent('333');
@@ -124,7 +125,7 @@ const Scramble = ({ className = '' }) => {
     if (
       isReadyTimerCondition(wrongCounter, scrambleMoves, cubeMoves, timerState)
     ) {
-      setTimerState(TimerState.READY);
+      settingsRef.current.inspection ? setTimerState(TimerState.INSPECTION) : setTimerState(TimerState.READY);
       setShowScramble(false);
       await generateScramble();
     }
@@ -146,6 +147,10 @@ const Scramble = ({ className = '' }) => {
 
   return (
     <>
+      {(timerState === TimerState.INSPECTION || timerState === TimerState.DNS) && (
+        <Inspection />
+      )}
+
       {showScramble && timerState === TimerState.IDLE && (
         <div
           className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
