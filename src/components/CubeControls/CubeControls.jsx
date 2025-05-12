@@ -27,6 +27,7 @@ const cubeControls = () => {
     setHardwareInfo,
     setBatteryLevel,
     connectionRef,
+    setShouldBeSolved,
   } = useCube();
 
   const { settingsRef } = useSettings();
@@ -81,6 +82,8 @@ const cubeControls = () => {
 
   const handleResetCubeState = () => {
     connection?.sendCubeCommand(CubeCommand.RESET);
+    setLastMoves([]);
+    setShouldBeSolved(false);
     twistyPlayerRef.current.alg = '';
   };
 
@@ -146,10 +149,13 @@ const cubeControls = () => {
       event.facelets === SOLVED_STATE
     ) {
       setLastMoves([]);
+      setShouldBeSolved(false);
     }
 
     if (event.type === CubeEventType.FACELETS && !cubeInitialized) {
+
       if (event.facelets !== SOLVED_STATE) {
+        setShouldBeSolved(true);
         const kpattern = faceletsToPattern(event.facelets);
         const solution = await experimentalSolve3x3x3IgnoringCenters(kpattern);
         twistyPlayerRef.current.alg = solution.invert();

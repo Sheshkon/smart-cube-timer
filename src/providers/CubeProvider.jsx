@@ -29,6 +29,7 @@ export const CubeProvider = ({ children }) => {
   const [timerState, setTimerState] = useState(TimerState.IDLE);
   const [lastMoves, setLastMoves] = useState([]);
   const [showScramble, setShowScramble] = useState(false);
+  const [shouldBeSolved, setShouldBeSolved] = useState(false);
 
   const twistyPlayerRef = useRef(twistyPlayer);
   const connectionRef = useRef(connection);
@@ -43,6 +44,7 @@ export const CubeProvider = ({ children }) => {
 
   const [scrambleDisplay, setScrambleDisplay] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
+
 
   useEffect(() => {
     connectionRef.current = connection;
@@ -65,6 +67,7 @@ export const CubeProvider = ({ children }) => {
         timerState,
         lastMoves,
         results,
+        shouldBeSolved,
 
         connectionRef,
         timerStateRef,
@@ -88,6 +91,7 @@ export const CubeProvider = ({ children }) => {
         setIsAnimating,
         setDeviceMac,
         setDeviceName,
+        setShouldBeSolved,
       }}
     >
       {children}

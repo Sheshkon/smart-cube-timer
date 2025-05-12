@@ -50,6 +50,8 @@ const Scramble = ({ className = '' }) => {
     scrambleDisplay,
     setScrambleDisplay,
     lastScrambleRef,
+    shouldBeSolved,
+    setShouldBeSolved,
   } = useCube();
 
   const { settings } = useSettings();
@@ -60,6 +62,7 @@ const Scramble = ({ className = '' }) => {
       .toString()
       .split(' ')
       .map((move, index) => new ColoredMove(move, index));
+
     lastScrambleRef.current = scramble;
     setScramble(newScramble);
     setScrambleDisplay(newScrambleDisplay);
@@ -95,6 +98,10 @@ const Scramble = ({ className = '' }) => {
       }
 
       if (wrongCounter > 0) {
+        if (wrongCounter > 10) {
+          setShouldBeSolved(true);
+        }
+
         wrongCounter++;
         return new ColoredMove(move, index, MoveColor.RED);
       }
@@ -156,7 +163,7 @@ const Scramble = ({ className = '' }) => {
                 overflow-x-auto
           `}>
             <div className="whitespace-normal break-all leading-relaxed text-gray-900 dark:text-gray-50">
-              {scrambleDisplay.length > 35 ? (
+              {shouldBeSolved ? (
                 <div className="text-red-500 px-10 py-2">
                   Cube should be solved
                 </div>

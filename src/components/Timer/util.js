@@ -1,8 +1,33 @@
-const TimerState = Object.freeze({
+import { CubeSolveAnalyzer } from 'src/utils/solve-analizer/cube-solve-analyzer.js';
+
+export const TimerState = Object.freeze({
   IDLE: 0,
-  READY: 1,
-  RUNNING: 2,
-  STOPPED: 3,
+  INSPECTION: 1,
+  READY: 2,
+  RUNNING: 3,
+  STOPPED: 4,
+  DNS: 5,
+  PLUS_2: 6,
+  STOPPED_PLUS_2: 8,
+  RUNNING_PLUS_2: 9
 });
 
-export { TimerState };
+export const getReconstruction = (scramble, fittedMoves, method = 'AUTO') => {
+  const methods = ['ROUX', 'CFOP'];
+
+  if (method !== 'AUTO') {
+    const cube = new CubeSolveAnalyzer();
+    return cube.analyzeSolve(scramble, fittedMoves, method);
+  }
+
+  const results = methods.map(m => {
+    const cube = new CubeSolveAnalyzer();
+    return cube.analyzeSolve(scramble, fittedMoves, m);
+  });
+
+  return results.reduce((best, current) => {
+    const currentSuccess = Object.values(current.steps).filter(s => s.found).length;
+    const bestSuccess = Object.values(best.steps).filter(s => s.found).length;
+    return currentSuccess > bestSuccess ? current : best;
+  });
+};
