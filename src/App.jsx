@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Cuboid } from 'lucide-react';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import Cube from 'src/components/Cube/Cube.jsx';
 import CubeControls from 'src/components/CubeControls/CubeControls.jsx';
 import Footer from 'src/components/Footer/Footer';
@@ -16,12 +16,19 @@ import { useSettings } from 'src/hooks/useSettings.js';
 import { CubeProvider } from 'src/providers/CubeProvider';
 
 function App() {
-  const { settings, updateSetting } = useSettings();
+  const { settings, settingsRef, updateSetting } = useSettings();
   const [sessions, setSessions] = useState([]);
   const [storedTimes, setStoredTimes] = useState([]);
 
   const handleSaveTime = async (solve) => {
     const storedTime = await sessionService.addSolveToSession(settings.selectedSessionId, solve);
+
+    const bestTime = await sessionService.getBestSolveBySession(settings.selectedSessionId);
+
+    if (bestTime.id === storedTime.id) {
+      toast.info(`Personal Best of the session: ${storedTime.time}`, { theme: settingsRef.current.theme });
+    }
+
     setStoredTimes((prevTimes) => [...prevTimes, storedTime]);
   };
 
@@ -64,7 +71,6 @@ function App() {
   return (
     <>
       <RefreshPrompt />
-      <CubeProvider>
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
           <Header />
           <main className="flex-grow container mx-auto px-4 py-6">
@@ -104,7 +110,6 @@ function App() {
           </main>
           <Footer />
         </div>
-      </CubeProvider>
       <ToastContainer />
     </>
   );

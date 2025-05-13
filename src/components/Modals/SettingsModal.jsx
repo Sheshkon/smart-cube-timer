@@ -1,9 +1,12 @@
 import React from 'react';
 
+import { TimerState } from 'src/components/Timer/util.js';
+import { useCube } from 'src/hooks/useCube.js';
 import { useSettings } from 'src/hooks/useSettings';
 
 export const SettingsModal = ({ isOpen, onClose }) => {
   const { settings, updateSetting } = useSettings();
+  const { timerState } = useCube();
 
   return (
     <>
@@ -70,6 +73,7 @@ export const SettingsModal = ({ isOpen, onClose }) => {
                 onChange={(e) =>
                   updateSetting('inspection', e.target.checked)
                 }
+                disabled={timerState === TimerState.RUNNING}
               />
             </div>
             <div className="flex justify-between items-center mb-3">

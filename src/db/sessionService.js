@@ -160,4 +160,17 @@ export const sessionService = {
       };
     });
   },
+
+  async getBestSolveBySession(sessionId) {
+    const _sessionId = parseInt(sessionId);
+
+    return db.transaction('r', db.solves, async () => {
+      const solves = await db.solves
+        .where('sessionId')
+        .equals(_sessionId)
+        .sortBy('timestamp');
+
+      return solves[0] || null;
+    });
+  },
 };
