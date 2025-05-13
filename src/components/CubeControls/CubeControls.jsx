@@ -137,7 +137,7 @@ const cubeControls = () => {
       });
       setLastMoves((prevMoves) => [...prevMoves, event]);
 
-      if (timerStateRef.current !== TimerState.IDLE) {
+      if (timerStateRef.current !== TimerState.IDLE && timerStateRef.current !== TimerState.DNS) {
         solutionMovesRef.current = [...solutionMovesRef.current, event];
       }
 
@@ -189,7 +189,7 @@ const cubeControls = () => {
     if (lastMoves.length > 256) {
       setLastMoves(lastMoves.slice(-256));
     }
-    console.log(timerStateRef.current);
+
     if (timerStateRef.current === TimerState.READY || timerStateRef.current === TimerState.INSPECTION) {
       setTimerState(TimerState.RUNNING);
     }
@@ -197,6 +197,8 @@ const cubeControls = () => {
     if (timerStateRef.current === TimerState.DNS) {
       setShowScramble(true);
       setShouldBeSolved(true);
+      setLastMoves([]);
+      solutionMovesRef.current = [];
       setTimerState(TimerState.IDLE);
     }
 

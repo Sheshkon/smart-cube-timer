@@ -7,9 +7,6 @@ export const TimerState = Object.freeze({
   RUNNING: 3,
   STOPPED: 4,
   DNS: 5,
-  PLUS_2: 6,
-  STOPPED_PLUS_2: 8,
-  RUNNING_PLUS_2: 9
 });
 
 export const getReconstruction = (scramble, fittedMoves, method = 'AUTO') => {

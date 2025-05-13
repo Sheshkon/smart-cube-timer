@@ -10,7 +10,6 @@ const AddModal = ({ isOpen, onClose, onAddSession }) => {
   };
 
   const handleAddSession = () => {
-    console.log('sessionName: ', sessionName);
     onAddSession(sessionName);
     closeModal();
   };

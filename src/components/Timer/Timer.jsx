@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { cubeTimestampLinearFit, makeTimeFromTimestamp } from 'gan-web-bluetooth';
-import { interval } from 'rxjs';
 import StatsResult from 'src/components/StatsDisplay/util.js';
 import { getReconstruction, TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
@@ -19,7 +18,7 @@ const Timer = ({ onSaveTime }) => {
     setShowScramble,
     setLastMoves,
     lastScrambleRef,
-    connectionRef
+    connectionRef,
   } = useCube();
 
   const localTimerRef = useRef(null);
@@ -31,10 +30,11 @@ const Timer = ({ onSaveTime }) => {
     stopTimer();
 
     const fittedMoves = cubeTimestampLinearFit(solutionMovesRef.current);
-    const lastMove = fittedMoves.slice(-1).pop();
-    const { formattedTime, originalTime } = getTimerValueFromTimestamp(
-      lastMove ? lastMove.cubeTimestamp : 0,
-    );
+    const lastMove = fittedMoves.at(-1);
+    const firstMove = fittedMoves[0];
+    const timestamp = lastMove.cubeTimestamp - firstMove.cubeTimestamp;
+
+    const { formattedTime, originalTime } = getTimerValueFromTimestamp(timestamp);
 
     const solve = new StatsResult(
       originalTime,
@@ -56,20 +56,42 @@ const Timer = ({ onSaveTime }) => {
   }, []);
 
   const startTimer = useCallback(() => {
-    const startTime = new Date().getTime();
-    localTimerRef.current = interval(30).subscribe(() => {
-      if (connectionRef.current) {
-        return getTimerValueFromTimestamp(new Date().getTime() - startTime);
+    const startTime = performance.now();
+    let expectedTime = startTime + 30;
+    let timeoutId;
+
+    const updateTimer = () => {
+      if (!connectionRef.current) {
+        setShowTimer(false);
+        clearTimerAndSolvingData();
+        return;
       }
-      setShowTimer(false);
-      clearTimerAndSolvingData();
-      stopTimer();
-    });
+
+      const currentTime = performance.now();
+      const elapsed = currentTime - startTime;
+
+      getTimerValueFromTimestamp(elapsed);
+
+      const drift = currentTime - expectedTime;
+      const nextInterval = Math.max(0, 30 - drift);
+
+      expectedTime += 30;
+      timeoutId = setTimeout(updateTimer, nextInterval);
+    };
+
+    timeoutId = setTimeout(updateTimer, 30);
+
+    localTimerRef.current = {
+      stop: () => clearTimeout(timeoutId),
+    };
+
   }, [connectionRef, getTimerValueFromTimestamp]);
 
   const stopTimer = useCallback(() => {
-    localTimerRef.current?.unsubscribe();
-    localTimerRef.current = null;
+    if (localTimerRef.current) {
+      localTimerRef.current.stop();
+      localTimerRef.current = null;
+    }
   }, []);
 
   const clearTimerAndSolvingData = useCallback(() => {

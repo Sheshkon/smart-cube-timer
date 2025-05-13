@@ -9,18 +9,12 @@ const Inspection = () => {
 
   const { setTimerState } = useCube();
 
-  const onInspectionEnded = () => {
-    console.log('DNS');
-    setTimerState(TimerState.DNS);
-  };
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCounter(prev => {
         if (prev <= 1) {
           clearInterval(interval);
           setIsComplete(true);
-          onInspectionEnded();
           return 0;
         }
         return prev - 1;
@@ -29,6 +23,13 @@ const Inspection = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (isComplete) {
+      setTimerState(TimerState.DNS);
+    }
+  }, [isComplete]);
+
 
   return (
     <div>
