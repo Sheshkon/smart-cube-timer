@@ -26,11 +26,8 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
           const fullShareLink = `${window.location.origin}${projectBaseUrl}share/${encodedData}`;
           setGeneratedLink(fullShareLink);
 
-          // Генерируем QR-код
           const qrCode = await QRCode.toDataURL(fullShareLink, {
-            errorCorrectionLevel: 'H',
-            // width: 200,
-            // margin: 2,
+            errorCorrectionLevel: 'Q',
           });
           setQrCodeDataUrl(qrCode);
         } catch (err) {
@@ -66,10 +63,8 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
     try {
       if (!qrCodeDataUrl) return;
 
-      // Создаем временный canvas для копирования
-      const canvas = await QRCode.toCanvas(generatedLink, { errorCorrectionLevel: 'H' });
+      const canvas = await QRCode.toCanvas(generatedLink, { errorCorrectionLevel: 'Q' });
 
-      // Копируем в буфер обмена
       canvas.toBlob(async (blob) => {
         const item = new ClipboardItem({ 'image/png': blob });
         await navigator.clipboard.write([item]);
