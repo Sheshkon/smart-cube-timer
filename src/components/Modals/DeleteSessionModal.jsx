@@ -1,7 +1,7 @@
 import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 
-const DeleteModal = ({ isOpen, onClose, onDeleteSolves, onDeleteSession }) => {
+const DeleteSessionModal = ({ isOpen, onClose, onDeleteSolves, onDeleteSession }) => {
   const { settings, updateSetting } = useSettings();
 
   const closeModal = () => {
@@ -59,4 +59,4 @@ const DeleteModal = ({ isOpen, onClose, onDeleteSolves, onDeleteSession }) => {
   );
 };
 
-export default DeleteModal;
+export default DeleteSessionModal;

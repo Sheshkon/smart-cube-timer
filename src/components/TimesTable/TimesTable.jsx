@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Share2 } from 'lucide-react';
 import AddModal from 'src/components/Modals/AddModal.jsx';
-import DeleteModal from 'src/components/Modals/DeleteModal';
+import DeleteSessionModal from 'src/components/Modals/DeleteSessionModal.jsx';
+import DeleteSolveModal from 'src/components/Modals/DeleteSolveModal.jsx';
+import ShareSolveLinkModal from 'src/components/Modals/ShareSolveLinkModal.jsx';
 import { formatSolveData } from 'src/components/StatsDisplay/util';
 import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
@@ -21,8 +23,15 @@ const TimesTable = ({
   const [popupContent, setPopupContent] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
 
-  const [isDeleteModelOpen, setIsDeleteModelOpen] = useState(false);
-  const [isAddModelOpen, setIsAddModelOpen] = useState(false);
+  const [isDeleteSessionModelOpen, setIsDeleteSessionModelOpen] = useState(false);
+  const [isAddSessionModelOpen, setIsAddSessionModelOpen] = useState(false);
+
+  const [isDeleteSolveModalOpen, setDeleteSolveModalOpen] = useState(false);
+
+  const [isShareLinkModalOpen, setSharedLinkModalOpen] = useState(false);
+
+
+  const [actionSolveId, setActionSolveId] = useState(-1);
 
   const sortedTimes = [...times].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
@@ -59,16 +68,16 @@ const TimesTable = ({
           Session
         </h3>
         <div className="flex items-center">
-          <DeleteModal
-            isOpen={isDeleteModelOpen}
-            onClose={() => setIsDeleteModelOpen(false)}
+          <DeleteSessionModal
+            isOpen={isDeleteSessionModelOpen}
+            onClose={() => setIsDeleteSessionModelOpen(false)}
             onDeleteSolves={() => onDeleteTimes(settings?.selectedSessionId)}
             onDeleteSession={() => onDeleteSession(settings?.selectedSessionId)}
           />
-          
+
           <AddModal
-            isOpen={isAddModelOpen}
-            onClose={() => setIsAddModelOpen(false)}
+            isOpen={isAddSessionModelOpen}
+            onClose={() => setIsAddSessionModelOpen(false)}
             onAddSession={(name) => onAddSession(name)}
           />
 
@@ -87,7 +96,7 @@ const TimesTable = ({
 
           <div className="text-sm text-gray-500 dark:text-gray-400">
             <button
-              onClick={() => setIsAddModelOpen(true)}
+              onClick={() => setIsAddSessionModelOpen(true)}
               className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
               title="Add session"
             >
@@ -97,7 +106,7 @@ const TimesTable = ({
 
           <div className="text-sm text-gray-500 dark:text-gray-400">
             <button
-              onClick={() => setIsDeleteModelOpen(true)}
+              onClick={() => setIsDeleteSessionModelOpen(true)}
               className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
               title="Delete all times"
             >
@@ -126,39 +135,68 @@ const TimesTable = ({
             </thead>
             <tbody>
             {sortedTimes.map((item, index) => (
-              <tr
-                key={item.id}
-                className={`
+              <>
+                <tr
+                  key={item.index}
+                  className={`
                     border-t border-gray-100 dark:border-gray-700
                     ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900/50'}
                     hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors
                   `}
-              >
-                <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
-                  {sortedTimes.length - index}
-                </td>
-                <td
-                  onClick={() => handleCellClick(item.id)}
-                  className="px-4 py-3 font-mono font-medium text-gray-900 dark:text-white"
                 >
-                  {item.time}
-                </td>
-                <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
-                  {formatDate(new Date(item.date))}
-                </td>
-                <td className="px-4 py-3">
-                  <button
-                    onClick={() => onDeleteTime(item.id)}
-                    className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
-                    title="Delete time"
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
+                    {sortedTimes.length - index}
+                  </td>
+                  <td
+                    onClick={() => handleCellClick(item.id)}
+                    className="px-4 py-3 font-mono font-medium text-gray-900 dark:text-white"
                   >
-                    <Trash2 size={16} />
-                  </button>
-                </td>
-              </tr>
+                    {item.time}
+                  </td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
+                    {formatDate(new Date(item.date))}
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => {
+                        setDeleteSolveModalOpen(true);
+                        setActionSolveId(item.id);
+                      }}
+                      className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                      title="Delete time"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setSharedLinkModalOpen(true);
+                        setActionSolveId(item.id);
+                      }}
+                      className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                      title="Delete time"
+                    >
+                      <Share2 size={16} />
+                    </button>
+                  </td>
+                </tr>
+              </>
             ))}
             </tbody>
           </table>
+
+          <ShareSolveLinkModal
+            isOpen={isShareLinkModalOpen}
+            onClose={() => setSharedLinkModalOpen(false)}
+            solveId={actionSolveId}
+          />
+
+          <DeleteSolveModal
+            isOpen={isDeleteSolveModalOpen}
+            onClose={() => setDeleteSolveModalOpen(false)}
+            onDeleteSolve={() => onDeleteTime(actionSolveId)}
+          />
+
           {popupContent && (
             <dialog open className="modal">
               <div className="modal-box">
@@ -166,75 +204,10 @@ const TimesTable = ({
                 <textarea
                   defaultValue={formatSolveData(popupContent)}
                   onClick={() => handleCopy(formatSolveData(popupContent))}
-                  className='w-full h-full'
+                  className="w-full h-full"
                   name="Text1" cols="10" rows={formatSolveData(popupContent).split('\n').length}
-                >
-                  {/*{formatSolveData(popupContent)}*/}
-                </textarea>
+                />
 
-                {/*<div onClick={() => handleCopy(formatSolveData(popupContent))}>*/}
-                {/*  <div className="flex justify-between items-center gap-16">*/}
-                {/*    <b>*/}
-                {/*      <label htmlFor="Time">Time:</label>*/}
-                {/*    </b>*/}
-                {/*    <input*/}
-                {/*      id="time"*/}
-                {/*      type="text"*/}
-                {/*      readOnly*/}
-                {/*      value={popupContent.formattedTime}*/}
-                {/*      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1 w-full"*/}
-                {/*    />*/}
-                {/*  </div>*/}
-                {/*  <div className="flex justify-between gap-8">*/}
-                {/*    <b>*/}
-                {/*      <label htmlFor="Scramble">Scramble:</label>*/}
-                {/*    </b>*/}
-                {/*    <input*/}
-                {/*      id="time"*/}
-                {/*      type="text"*/}
-                {/*      readOnly*/}
-                {/*      value={popupContent?.scramble}*/}
-                {/*      className="bg-gray-100 dark:bg-gray-800 p-1 rounded flex-1 w-full"*/}
-                {/*    />*/}
-                {/*  </div>*/}
-                {/*  <div className="flex justify-between gap-16">*/}
-                {/*    <b>*/}
-                {/*      <label className="x" htmlFor="date">*/}
-                {/*        Date:*/}
-                {/*      </label>*/}
-                {/*    </b>*/}
-                {/*    <input*/}
-                {/*      id="time"*/}
-                {/*      type="text"*/}
-                {/*      readOnly*/}
-                {/*      value={popupContent?.date}*/}
-                {/*      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1 w-full"*/}
-                {/*    />*/}
-                {/*  </div>*/}
-                {/*  <div className="flex justify-between gap-1">*/}
-                {/*    <b>*/}
-                {/*      <label htmlFor="Moves count">Moves count:</label>*/}
-                {/*    </b>*/}
-                {/*    <input*/}
-                {/*      id="time"*/}
-                {/*      type="text"*/}
-                {/*      readOnly*/}
-                {/*      value={popupContent?.solution?.split(' ')?.length}*/}
-                {/*      className="bg-gray-100 dark:bg-gray-800 p-1 rounded flex-1 w-full"*/}
-                {/*    />*/}
-                {/*  </div>*/}
-                {/*  <div className="flex justify-between gap-9">*/}
-                {/*    <b>*/}
-                {/*      <label htmlFor="Solution">Solution: </label>*/}
-                {/*    </b>*/}
-                {/*    <input*/}
-                {/*      id="time"*/}
-                {/*      type="text"*/}
-                {/*      readOnly*/}
-                {/*      value={popupContent?.solution}*/}
-                {/*      className="bg-gray-200 dark:bg-gray-900 p-1 rounded flex-1"*/}
-                {/*    />*/}
-                {/*  </div>*/}
                 {isCopied && (
                   <div className="absolute center flex right-4">
                       <span className="copied-message text-green-800">

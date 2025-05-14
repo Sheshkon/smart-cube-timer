@@ -51,7 +51,7 @@ export const sessionService = {
             db.reconstructionSteps.add({
               solveId,
               name: stepName,
-              moves: data.plain,
+              moves: mergeConsecutiveWords(data.plain),
               startTime: data.startTime,
               endTime: data.endTime,
               found: data.found,

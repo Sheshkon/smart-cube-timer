@@ -31,15 +31,15 @@ const Inspection = () => {
       setCounter(prev => {
         const newVal = prev + 1;
 
-        if(newVal === 9)
+        if (newVal === 9)
           play8();
 
-        if(newVal === 13)
+        if (newVal === 13)
           play12();
 
-        if(newVal > 15){
-            clearInterval(interval);
-            setIsComplete(true);
+        if (newVal > 15) {
+          clearInterval(interval);
+          setIsComplete(true);
         }
 
         return newVal >= 0 ? newVal : 0;
@@ -52,7 +52,7 @@ const Inspection = () => {
   useEffect(() => {
     if (isComplete) {
       setTimerState(TimerState.DNS);
-      toast.warn( 'Did Not Start', { theme: settingsRef.current.theme });
+      toast.warn('Did Not Start', { theme: settingsRef.current.theme });
     }
   }, [isComplete]);
 
