@@ -1,15 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
+import QRCode from 'qrcode';
 import { FiCopy, FiLink, FiX } from 'react-icons/fi';
+import { MdOutlineQrCode2 } from 'react-icons/md';
 import { generateShareLink } from 'src/utils/solve-link.js';
 
 const projectBaseUrl = import.meta.env.BASE_URL;
 
 const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
   const [generatedLink, setGeneratedLink] = useState('');
-  const [isCopied, setIsCopied] = useState(false);
+  const [isCopiedLink, setIsCopiedLink] = useState(false);
+  const [isCopiedQR, setIsCopiedQR] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
+  const qrCodeRef = useRef(null);
 
   useEffect(() => {
     const generateLink = async () => {
@@ -20,10 +25,19 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
           const encodedData = await generateShareLink(solveId);
           const fullShareLink = `${window.location.origin}${projectBaseUrl}share/${encodedData}`;
           setGeneratedLink(fullShareLink);
+
+          // Генерируем QR-код
+          const qrCode = await QRCode.toDataURL(fullShareLink, {
+            errorCorrectionLevel: 'H',
+            // width: 200,
+            // margin: 2,
+          });
+          setQrCodeDataUrl(qrCode);
         } catch (err) {
           console.error('Error generating share link:', err);
           setError('Failed to generate share link');
           setGeneratedLink('');
+          setQrCodeDataUrl('');
         } finally {
           setIsLoading(false);
         }
@@ -31,7 +45,7 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
     };
 
     generateLink();
-    setIsCopied(false);
+    setIsCopiedLink(false);
   }, [isOpen, solveId]);
 
   const handleCopy = () => {
@@ -39,8 +53,8 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
 
     navigator.clipboard.writeText(generatedLink)
       .then(() => {
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2000);
+        setIsCopiedLink(true);
+        setTimeout(() => setIsCopiedLink(false), 2000);
       })
       .catch(err => {
         console.error('Failed to copy:', err);
@@ -48,11 +62,38 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
       });
   };
 
-  // Функция для сокращения ссылки
+  const handleCopyQrCode = async () => {
+    try {
+      if (!qrCodeDataUrl) return;
+
+      // Создаем временный canvas для копирования
+      const canvas = await QRCode.toCanvas(generatedLink, { errorCorrectionLevel: 'H' });
+
+      // Копируем в буфер обмена
+      canvas.toBlob(async (blob) => {
+        const item = new ClipboardItem({ 'image/png': blob });
+        await navigator.clipboard.write([item]);
+        setIsCopiedQR(true);
+        setTimeout(() => setIsCopiedQR(false), 2000);
+      });
+    } catch (err) {
+      console.error('Failed to copy QR code:', err);
+      setError('Failed to copy QR code');
+    }
+  };
+
+  const handleDownloadQrCode = () => {
+    if (!qrCodeDataUrl) return;
+
+    const link = document.createElement('a');
+    link.href = qrCodeDataUrl;
+    link.download = `cube-solve-${solveId}.png`;
+    link.click();
+  };
+
   const truncateLink = (link, maxLength = 30) => {
     if (!link) return '';
     if (link.length <= maxLength) return link;
-
     const partLength = Math.floor((maxLength - 3) / 2);
     return `${link.substring(0, partLength)}...${link.substring(link.length - partLength)}`;
   };
@@ -61,7 +102,7 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
     <div>
       {isOpen && (
         <dialog open className="modal">
-          <div className="modal-box relative border-primary/20 rounded-lg">
+          <div className="modal-box relative border-2 border-primary/20 rounded-lg max-w-md">
             <button
               onClick={onClose}
               className="btn btn-sm btn-circle absolute right-2 top-2"
@@ -82,7 +123,7 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
 
               <div className="w-full mb-4">
                 <div className="flex items-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg border">
-                  <FiLink className="text-gray-500 flex-shrink-`" />
+                  <FiLink className="text-gray-500 flex-shrink-0" />
                   <div className="truncate flex-1" title={generatedLink}>
                     {isLoading ? (
                       <span className="italic text-gray-500">Generating link...</span>
@@ -93,14 +134,33 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
                 </div>
               </div>
 
-              <button
-                className={`btn btn-primary gap-2 ${isCopied ? 'btn-success' : ''}`}
-                onClick={handleCopy}
-                disabled={!generatedLink || isLoading}
-              >
-                <FiCopy />
-                {isCopied ? 'Copied!' : 'Copy Link'}
-              </button>
+              {/* QR-код */}
+              {qrCodeDataUrl && (
+                <div className="mb-4 flex flex-col items-center">
+                  <div className="flex gap-2 mt-3">
+
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <button
+                  className={`btn btn-primary gap-2 ${isCopiedLink ? 'btn-success' : ''}`}
+                  onClick={handleCopy}
+                  disabled={!generatedLink || isLoading}
+                >
+                  <FiCopy />
+                  {isCopiedLink ? 'Copied!' : 'Copy Link'}
+                </button>
+
+                <button
+                  className={`btn btn-outline gap-2 ${isCopiedQR ? 'btn-success' : ''}`}
+                  onClick={handleCopyQrCode}
+                >
+                  <MdOutlineQrCode2 />
+                  {isCopiedQR ? 'Copied!' : 'Copy QR'}
+                </button>
+              </div>
             </div>
           </div>
         </dialog>
