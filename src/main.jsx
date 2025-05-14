@@ -18,5 +18,5 @@ createRoot(document.getElementById('root')).render(
         </Routes>
       </SettingsProvider>
     </CubeProvider>
-  </Router>,
+  </Router>
 );

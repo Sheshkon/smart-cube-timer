@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { FiArrowLeft, FiClock, FiCalendar, FiLayers, FiCode, FiAlertTriangle } from 'react-icons/fi';
 import { useParams, useNavigate } from 'react-router-dom';
+import { parseShareLink } from 'src/utils/solve-link.js';
 
 const projectBaseUrl = import.meta.env.BASE_URL;
 
@@ -15,11 +16,8 @@ const ShareSolveViewPage = () => {
   useEffect(() => {
     const decodeData = () => {
       try {
+        const data = parseShareLink(encodedData);
 
-        const decodedString = decodeURIComponent(escape(atob(encodedData)));
-        const data = JSON.parse(decodedString);
-
-        // Валидация данных
         if (!data || !data.time || !data.scramble) {
           throw new Error('Invalid solve data');
         }
