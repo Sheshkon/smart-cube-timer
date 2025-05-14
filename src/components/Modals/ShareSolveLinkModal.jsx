@@ -21,19 +21,19 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
       if (isOpen && solveId) {
         setIsLoading(true);
         setError(null);
+        const encodedData = await generateShareLink(solveId);
+        const fullShareLink = `${window.location.origin}${projectBaseUrl}share/${encodedData}`;
         try {
-          const encodedData = await generateShareLink(solveId);
-          const fullShareLink = `${window.location.origin}${projectBaseUrl}share/${encodedData}`;
           setGeneratedLink(fullShareLink);
 
           const qrCode = await QRCode.toDataURL(fullShareLink, {
-            errorCorrectionLevel: 'Q',
+            errorCorrectionLevel: 'M',
           });
           setQrCodeDataUrl(qrCode);
         } catch (err) {
           console.error('Error generating share link:', err);
-          setError('Failed to generate share link');
-          setGeneratedLink('');
+          setError('Failed to generate share QR Code');
+          setGeneratedLink(fullShareLink);
           setQrCodeDataUrl('');
         } finally {
           setIsLoading(false);
@@ -63,7 +63,7 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
     try {
       if (!qrCodeDataUrl) return;
 
-      const canvas = await QRCode.toCanvas(generatedLink, { errorCorrectionLevel: 'Q' });
+      const canvas = await QRCode.toCanvas(generatedLink, { errorCorrectionLevel: 'M' });
 
       canvas.toBlob(async (blob) => {
         const item = new ClipboardItem({ 'image/png': blob });
