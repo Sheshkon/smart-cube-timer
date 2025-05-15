@@ -44,7 +44,7 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
           onClick={() => navigate ? navigate(projectBaseUrl) : onClose()}
           className="flex items-center gap-2 mb-6 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
         >
-          <FiArrowLeft /> Go To Timer
+          <FiArrowLeft /> To Timer
         </button>
 
         {loading ? (
