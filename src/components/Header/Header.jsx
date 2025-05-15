@@ -10,13 +10,15 @@ const Header = ({ className = '' }) => {
   return (
     <>
       <header
-        className={`bg-white dark:bg-gray-800 shadow-sm px-4 py-3 ${className}`}
+        className={`bg-white dark:bg-gray-800 shadow-sm ${className}`}
       >
         <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+          <div className="sticky top-0 z-10 w-full p-4 flex justify-between items-center shadow-sm">
+            <div className="w-full max-w-[1800px] mx-auto px-4 flex justify-between items-center">
+            <h2 className="text-xl font-bold">
               SmartTimer
-            </h1>
+            </h2>
+            </div>
           </div>
           <div className="flex items-center space-x-4">
             <button

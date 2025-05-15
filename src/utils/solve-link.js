@@ -1,11 +1,13 @@
 import { sessionService } from 'src/db/sessionService.js';
 
+const projectBaseUrl = import.meta.env.BASE_URL;
+
+
 export const generateShareLink = async (solveId) =>  {
   const data = await sessionService.getSolveWithReconstructionBySolveId(solveId);
   const jsonString = JSON.stringify(data);
-  console.log(jsonString);
   const encoded = btoa(unescape(encodeURIComponent(jsonString)));
-  return `${encoded}`;
+  return `${projectBaseUrl}share/${encoded}`;
 };
 
 export const parseShareLink = (shareLink) =>{

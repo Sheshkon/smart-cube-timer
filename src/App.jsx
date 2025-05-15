@@ -1,5 +1,6 @@
-import { Cuboid } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+
+import { Cuboid } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import Cube from 'src/components/Cube/Cube.jsx';
 import CubeControls from 'src/components/CubeControls/CubeControls.jsx';

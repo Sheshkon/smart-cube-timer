@@ -5,8 +5,6 @@ import { FiCopy, FiLink, FiX } from 'react-icons/fi';
 import { MdOutlineQrCode2 } from 'react-icons/md';
 import { generateShareLink } from 'src/utils/solve-link.js';
 
-const projectBaseUrl = import.meta.env.BASE_URL;
-
 const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [isCopiedLink, setIsCopiedLink] = useState(false);
@@ -21,8 +19,8 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
       if (isOpen && solveId) {
         setIsLoading(true);
         setError(null);
-        const encodedData = await generateShareLink(solveId);
-        const fullShareLink = `${window.location.origin}${projectBaseUrl}share/${encodedData}`;
+        const relativeLink = await generateShareLink(solveId);
+        const fullShareLink = `${window.location.origin}${relativeLink}`;
         try {
           setGeneratedLink(fullShareLink);
 
