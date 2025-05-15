@@ -1,9 +1,31 @@
+import { useEffect, useRef } from 'react';
+
+import { Alg } from 'cubing/alg';
+import { TwistyPlayer } from 'cubing/twisty';
 import { FiAlertTriangle, FiArrowLeft, FiCalendar, FiClock, FiCode, FiLayers } from 'react-icons/fi';
 import { formatTime } from 'src/utils/time.js';
 
 const projectBaseUrl = import.meta.env.BASE_URL;
 
 const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, onClose }) => {
+  const twistyPlayerRef = useRef(null);
+
+  useEffect(() => {
+    if (solveData?.solution && twistyPlayerRef.current) {
+      // Initialize TwistyPlayer with the solution
+      const player = new TwistyPlayer({
+        experimentalSetupAlg: solveData.scramble,
+        alg: solveData.solution,
+        hintFacelets: 'none',
+        background: 'none',
+        visualization: '3D',
+      });
+
+      twistyPlayerRef.current.innerHTML = '';
+      twistyPlayerRef.current.appendChild(player);
+    }
+  }, [solveData]);
+
   if (!solveData?.reconstruction?.steps) return null;
 
   const renderReconstructionSteps = () => (
@@ -11,6 +33,17 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
       <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
         Reconstruction Steps ({solveData.reconstruction.method})
       </h3>
+
+      {/* Add TwistyPlayer reconstruction */}
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+        <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Solution Visualization
+        </h4>
+        <div
+          ref={twistyPlayerRef}
+          className="w-full h-64 md:h-96 flex justify-center items-center"
+        />
+      </div>
 
       {Object.entries(solveData.reconstruction.steps).map(([stepName, stepData]) => (
         <div key={stepName} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 shadow-sm">
