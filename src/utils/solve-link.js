@@ -13,7 +13,7 @@ export const parseShareLink = (shareLink) =>{
   try {
     const jsonString = decodeURIComponent(escape(atob(base64)));
     return JSON.parse(jsonString);
-  } catch (e) {
+  } catch (_) {
     console.error('Invalid share link');
     return null;
   }

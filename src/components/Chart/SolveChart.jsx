@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 import { BarChart } from '@mui/x-charts/BarChart';
 import { useSettings } from 'src/hooks/useSettings.js';
 
@@ -11,7 +9,7 @@ export const SolveReconstructionChart = ({ reconstruction }) => {
   const { method, steps } = reconstruction;
 
   const stepNames = Object.keys(steps).filter(step => steps[step].found);
-  const durations = stepNames.map(step => (steps[step]?.endTime -  steps[step]?.startTime) / 1000); // Convert to seconds
+  const durations = stepNames.map(step => (steps[step]?.endTime - steps[step]?.startTime) / 1000); // Convert to seconds
 
 
   const textColor = settings['theme'] === 'dark' ? 'white' : 'black';
