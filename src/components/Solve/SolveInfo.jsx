@@ -19,6 +19,7 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
         hintFacelets: 'none',
         background: 'none',
         visualization: '3D',
+        tempoScale: 3,
       });
 
       twistyPlayerRef.current.innerHTML = '';
