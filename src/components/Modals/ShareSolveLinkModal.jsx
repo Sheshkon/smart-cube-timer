@@ -95,7 +95,7 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
     <div>
       {isOpen && (
         <dialog open className="modal">
-          <div className="modal-box relative border-2 border-primary/20 rounded-lg max-w-md">
+          <div className="modal-box relative rounded-lg max-w-md">
             <button
               onClick={onClose}
               className="btn btn-sm btn-circle absolute right-2 top-2"
