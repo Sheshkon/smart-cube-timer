@@ -11,6 +11,7 @@ import Scramble from 'src/components/Scramble/Scramble.jsx';
 import StatsDisplay from 'src/components/StatsDisplay/StatsDisplay';
 import Timer from 'src/components/Timer/Timer';
 import TimesTable from 'src/components/TimesTable/TimesTable';
+import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 
@@ -50,6 +51,23 @@ function App() {
   const handleDeleteTimes = (sessionId) => {
     sessionService.deleteSolvesBySession(sessionId);
     setStoredTimes(() => []);
+  };
+
+  const handleImport = () => {
+    sessionService.getAllSessions()
+      .then(sessions => {
+        setSessions(sessions);
+        const lastSession = sessions.at(-1);
+        updateSetting('selectedSessionId', lastSession?.id || DEFAULT_SESSION_ID);
+        sessionService.getSolvesBySessionId(lastSession?.id)
+          .then(session => {
+            setStoredTimes(session);
+          })
+          .catch(() =>
+            sessionService.getSolvesBySessionId(DEFAULT_SESSION_ID)
+              .then(setStoredTimes),
+          );
+      });
   };
 
   useEffect(() => {
@@ -97,6 +115,7 @@ function App() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               <StatsDisplay times={storedTimes} />
               <TimesTable
+                onImport={handleImport}
                 sessions={sessions}
                 onDeleteTimes={handleDeleteTimes}
                 times={storedTimes}

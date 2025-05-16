@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { ExternalLink, Plus, Share2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import ExportImport from 'src/components/ExportImport/ExportImport.jsx';
 import AddModal from 'src/components/Modals/AddModal.jsx';
 import DeleteSessionModal from 'src/components/Modals/DeleteSessionModal.jsx';
 import DeleteSolveModal from 'src/components/Modals/DeleteSolveModal.jsx';
@@ -13,6 +14,7 @@ import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 
 const TimesTable = ({
+                      onImport,
                       sessions,
                       onDeleteTimes,
                       onDeleteSession,
@@ -80,11 +82,16 @@ const TimesTable = ({
           </FullScreenModal>
         ) :
 
-        (<div
+        (
+          <div
             className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
           >
+            <ExportImport
+              classWrapper={'pb-4'}
+              onImport={onImport}
+            />
             <div className="flex mb-4">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+              <h3 className="text-2xl font-medium text-gray-900 dark:text-white">
                 Session
               </h3>
               <div className="flex items-center">
@@ -103,7 +110,7 @@ const TimesTable = ({
 
                 <select
                   value={settings?.selectedSessionId}
-                  className="select select-xs w-32 ml-2"
+                  className="select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none"
                   onChange={(e) => updateSetting('selectedSessionId', e.target.value)}
                 >
                   {sessions.map((session) => (
@@ -114,20 +121,20 @@ const TimesTable = ({
 
                 </select>
 
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-sm">
                   <button
                     onClick={() => setIsAddSessionModelOpen(true)}
-                    className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                    className="p-1 rounded hover:text-green-500 dark:hover:text-red-400 transition-colors"
                     title="Add session"
                   >
                     <Plus size={16} />
                   </button>
                 </div>
 
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-sm">
                   <button
                     onClick={() => setIsDeleteSessionModelOpen(true)}
-                    className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                    className="p-1 rounded hover:text-red-500"
                     title="Delete all times"
                   >
                     <Trash2 size={16} />
@@ -185,7 +192,7 @@ const TimesTable = ({
                               setDeleteSolveModalOpen(true);
                               setActionSolveId(item.id);
                             }}
-                            className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                            className="p-1 rounded hover:text-red-500"
                             title="Delete time"
                           >
                             <Trash2 size={16} />
@@ -196,7 +203,7 @@ const TimesTable = ({
                               setSharedLinkModalOpen(true);
                               setActionSolveId(item.id);
                             }}
-                            className="p-1 rounded text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                            className="p-1 rounded hover:text-blue-500"
                             title="Share time"
                           >
                             <Share2 size={16} />
