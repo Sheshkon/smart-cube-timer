@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 
-import { Alg } from 'cubing/alg';
 import { TwistyPlayer } from 'cubing/twisty';
 import { FiAlertTriangle, FiArrowLeft, FiCalendar, FiClock, FiCode, FiLayers } from 'react-icons/fi';
+import { IoSpeedometer } from 'react-icons/io5';
 import { formatTime } from 'src/utils/time.js';
 
 const projectBaseUrl = import.meta.env.BASE_URL;
@@ -12,7 +12,6 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
 
   useEffect(() => {
     if (solveData?.solution && twistyPlayerRef.current) {
-      // Initialize TwistyPlayer with the solution
       const player = new TwistyPlayer({
         experimentalSetupAlg: solveData.scramble,
         alg: solveData.solution,
@@ -35,7 +34,6 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
         Reconstruction Steps ({solveData.reconstruction.method})
       </h3>
 
-      {/* Add TwistyPlayer reconstruction */}
       <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 shadow-sm">
         <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
           Solution Visualization
@@ -53,7 +51,8 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
               {stepName.replace(/_/g, ' ')}
             </h4>
             {stepData.found && (
-              <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full">
+              <span
+                className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full">
                 Found
               </span>
             )}
@@ -86,7 +85,8 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
           </div>
         ) : error ? (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center shadow-md">
+          <div
+            className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center shadow-md">
             <FiAlertTriangle className="mx-auto text-red-500 dark:text-red-400 text-3xl mb-3" />
             <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-2">
               Error Loading Solve
@@ -98,16 +98,30 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
             <div className="p-6 md:p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <InfoCard
-                    icon={<FiClock className="text-blue-500" />}
-                    title="Time"
-                    value={solveData.time}
-                  />
+
                   <InfoCard
                     icon={<FiCode className="text-purple-500" />}
                     title="Scramble"
                     value={solveData.scramble}
                     mono
+                  />
+
+                  <InfoCard
+                    icon={<FiClock className="text-blue-500" />}
+                    title="Time"
+                    value={solveData.time}
+                  />
+
+                  <InfoCard
+                    icon={<FiLayers className="text-yellow-500" />}
+                    title="Solution Moves"
+                    value={`${solveData.solution.split(' ').length}`}
+                  />
+
+                  <InfoCard
+                    icon={<IoSpeedometer className="text-red-500" />}
+                    title="TPS"
+                    value={`${Math.floor(solveData.solution.split(' ').length * 100 / Math.floor(solveData.timestamp /1000)) / 100}`}
                   />
                 </div>
 
@@ -117,11 +131,6 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
                     title="Date"
                     value={new Date(solveData.date).toLocaleString()}
                   />
-                  <InfoCard
-                    icon={<FiLayers className="text-yellow-500" />}
-                    title="Solution Length"
-                    value={`${solveData.solution.split(' ').length} moves`}
-                  />
                 </div>
               </div>
 
@@ -130,7 +139,8 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
                   <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
                     Full Solution
                   </h3>
-                  <div className="font-mono bg-gray-100 dark:bg-gray-800 p-4 rounded-lg whitespace-pre-wrap break-all shadow-sm">
+                  <div
+                    className="font-mono bg-gray-100 dark:bg-gray-800 p-4 rounded-lg whitespace-pre-wrap break-all shadow-sm">
                     {solveData.solution}
                   </div>
                 </div>
