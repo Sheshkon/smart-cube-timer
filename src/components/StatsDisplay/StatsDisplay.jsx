@@ -114,7 +114,7 @@ const StatsDisplay = ({ times, className = '' }) => {
         <div
           className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
         >
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Solve Step Analysis</h3>
+          <h3 className="text-2xl font-medium text-gray-900 dark:text-white">Solve Step Analysis</h3>
           <SolveReconstructionChart className="flex-col" reconstruction={stats?.current?.reconstruction} />
         </div>
       )}
