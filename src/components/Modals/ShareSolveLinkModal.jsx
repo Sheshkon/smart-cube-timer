@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 import QRCode from 'qrcode';
-import { FiCopy, FiLink, FiX } from 'react-icons/fi';
+import { FiCopy, FiLink, FiX, FiDownload } from 'react-icons/fi';
 import { MdOutlineQrCode2 } from 'react-icons/md';
 import { generateShareLink } from 'src/utils/solve-link.js';
 
@@ -26,6 +26,8 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
 
           const qrCode = await QRCode.toDataURL(fullShareLink, {
             errorCorrectionLevel: 'M',
+            width: 900,
+            margin: 2
           });
           setQrCodeDataUrl(qrCode);
         } catch (err) {
@@ -61,7 +63,10 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
     try {
       if (!qrCodeDataUrl) return;
 
-      const canvas = await QRCode.toCanvas(generatedLink, { errorCorrectionLevel: 'M' });
+      const canvas = await QRCode.toCanvas(generatedLink, {
+        errorCorrectionLevel: 'M',
+        width: 200
+      });
 
       canvas.toBlob(async (blob) => {
         const item = new ClipboardItem({ 'image/png': blob });
@@ -127,11 +132,30 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
                 </div>
               </div>
 
-              {/* QR-код */}
+              {/* QR Code Display */}
               {qrCodeDataUrl && (
-                <div className="mb-4 flex flex-col items-center">
+                <div className="mb-6 flex flex-col items-center">
+                  <img
+                    src={qrCodeDataUrl}
+                    alt="QR Code for sharing"
+                    className=" border border-gray-200 rounded-lg p-2 bg-white"
+                    ref={qrCodeRef}
+                  />
                   <div className="flex gap-2 mt-3">
-
+                    <button
+                      className={`btn btn-sm gap-1 ${isCopiedQR ? 'btn-success' : 'btn-outline'}`}
+                      onClick={handleCopyQrCode}
+                    >
+                      <MdOutlineQrCode2 size={16} />
+                      {isCopiedQR ? 'Copied!' : 'Copy QR'}
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline gap-1"
+                      onClick={handleDownloadQrCode}
+                    >
+                      <FiDownload size={16} />
+                      Download
+                    </button>
                   </div>
                 </div>
               )}
@@ -144,14 +168,6 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
                 >
                   <FiCopy />
                   {isCopiedLink ? 'Copied!' : 'Copy Link'}
-                </button>
-
-                <button
-                  className={`btn btn-outline gap-2 ${isCopiedQR ? 'btn-success' : ''}`}
-                  onClick={handleCopyQrCode}
-                >
-                  <MdOutlineQrCode2 />
-                  {isCopiedQR ? 'Copied!' : 'Copy QR'}
                 </button>
               </div>
             </div>
