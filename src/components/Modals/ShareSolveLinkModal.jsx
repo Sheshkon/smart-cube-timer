@@ -65,7 +65,7 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
 
       const canvas = await QRCode.toCanvas(generatedLink, {
         errorCorrectionLevel: 'M',
-        width: 200
+        width: 900
       });
 
       canvas.toBlob(async (blob) => {
