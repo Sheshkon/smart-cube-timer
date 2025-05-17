@@ -2,6 +2,15 @@
 *A modern [PWA](https://en.wikipedia.org/wiki/Progressive_web_app) speedcubing timer with smart GAN cube support*
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Open-green?style=for-the-badge)](https://sheshkon.github.io/smart-cube-timer/)
+
+
+
+## 🎥 Demo Video
+
+
+https://github.com/user-attachments/assets/2a34bef8-572a-4cdf-a49e-a67b4a32b0aa
+
+
 <!-- 
 <div align="center">
   <img src="./public/screenshots/light-screenshot-mobile.jpg" width="75px" alt="Light Mode"/>
