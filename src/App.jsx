@@ -19,6 +19,8 @@ function App() {
   const { settings, settingsRef, updateSetting } = useSettings();
   const [sessions, setSessions] = useState([]);
   const [storedTimes, setStoredTimes] = useState([]);
+  const [stats, setStats] = useState({});
+
 
   const handleSaveTime = async (solve) => {
     const storedTime = await sessionService.addSolveToSession(settings.selectedSessionId, solve);
@@ -113,8 +115,13 @@ function App() {
               </div>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-              <StatsDisplay times={storedTimes} />
+              <StatsDisplay
+                times={storedTimes}
+                stats={stats}
+                setStats={setStats}
+              />
               <TimesTable
+                stats={stats}
                 onImport={handleImport}
                 sessions={sessions}
                 onDeleteTimes={handleDeleteTimes}

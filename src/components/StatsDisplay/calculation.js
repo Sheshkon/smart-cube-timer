@@ -10,6 +10,10 @@ export const calculateStats = async (times) => {
     time.timestamp < min.timestamp ? time : min,
   );
 
+  const worst = times.reduce((max, time) =>
+    time.timestamp > max.timestamp ? time : max,
+  );
+
   const last = times[times.length - 1];
 
   const current = await sessionService.getSolveWithReconstructionBySolveId(last?.id);
@@ -21,7 +25,7 @@ export const calculateStats = async (times) => {
     ? getCurrentSolveStats(current, times[times.length - 2])
     : getCurrentSolveStats(current);
 
-  return { current, best, avg5, avg12, currentStats };
+  return { current, best, worst, avg5, avg12, currentStats };
 };
 
 export const calculateAverage = async (times) => {

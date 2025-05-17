@@ -6,10 +6,8 @@ import { calculateStats } from 'src/components/StatsDisplay/calculation.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime } from 'src/utils/time.js';
 
-const StatsDisplay = ({ times, className = '' }) => {
+const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
   const { settings } = useSettings();
-
-  const [stats, setStats] = useState({});
 
   useEffect(() => {
     let isActive = true;

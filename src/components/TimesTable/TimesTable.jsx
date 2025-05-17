@@ -13,7 +13,14 @@ import { formatSolveData } from 'src/components/StatsDisplay/util';
 import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 
+function defineTimeColor(stats, item) {
+  if(stats?.best?.time === item?.time)  return 'text-green-500';
+  if(stats?.worst?.time === item?.time) return 'text-red-500';
+  return '';
+}
+
 const TimesTable = ({
+                      stats,
                       onImport,
                       sessions,
                       onDeleteTimes,
@@ -63,7 +70,6 @@ const TimesTable = ({
   };
 
   const handleCopy = (textToCopy) => {
-    // const textToCopy = JSON.stringify(textToCopy)
 
     navigator.clipboard.writeText(textToCopy).then(() => {
       setIsCopied(true);
@@ -171,7 +177,9 @@ const TimesTable = ({
                     hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors
                   `}
                       >
-                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
+                        <td
+                          key={item.id}
+                          className="px-4 py-3 text-gray-500 dark:text-gray-400">
                           {sortedTimes.length - index}
                         </td>
                         <td
@@ -179,7 +187,9 @@ const TimesTable = ({
                             setActionSolveId(item.id);
                             await handleCellClick(item.id);
                           }}
-                          className="px-4 py-3 font-mono font-medium text-gray-900 dark:text-white"
+                          className={
+                            `px-4 py-3 cursor-pointer font-mono font-medium ${(defineTimeColor(stats, item))}`
+                          }
                         >
                           {item.time}
                         </td>

@@ -11,6 +11,7 @@ const defaultSettings = {
   notifications: true,
   fontSize: 16,
   selectedSessionId: DEFAULT_SESSION_ID,
+  solutionChart: true,
   inspection: false
 };
 
