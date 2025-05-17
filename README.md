@@ -5,10 +5,9 @@
 
 
 
-## 🎥 Demo Video
+## 🎥 Demo
 
-
-https://github.com/user-attachments/assets/2a34bef8-572a-4cdf-a49e-a67b4a32b0aa
+![demo](https://github.com/user-attachments/assets/f251dc53-c487-4c5d-bfcc-fdd982cd6a0f)
 
 
 <!-- 
