@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ExternalLink, Plus, Share2, Trash2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import ExportImport from 'src/components/ExportImport/ExportImport.jsx';
 import AddModal from 'src/components/Modals/AddModal.jsx';
 import DeleteSessionModal from 'src/components/Modals/DeleteSessionModal.jsx';
@@ -30,7 +29,6 @@ const TimesTable = ({
                       onDeleteTime,
                       className = '',
                     }) => {
-  const navigate = useNavigate();
 
   const { settings, updateSetting } = useSettings();
 
@@ -168,9 +166,8 @@ const TimesTable = ({
                   </thead>
                   <tbody>
                   {sortedTimes.map((item, index) => (
-                    <>
                       <tr
-                        key={item.index}
+                        key={item.id}
                         className={`
                     border-t border-gray-100 dark:border-gray-700
                     ${index % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900/50'}
@@ -178,7 +175,6 @@ const TimesTable = ({
                   `}
                       >
                         <td
-                          key={item.id}
                           className="px-4 py-3 text-gray-500 dark:text-gray-400">
                           {sortedTimes.length - index}
                         </td>
@@ -220,7 +216,6 @@ const TimesTable = ({
                           </button>
                         </td>
                       </tr>
-                    </>
                   ))}
                   </tbody>
                 </table>

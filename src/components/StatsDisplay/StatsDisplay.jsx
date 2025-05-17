@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 
 import { Award, BarChart2, Clock, TrendingUp } from 'lucide-react';
+import { MdOutlineQueryStats } from 'react-icons/md';
 import { SolveReconstructionChart } from 'src/components/Chart/SolveChart.jsx';
+import ExtendedStats from 'src/components/ExtendedStats/ExtendedStats.jsx';
+import FullScreenModal from 'src/components/Modals/FullScreenModal.jsx';
 import { calculateStats } from 'src/components/StatsDisplay/calculation.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime } from 'src/utils/time.js';
 
 const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
   const { settings } = useSettings();
+
+  const [showExtendedStats, setShowExtendedStats] = useState(false);
 
   useEffect(() => {
     let isActive = true;
@@ -49,12 +54,26 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
 
   return (
     <>
-      <div
-        className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
-      >
-        <h3 className="text-2xl font-medium text-gray-900 dark:text-white mb-4">
-          Statistics
-        </h3>
+      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-2xl font-medium text-gray-900 dark:text-white">
+            Statistics
+          </div>
+          <button
+            onClick={() => setShowExtendedStats(true)}
+            className="hover:text-gray-700 dark:hover:text-gray-200"
+            aria-label="Extended statistics"
+          >
+            <MdOutlineQueryStats className="h-7 w-7" />
+          </button>
+        </div>
+
+        {showExtendedStats && (
+          <FullScreenModal>
+            <ExtendedStats
+              onClose={() => setShowExtendedStats(false)}
+            />
+          </FullScreenModal>)}
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {statItems().map((item, index) => (

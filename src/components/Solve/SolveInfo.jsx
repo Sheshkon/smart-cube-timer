@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { TwistyPlayer } from 'cubing/twisty';
 import { FiAlertTriangle, FiArrowLeft, FiCalendar, FiClock, FiCode, FiLayers } from 'react-icons/fi';
@@ -73,12 +73,17 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
   return (
     <div className="bg-white dark:bg-gray-800 p-4 md:p-6">
       <div className="mx-auto">
-        <button
-          onClick={() => navigate ? navigate(projectBaseUrl) : onClose()}
-          className="flex items-center gap-2 mb-6 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-        >
-          <FiArrowLeft /> To Timer
-        </button>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+            Solve Information
+          </h2>
+          <button
+            onClick={() => navigate ? navigate(projectBaseUrl) : onClose()}
+            className="flex items-center gap-2 mb-6 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+          >
+            <FiArrowLeft /> To Timer
+          </button>
+        </div>
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -121,7 +126,7 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
                   <InfoCard
                     icon={<IoSpeedometer className="text-red-500" />}
                     title="TPS"
-                    value={`${Math.floor(solveData.solution.split(' ').length * 100 / Math.floor(solveData.timestamp /1000)) / 100}`}
+                    value={`${Math.floor(solveData.solution.split(' ').length * 100 / Math.floor(solveData.timestamp / 1000)) / 100}`}
                   />
                 </div>
 
@@ -163,7 +168,7 @@ const InfoCard = ({ icon, title, value, mono = false }) => (
     <div className="flex-1">
       <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
       <p className={`mt-1 ${mono ? 'font-mono' : ''} text-gray-800 dark:text-white`}>
-        {value || 'N/A'}
+      {value || 'N/A'}
       </p>
     </div>
   </div>

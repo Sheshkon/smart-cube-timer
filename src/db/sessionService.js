@@ -20,7 +20,6 @@ export const sessionService = {
       const sessionId = await db.sessions.add({
         name,
         createdAt: new Date().toISOString(),
-        solves: [],
       });
 
      return await db.sessions
@@ -60,9 +59,9 @@ export const sessionService = {
         ),
       );
 
-      await db.sessions.update(_sessionId, {
-        solves: [...(await db.sessions.get(_sessionId)).solves, solveId],
-      });
+      // await db.sessions.update(_sessionId, {
+      //   solves: [...(await db.sessions.get(_sessionId)).solves, solveId],
+      // });
 
       const solve = await db.solves.get(solveId);
       const reconstructionSteps = await db.reconstructionSteps
