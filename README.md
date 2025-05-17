@@ -98,6 +98,21 @@
 - Enable flags: `chrome://flags/#enable-experimental-web-platform-features`
 - Bluetooth enabled device
 
+## ℹ️ Compatibility Notes
+
+### iOS Limitations
+⚠️ **Mobile iOS devices (iPhone/iPad) are currently not supported** due to:
+- Apple's restrictive Web Bluetooth implementation
+- Missing BLE (Bluetooth Low Energy) peripheral mode in mobile Safari
+- Lack of Web Bluetooth API support in WKWebView
+
+**Workarounds:**
+1. Use **macOS devices** (MacBook, iMac) with Chrome/Edge
+2. Android devices with Chrome 89+
+3. For development: Use iOS with [WebBLE polyfill](https://github.com/WebBluetoothCG/web-bluetooth-polyfill) (limited functionality)
+
+We're monitoring [WebKit's Web Bluetooth status](https://webkit.org/status/#specification-web-bluetooth) for future iOS support.
+
 ### Installation
 ```bash
 git clone https://github.com/sheshkon/smart-cube-timer.git
