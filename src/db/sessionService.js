@@ -1,3 +1,4 @@
+import Dexie from 'dexie';
 import db from 'src/db/db.js';
 import { mergeConsecutiveWords } from 'src/utils/string.js';
 
@@ -166,13 +167,18 @@ export const sessionService = {
   async getBestSolveBySession(sessionId) {
     const _sessionId = parseInt(sessionId);
 
-    return db.transaction('r', db.solves, async () => {
-      const solves = await db.solves
-        .where('sessionId')
-        .equals(_sessionId)
-        .sortBy('timestamp');
+    const solve = await db.solves
+      .where('[sessionId+timestamp]')
+      .between([_sessionId, Dexie.minKey], [_sessionId, Dexie.maxKey])
+      .first();
 
-      return solves[0] || null;
-    });
+    return solve ?? null;
+  },
+
+  async getSolvesCountBySession(sessionId) {
+    return db.solves
+      .where('sessionId')
+      .equals(parseInt(sessionId))
+      .count();
   },
 };

@@ -1,6 +1,6 @@
 export const DB_NAME = 'session_data';
 
-export const DB_VERSION = 2;
+export const DB_VERSION = 3;
 export const DEFAULT_SESSION_ID = 1;
 
 export const DB_SCHEMA = {
@@ -17,7 +17,9 @@ export const DB_SCHEMA = {
     timestamp,
     scramble,
     solution,
-    reconstruction.method
+    reconstruction.method,
+    [sessionId+timestamp],
+    [sessionId+date]
   `,
   reconstructionSteps: `
     ++id,
@@ -25,9 +27,9 @@ export const DB_SCHEMA = {
     name,
     startTime,
     endTime,
-    found
+    found,
+    [solveId+startTime]
   `,
-
   practiceScrambles: `
     ++id,
     sheetId,
@@ -37,7 +39,6 @@ export const DB_SCHEMA = {
     [sheetId+category],
     [sheetId+category+group]
   `,
-
   practiceScrambleMeta: `
     &sheetId,
     timestamp

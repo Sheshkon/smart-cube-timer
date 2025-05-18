@@ -37,15 +37,21 @@ function App() {
 
   const handleSaveTime = async (solve) => {
     const storedTime = await sessionService.addSolveToSession(settings.selectedSessionId, solve);
-    const bestTime = await sessionService.getBestSolveBySession(settings.selectedSessionId);
+    setStoredTimes((prevTimes) => [...prevTimes, storedTime]);
 
-    if (bestTime.id === storedTime.id) {
+    const bestTime = await sessionService.getBestSolveBySession(settings.selectedSessionId);
+    const solvesCount = await sessionService.getSolvesCountBySession(settings.selectedSessionId);
+    console.log('solves count: ', solvesCount);
+
+    if (bestTime.id === storedTime.id && solvesCount > 1) {
       toast.info(`Personal Best of the session: ${storedTime.time}`, {
         theme: settingsRef.current.theme,
       });
     }
 
-    setStoredTimes((prevTimes) => [...prevTimes, storedTime]);
+    if (settings.notifyEveryNSolves > 0 && solvesCount % settings.notifyEveryNSolves === 0) {
+      toast.info(`You solved ${solvesCount} times`);
+    }
   };
 
   const handleDeleteTime = (id) => {

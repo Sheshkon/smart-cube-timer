@@ -116,6 +116,23 @@ export const SettingsModal = ({ isOpen, onClose }) => {
                 <option value='100'>100</option>
               </select>
             </div>
+            <div className='flex justify-between items-center mb-3'>
+              <b>
+                <label htmlFor='notifyEveryNSolves'>Notify Every Solves</label>
+              </b>
+              <select
+                value={settings?.notifyEveryNSolves || 'text-sm'}
+                className='select select-xs w-32'
+                onChange={(e) => updateSetting('notifyEveryNSolves', parseInt(e.target.value))}
+              >
+                <option value='-1'>Disabled</option>
+                <option value='5'>5</option>
+                <option value='10'>10</option>
+                <option value='12'>15</option>
+                <option value='15'>20</option>
+                <option value='100'>100</option>
+              </select>
+            </div>
             <div>
               <b>
                 <label htmlFor='backgroundColor'>Background color</label>

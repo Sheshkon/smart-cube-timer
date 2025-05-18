@@ -18,7 +18,8 @@ const defaultSettings = {
     category: 'ROUX_CMLL'
   },
   showCubeAnimation: true,
-  backgroundColor: 'none'
+  backgroundColor: 'none',
+  notifyEveryNSolves: -1,
 };
 
 export const SettingsProvider = ({ children }) => {
