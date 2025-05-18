@@ -28,20 +28,26 @@ export const SolveReconstructionChart = ({ reconstruction }) => {
         data: stepNames,
         labelStyle: {
           fill: textColor,
+          fontSize: 12,
         },
         tickLabelStyle: {
           fill: textColor,
+          angle: 45,
+          textAnchor: 'start',
+          fontSize: 9,
         },
         colorMap: {
           type: 'ordinal',
           colors: ['#2266ff', '#44ee00', '#ff8000', '#ff0000', '#f4f400'],
         },
+        height: 100
       },
     ],
     yAxis: [
       {
         label: 'Duration (seconds)',
         labelStyle: {
+          fontSize: 12,
           fill: textColor,
         },
         tickLabelStyle: {
@@ -66,7 +72,6 @@ export const SolveReconstructionChart = ({ reconstruction }) => {
   return (
     <div className="bg-gray-50 dark:bg-gray-900 rounded-lg mt-3">
       <BarChart
-
         {...chartSetting}
       />
     </div>
