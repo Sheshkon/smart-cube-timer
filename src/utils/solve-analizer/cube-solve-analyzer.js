@@ -199,7 +199,7 @@ export class CubeSolveAnalyzer extends CubeCore {
 
     // Initialize steps with timing fields
     steps.forEach(step => {
-      result.steps[step.name] = {
+      result.steps[step] = {
         moves: [],
         found: false,
         plain: '',
@@ -234,15 +234,15 @@ export class CubeSolveAnalyzer extends CubeCore {
       for (let i = 0; i < steps.length; i++) {
         const step = steps[i];
 
-        if (result.steps[step.name].found) continue;
-        if (i > 0 && !result.steps[steps[i - 1].name].found) break;
+        if (result.steps[step].found) continue;
+        if (i > 0 && !result.steps[steps[i - 1]].found) break;
 
-        if (currentCube.matchesAnyOrientation(TEMPLATES[method][step].template)) {
+        if (currentCube.matchesAnyOrientation(TEMPLATES[method][step])) {
           // Store moves
           const stepMoves = moves.slice(appliedMoves, currentMoveIndex + 1);
-          result.steps[step.name].moves = stepMoves;
-          result.steps[step.name].plain = stepMoves.join(' ');
-          result.steps[step.name].found = true;
+          result.steps[step].moves = stepMoves;
+          result.steps[step].plain = stepMoves.join(' ');
+          result.steps[step].found = true;
 
           // Calculate timing
           const firstMoveIndex = appliedMoves;
@@ -251,10 +251,10 @@ export class CubeSolveAnalyzer extends CubeCore {
           const lastTimestamp = timestamps[lastMoveIndex]?.cubeTimestamp;
 
           if (firstTimestamp && lastTimestamp) {
-            result.steps[step.name].startTime = firstTimestamp;
-            result.steps[step.name].endTime = lastTimestamp;
-            result.steps[step.name].duration = lastTimestamp - firstTimestamp;
-            result.steps[step.name].relativeTime = firstTimestamp - (timestamps[0]?.cubeTimestamp || 0);
+            result.steps[step].startTime = firstTimestamp;
+            result.steps[step].endTime = lastTimestamp;
+            result.steps[step].duration = lastTimestamp - firstTimestamp;
+            result.steps[step].relativeTime = firstTimestamp - (timestamps[0]?.cubeTimestamp || 0);
           }
 
           appliedMoves = currentMoveIndex + 1;
