@@ -166,9 +166,9 @@ export class CubeSolveAnalyzer extends CubeCore {
     return allOrientations.some(template => this.matchesTemplate(template));
   }
 
-  getMethodStepNames(method) {
+  getMethodSteps(method) {
     if (!TEMPLATES[method]) return null;
-    return Object.values(TEMPLATES[method]).map(step => step.name);
+    return Object.keys(TEMPLATES[method]);
   }
 
   analyzeSolve(scramble, fittedMoves, method = 'ROUX') {
@@ -176,8 +176,7 @@ export class CubeSolveAnalyzer extends CubeCore {
       throw new Error(`Method ${method} not found in templates`);
     }
 
-    const steps = this.getMethodStepNames(method);
-    console.log('steps', steps);
+    const steps = this.getMethodSteps(method);
     if (!steps || steps.length === 0) {
       throw new Error(`No steps defined for method ${method}`);
     }
@@ -186,28 +185,28 @@ export class CubeSolveAnalyzer extends CubeCore {
     const result = {
       scramble: {
         moves: scramble.split(' ').filter(m => m.trim()),
-        plain: scramble,
+        plain: scramble
       },
       solution: {
         moves: fittedMoves.map(el => el.move),
         plain: fittedMoves.map(el => el.move).join(' '),
-        timestamps: fittedMoves,
+        timestamps: fittedMoves
       },
       method: method,
       steps: {},
-      totalDuration: 0,
+      totalDuration: 0
     };
 
     // Initialize steps with timing fields
     steps.forEach(step => {
-      result.steps[step] = {
+      result.steps[step.name] = {
         moves: [],
         found: false,
         plain: '',
         startTime: null,
         endTime: null,
         duration: null,
-        relativeTime: null,
+        relativeTime: null
       };
     });
 
@@ -235,15 +234,15 @@ export class CubeSolveAnalyzer extends CubeCore {
       for (let i = 0; i < steps.length; i++) {
         const step = steps[i];
 
-        if (result.steps[step].found) continue;
-        if (i > 0 && !result.steps[steps[i - 1]].found) break;
+        if (result.steps[step.name].found) continue;
+        if (i > 0 && !result.steps[steps[i - 1].name].found) break;
 
         if (currentCube.matchesAnyOrientation(TEMPLATES[method][step].template)) {
           // Store moves
           const stepMoves = moves.slice(appliedMoves, currentMoveIndex + 1);
-          result.steps[step].moves = stepMoves;
-          result.steps[step].plain = stepMoves.join(' ');
-          result.steps[step].found = true;
+          result.steps[step.name].moves = stepMoves;
+          result.steps[step.name].plain = stepMoves.join(' ');
+          result.steps[step.name].found = true;
 
           // Calculate timing
           const firstMoveIndex = appliedMoves;
@@ -252,10 +251,10 @@ export class CubeSolveAnalyzer extends CubeCore {
           const lastTimestamp = timestamps[lastMoveIndex]?.cubeTimestamp;
 
           if (firstTimestamp && lastTimestamp) {
-            result.steps[step].startTime = firstTimestamp;
-            result.steps[step].endTime = lastTimestamp;
-            result.steps[step].duration = lastTimestamp - firstTimestamp;
-            result.steps[step].relativeTime = firstTimestamp - (timestamps[0]?.cubeTimestamp || 0);
+            result.steps[step.name].startTime = firstTimestamp;
+            result.steps[step.name].endTime = lastTimestamp;
+            result.steps[step.name].duration = lastTimestamp - firstTimestamp;
+            result.steps[step.name].relativeTime = firstTimestamp - (timestamps[0]?.cubeTimestamp || 0);
           }
 
           appliedMoves = currentMoveIndex + 1;
