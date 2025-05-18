@@ -7,8 +7,7 @@
 
 ## 🎥 Demo
 
-![demo](https://github.com/user-attachments/assets/f251dc53-c487-4c5d-bfcc-fdd982cd6a0f)
-
+https://github.com/user-attachments/assets/2c502ddf-ec6e-4e24-aba7-4e4641a9345b
 
 <!-- 
 <div align="center">
@@ -103,6 +102,7 @@
 
 ### Prerequisites
 - Chrome/Edge 89+ (for Web Bluetooth)
+- `chrome://bluetooth-internals/#devices` (`edge://bluetooth-internals/#device`) list of all bluetooth devices with mac address 
 - Enable flags: `chrome://flags/#enable-experimental-web-platform-features`
 - Bluetooth enabled device
 
