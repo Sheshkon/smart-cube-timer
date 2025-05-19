@@ -31,10 +31,10 @@ const Inspection = () => {
       setCounter(prev => {
         const newVal = prev + 1;
 
-        if (newVal === 9)
+        if (newVal === 8)
           play8();
 
-        if (newVal === 13)
+        if (newVal === 12)
           play12();
 
         if (newVal > 15) {
