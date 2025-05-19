@@ -166,9 +166,9 @@ export class CubeSolveAnalyzer extends CubeCore {
     return allOrientations.some(template => this.matchesTemplate(template));
   }
 
-  getMethodStepNames(method) {
-    if (!TEMPLATES[method]) return null;
-    return Object.values(TEMPLATES[method]).map(step => step.name);
+  getMethodSteps(method) {
+    if (!TEMPLATES[method] || !TEMPLATES[method].steps) return null;
+    return Object.keys(TEMPLATES[method].steps);
   }
 
   analyzeSolve(scramble, fittedMoves, method = 'ROUX') {
@@ -176,38 +176,44 @@ export class CubeSolveAnalyzer extends CubeCore {
       throw new Error(`Method ${method} not found in templates`);
     }
 
-    const steps = this.getMethodStepNames(method);
-    console.log('steps', steps);
+    const methodData = TEMPLATES[method];
+    const steps = Object.keys(methodData.steps);
     if (!steps || steps.length === 0) {
       throw new Error(`No steps defined for method ${method}`);
     }
 
-    // Prepare result structure with timing support
+    // Prepare result structure with display names
     const result = {
       scramble: {
         moves: scramble.split(' ').filter(m => m.trim()),
-        plain: scramble,
+        plain: scramble
       },
       solution: {
         moves: fittedMoves.map(el => el.move),
         plain: fittedMoves.map(el => el.move).join(' '),
-        timestamps: fittedMoves,
+        timestamps: fittedMoves
       },
-      method: method,
+      method: {
+        name: method,
+        displayName: methodData.name
+      },
       steps: {},
-      totalDuration: 0,
+      totalDuration: 0
     };
 
-    // Initialize steps with timing fields
+    // Initialize steps with display names
     steps.forEach(step => {
+      const stepData = methodData.steps[step];
       result.steps[step] = {
+        name: step,
+        displayName: stepData.displayName,
         moves: [],
         found: false,
         plain: '',
         startTime: null,
         endTime: null,
         duration: null,
-        relativeTime: null,
+        relativeTime: null
       };
     });
 
@@ -238,7 +244,7 @@ export class CubeSolveAnalyzer extends CubeCore {
         if (result.steps[step].found) continue;
         if (i > 0 && !result.steps[steps[i - 1]].found) break;
 
-        if (currentCube.matchesAnyOrientation(TEMPLATES[method][step].template)) {
+        if (currentCube.matchesAnyOrientation(methodData.steps[step].template)) {
           // Store moves
           const stepMoves = moves.slice(appliedMoves, currentMoveIndex + 1);
           result.steps[step].moves = stepMoves;

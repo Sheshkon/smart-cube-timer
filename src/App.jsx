@@ -23,6 +23,7 @@ function App() {
 
 
   const handleSaveTime = async (solve) => {
+    console.log('solve', solve);
     const storedTime = await sessionService.addSolveToSession(settings.selectedSessionId, solve);
 
     const bestTime = await sessionService.getBestSolveBySession(settings.selectedSessionId);

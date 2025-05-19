@@ -41,7 +41,7 @@ export const sessionService = {
         scramble: mergeConsecutiveWords(solveData?.reconstruction?.scramble?.plain),
         solution: mergeConsecutiveWords(solveData?.reconstruction?.solution?.plain),
         reconstruction: {
-          method: solveData.reconstruction.method,
+          method: solveData.reconstruction.method.displayName,
         },
       });
 
@@ -49,7 +49,7 @@ export const sessionService = {
         Object.entries(solveData.reconstruction.steps).map(([stepName, data]) => {
             db.reconstructionSteps.add({
               solveId,
-              name: stepName,
+              name: data.displayName,
               moves: mergeConsecutiveWords(data.plain),
               startTime: data.startTime,
               endTime: data.endTime,
