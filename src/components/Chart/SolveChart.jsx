@@ -65,7 +65,7 @@ export const SolveReconstructionChart = ({ reconstruction }) => {
         color: '#dc2626',
       },
     ],
-    height: 300,
+    height: 350,
     borderRadius: 10,
   };
 

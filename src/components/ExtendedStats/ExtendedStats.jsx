@@ -35,6 +35,7 @@ const ExtendedStats = ({ onClose, navigate }) => {
   const [stepFrequencyData, setStepFrequencyData] = useState(null);
   const [stepAnalysis, setStepAnalysis] = useState(null);
 
+  const textColor = settings['theme'] === 'dark' ? 'white' : 'black';
 
   // Load sessions on component mount
   useEffect(() => {
@@ -242,9 +243,10 @@ const ExtendedStats = ({ onClose, navigate }) => {
           const stepAnalysisResults = Object.entries(stepAggregates).map(([name, data]) => ({
             name,
             avgMoves: data.count > 0 ? (data.totalMoves / data.count) : 0,
-            frequency: data.count,
+            // frequency: data.count,
             avgEntryDuration: data.count > 0 && data.totalEntryDuration > 0 ? (data.totalEntryDuration / data.count / 1000) : 0, // in seconds
-          })).sort((a, b) => b.frequency - a.frequency); // Sort by frequency for display
+          }));
+          // .sort((a, b) => b.frequency - a.frequency); // Sort by frequency for display
 
           setStepAnalysis(stepAnalysisResults);
 
@@ -334,7 +336,7 @@ const ExtendedStats = ({ onClose, navigate }) => {
           disabled={isLoading || sessions.length === 0}
         >
           {sessions.map(session => (
-            <option key={session.id} value={session.id}>{session.name} (ID: {session.id})</option>
+            <option key={session.id} value={session.id}>{session.name}</option>
           ))}
           {sessions.length === 0 && <option value="" disabled>No sessions available</option>}
         </select>
@@ -376,56 +378,213 @@ const ExtendedStats = ({ onClose, navigate }) => {
           </div>
 
           {/* Visualizations */}
-          <div className="mb-8">
+          <div className="">
             <h3 className="text-xl font-semibold mb-6 text-gray-800 dark:text-white">Visualizations</h3>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-6">
+
+              {solvesOverTimeData && solvesOverTimeData.times.length > 1 ? (
+                <ChartCard title="Solve Time Progression">
+                  <LineChart
+                    xAxis={[{
+                      data: solvesOverTimeData.xAxis,
+                      label: 'Solve Number',
+                      scaleType: 'point',
+                      labelStyle: { fill: textColor },
+                      tickLabelStyle: { fill: textColor },
+                    }]}
+                    yAxis={[{
+                      labelStyle: { fill: textColor },
+                      tickLabelStyle: { fill: textColor },
+                    }]}
+                    series={[{
+                      data: solvesOverTimeData.times,
+                      label: 'Time (s)',
+                      color: '#10b981',
+                      area: true,
+                      labelStyle: { fill: textColor },
+                      tickLabelStyle: { fill: textColor },
+                      showMark: ({ index }) => solvesOverTimeData.times.length < 50 || index % Math.floor(solvesOverTimeData.times.length / 25) === 0,
+                    }]}
+                    height={300}
+                    margin={{ left: -20 }}
+                    slotProps={{
+                      legend: {
+                        hidden: true, labelStyle: { fill: textColor },
+                        tickLabelStyle: { fill: textColor },
+                      },
+                    }}
+                  />
+                </ChartCard>
+              ) : (solvesOverTimeData && solvesOverTimeData.times.length > 0 &&
+                <ChartPlaceholder message="Need at least two solves for progress chart." />)}
+
               {timeDistributionData ? (
                 <ChartCard title="Solve Time Distribution">
                   <BarChart
-                    xAxis={[{ scaleType: 'band', data: timeDistributionData.labels, label: 'Time Buckets (s)' }]}
-                    series={[{ data: timeDistributionData.counts, label: 'Solves', color: '#3b82f6' }]}
+                    xAxis={[{
+                      labelStyle: { fill: textColor },
+                      tickLabelStyle: { fill: textColor },
+                      scaleType: 'band',
+                      data: timeDistributionData.labels,
+                      label: 'Time Buckets (s)',
+                    }]}
+                    yAxis={[{
+                      labelStyle: { fill: textColor },
+                      tickLabelStyle: { fill: textColor },
+                    }]}
+                    series={[{
+                      data: timeDistributionData.counts,
+                      label: 'Solves',
+                      color: '#3b82f6',
+                      textColor: textColor,
+                    }]}
                     height={300}
-                    margin={{ top: 20, right: 10, bottom: 60, left: 40 }}
+                    margin={{ left: -20 }}
                     slotProps={{ legend: { hidden: true } }}
                   />
                 </ChartCard>
               ) : <ChartPlaceholder message="Not enough data for time distribution." />}
 
-              {methodDistributionData ? (
-                <ChartCard title="Method Usage">
-                  <PieChart
-                    series={[{
-                      data: methodDistributionData,
-                      innerRadius: 30,
-                      outerRadius: 100,
-                      paddingAngle: 2,
-                      cornerRadius: 3,
-                      highlightScope: { faded: 'global', highlighted: 'item' },
-                    }]}
-                    height={300}
-                    margin={{ top: 10, bottom: 10, left: 10, right: 130 }}
-                    slotProps={{
-                      legend: {
-                        direction: 'column',
-                        position: { vertical: 'middle', horizontal: 'right' },
-                        padding: 0,
-                      },
-                    }}
-                  />
-                </ChartCard>
-              ) : <ChartPlaceholder message="No method data." />}
+              {/* Reconstruction Step Analysis */}
+              {stepAnalysis && stepAnalysis.length > 0 && (
+                <div className="">
+                  <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Reconstruction Step
+                    Analysis</h3>
+                  <div className="overflow-x-auto bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                      <thead className="bg-gray-100 dark:bg-gray-600">
+                      <tr>
+                        <th
+                          className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Step
+                          Name
+                        </th>
+                        {/*<th*/}
+                        {/*  className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Frequency*/}
+                        {/*</th>*/}
+                        <th
+                          className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Avg.
+                          Moves
+                        </th>
+                        <th
+                          className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Avg.
+                          Recon Entry Time (s)
+                        </th>
+                      </tr>
+                      </thead>
+                      <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                      {stepAnalysis.map(step => (
+                        <tr key={step.name}>
+                          <td
+                            className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{step.name}</td>
+                          {/*<td*/}
+                          {/*  className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{step.frequency}</td>*/}
+                          <td
+                            className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{step.avgMoves.toFixed(1)}</td>
+                          <td
+                            className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{step.avgEntryDuration > 0 ? step.avgEntryDuration.toFixed(2) : '-'}</td>
+                        </tr>
+                      ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/*{avgMovesPerStepData ? (*/}
+                    {/*  <ChartCard title="Average Moves per Step">*/}
+                    {/*    <BarChart*/}
+                    {/*      dataset={stepAnalysis.map(s => ({*/}
+                    {/*        name: s.name,*/}
+                    {/*        avgMoves: parseFloat(s.avgMoves.toFixed(1)),*/}
+                    {/*      })).sort((a, b) => b.avgMoves - a.avgMoves).slice(0, 15)} // Top 15 for readability*/}
+                    {/*      yAxis={[{ scaleType: 'band', dataKey: 'name' }]}*/}
+                    {/*      series={[{ dataKey: 'avgMoves', label: 'Avg Moves', color: '#8b5cf6' }]}*/}
+                    {/*      layout="horizontal"*/}
+                    {/*      height={Math.max(300, stepAnalysis.slice(0, 15).length * 35)} // Dynamic height*/}
+                    {/*      margin={{ top: 20, right: 30, bottom: 40, left: 120 }}*/}
+                    {/*      slotProps={{ legend: { hidden: true } }}*/}
+                    {/*    />*/}
+                    {/*  </ChartCard>*/}
+                    {/*) : <ChartPlaceholder message="No data for average moves per step." />}*/}
+
+                    {/*{stepFrequencyData ? (*/}
+                    {/*  <ChartCard title="Step Recording Frequency">*/}
+                    {/*    <PieChart*/}
+                    {/*      series={[{*/}
+                    {/*        data: stepFrequencyData.sort((a, b) => b.value - a.value).slice(0, 8),*/}
+                    {/*        innerRadius: 30,*/}
+                    {/*        outerRadius: 100,*/}
+                    {/*        paddingAngle: 2,*/}
+                    {/*        cornerRadius: 3,*/}
+                    {/*      }]}*/}
+                    {/*      height={300}*/}
+                    {/*      margin={{ top: 10, bottom: 10}}*/}
+                    {/*      slotProps={{*/}
+                    {/*        legend: {*/}
+                    {/*          direction: 'vertical',*/}
+                    {/*          position: { vertical: 'middle', horizontal: 'right' },*/}
+                    {/*          padding: 0,*/}
+                    {/*        },*/}
+                    {/*      }}*/}
+                    {/*    />*/}
+                    {/*  </ChartCard>*/}
+                    {/*) : <ChartPlaceholder message="No data for step frequency." />}*/}
+                  </div>
+                </div>
+              )}
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold mb-6 text-gray-800 dark:text-white">More info</h3>
+                {methodDistributionData ? (
+                  <ChartCard title="Method Usage">
+                    <PieChart
+                      series={[{
+                        data: methodDistributionData,
+                        innerRadius: 30,
+                        outerRadius: 100,
+                        paddingAngle: 2,
+                        cornerRadius: 3,
+                        highlightScope: { faded: 'global', highlighted: 'item' },
+                      }]}
+                      height={300}
+                      margin={{ top: 10, bottom: 10, left: 10 }}
+                      slotProps={{
+                        legend: {
+                          direction: 'column',
+                          position: { vertical: 'middle', horizontal: 'right' },
+                          padding: 0,
+
+                        },
+                      }}
+                    />
+                  </ChartCard>
+                ) : <ChartPlaceholder message="No method data." />}
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-8">
               {tpsDistributionData ? (
                 <ChartCard title="TPS Distribution">
                   <BarChart
-                    xAxis={[{ scaleType: 'band', data: tpsDistributionData.labels, label: 'TPS Buckets' }]}
-                    series={[{ data: tpsDistributionData.counts, label: 'Solves', color: '#ef4444' }]}
+                    xAxis={[{
+                      labelStyle: { fill: textColor },
+                      tickLabelStyle: { fill: textColor },
+                      scaleType: 'band',
+                      data: tpsDistributionData.labels,
+                      label: 'TPS Buckets',
+                    }]}
+                    yAxis={[{
+                      labelStyle: { fill: textColor },
+                      tickLabelStyle: { fill: textColor },
+                    }]}
+                    series={[{
+                      data: tpsDistributionData.counts, label: 'Solves', color: '#ef4444',
+                      labelStyle: {
+                        fill: textColor,    // Label text color
+                      },
+                    }]}
                     height={300}
-                    margin={{ top: 20, right: 10, bottom: 60, left: 40 }}
-                    slotProps={{ legend: { hidden: true } }}
+                    margin={{ right: 10, left: -20 }}
+                    slotProps={{ legend: { hidden: true }, labelStyle: { fill: textColor } }}
                   />
                 </ChartCard>
               ) : <ChartPlaceholder message="Not enough data for TPS distribution." />}
@@ -441,130 +600,26 @@ const ExtendedStats = ({ onClose, navigate }) => {
                       color: '#f97316',
                     }]}
                     xAxis={[{
+                      labelStyle: { fill: textColor },
+                      tickLabelStyle: { fill: textColor },
                       label: 'Solve Time (s)',
                       min: Math.min(...tpsVsTimeData.map(d => d.x)) * 0.9,
                       max: Math.max(...tpsVsTimeData.map(d => d.x)) * 1.1,
                     }]}
                     yAxis={[{
+                      labelStyle: { fill: textColor },
+                      tickLabelStyle: { fill: textColor },
                       label: 'TPS',
                       min: Math.min(...tpsVsTimeData.map(d => d.y)) * 0.9,
                       max: Math.max(...tpsVsTimeData.map(d => d.y)) * 1.1,
                     }]}
                     height={300}
-                    margin={{ top: 20, right: 20, bottom: 60, left: 50 }}
                     slotProps={{ legend: { hidden: true } }}
                   />
                 </ChartCard>
               ) : <ChartPlaceholder message="Not enough data for TPS vs Time." />}
             </div>
-
-            {solvesOverTimeData && solvesOverTimeData.times.length > 1 ? (
-              <ChartCard title="Solve Time Progression">
-                <LineChart
-                  xAxis={[{ data: solvesOverTimeData.xAxis, label: 'Solve Number', scaleType: 'point' }]}
-                  series={[{
-                    data: solvesOverTimeData.times,
-                    label: 'Time (s)',
-                    color: '#10b981',
-                    area: true,
-                    showMark: ({ index }) => solvesOverTimeData.times.length < 50 || index % Math.floor(solvesOverTimeData.times.length / 25) === 0,
-                  }]}
-                  height={300}
-                  margin={{ top: 20, right: 20, bottom: 60, left: 50 }}
-                  slotProps={{ legend: { hidden: true } }}
-                />
-              </ChartCard>
-            ) : (solvesOverTimeData && solvesOverTimeData.times.length > 0 &&
-              <ChartPlaceholder message="Need at least two solves for progress chart." />)}
           </div>
-
-          {/* Reconstruction Step Analysis */}
-          {stepAnalysis && stepAnalysis.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Reconstruction Step Analysis</h3>
-              <div className="overflow-x-auto bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                  <thead className="bg-gray-100 dark:bg-gray-600">
-                  <tr>
-                    <th
-                      className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Step
-                      Name
-                    </th>
-                    <th
-                      className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Frequency
-                    </th>
-                    <th
-                      className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Avg.
-                      Moves
-                    </th>
-                    <th
-                      className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Avg.
-                      Recon Entry Time (s)
-                    </th>
-                  </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
-                  {stepAnalysis.map(step => (
-                    <tr key={step.name}>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{step.name}</td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{step.frequency}</td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{step.avgMoves.toFixed(1)}</td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{step.avgEntryDuration > 0 ? step.avgEntryDuration.toFixed(2) : '-'}</td>
-                    </tr>
-                  ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                {avgMovesPerStepData ? (
-                  <ChartCard title="Average Moves per Step">
-                    <BarChart
-                      dataset={stepAnalysis.map(s => ({
-                        name: s.name,
-                        avgMoves: parseFloat(s.avgMoves.toFixed(1)),
-                      })).sort((a, b) => b.avgMoves - a.avgMoves).slice(0, 15)} // Top 15 for readability
-                      yAxis={[{ scaleType: 'band', dataKey: 'name' }]}
-                      series={[{ dataKey: 'avgMoves', label: 'Avg Moves', color: '#8b5cf6' }]}
-                      layout="horizontal"
-                      height={Math.max(300, stepAnalysis.slice(0, 15).length * 35)} // Dynamic height
-                      margin={{ top: 20, right: 30, bottom: 40, left: 120 }}
-                      slotProps={{ legend: { hidden: true } }}
-                    />
-                  </ChartCard>
-                ) : <ChartPlaceholder message="No data for average moves per step." />}
-
-                {stepFrequencyData ? (
-                  <ChartCard title="Step Recording Frequency">
-                    <PieChart
-                      series={[{
-                        data: stepFrequencyData.sort((a, b) => b.value - a.value).slice(0, 8),
-                        innerRadius: 30,
-                        outerRadius: 100,
-                        paddingAngle: 2,
-                        cornerRadius: 3,
-                      }]} // Top 8 for readability
-                      height={300}
-                      margin={{ top: 10, bottom: 10, left: 10, right: 130 }}
-                      slotProps={{
-                        legend: {
-                          direction: 'column',
-                          position: { vertical: 'middle', horizontal: 'right' },
-                          padding: 0,
-                        },
-                      }}
-                    />
-                  </ChartCard>
-                ) : <ChartPlaceholder message="No data for step frequency." />}
-              </div>
-            </div>
-          )}
-
-
         </>
       )}
     </div>
