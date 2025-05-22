@@ -40,7 +40,6 @@ export const getShortLink = async (url) => {
   })
     .then(response => response.json())
     .then(data => data?.short_url)
-    .then(data => console.log(data))
     .catch(error => {
       console.warn('Error:', error);
       return url;
