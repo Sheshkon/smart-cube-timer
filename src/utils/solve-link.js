@@ -20,3 +20,33 @@ export const parseShareLink = (shareLink) =>{
     return null;
   }
 };
+
+
+const apiUrl = 'https://spoo.me';
+
+const payload = {};
+
+const headers = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json',
+};
+
+export const getShortLink = async (url) => fetch(apiUrl, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify({ ...payload, url }),
+  })
+    .then(async response => {
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, ${error}`);
+      }
+      console.log(response.json());
+      return response.json();
+    })
+    .then(data => console.log(data))
+    .catch(error => {
+      console.warn('Error:', error);
+      return url;
+    });
+

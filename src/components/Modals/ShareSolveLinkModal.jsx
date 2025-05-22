@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { FiCopy, FiLink, FiX, FiDownload } from 'react-icons/fi';
 import { MdOutlineQrCode2 } from 'react-icons/md';
-import { generateShareLink } from 'src/utils/solve-link.js';
+import { generateShareLink, getShortLink } from 'src/utils/solve-link.js';
 
 const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
   const [generatedLink, setGeneratedLink] = useState('');
@@ -21,10 +21,13 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
         setError(null);
         const relativeLink = await generateShareLink(solveId);
         const fullShareLink = `${window.location.origin}${relativeLink}`;
-        try {
-          setGeneratedLink(fullShareLink);
 
-          const qrCode = await QRCode.toDataURL(fullShareLink, {
+        const shortenerLink = await getShortLink(fullShareLink);
+
+        try {
+          setGeneratedLink(shortenerLink);
+
+          const qrCode = await QRCode.toDataURL(shortenerLink, {
             errorCorrectionLevel: 'M',
             width: 900,
             margin: 2
@@ -33,7 +36,7 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
         } catch (err) {
           console.error('Error generating share link:', err);
           setError('Failed to generate share QR Code');
-          setGeneratedLink(fullShareLink);
+          setGeneratedLink(shortenerLink);
           setQrCodeDataUrl('');
         } finally {
           setIsLoading(false);
