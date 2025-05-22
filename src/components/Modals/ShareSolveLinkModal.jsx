@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-
 import QRCode from 'qrcode';
-import { FiCopy, FiLink, FiX, FiDownload } from 'react-icons/fi';
+import { useEffect, useRef, useState } from 'react';
+import { FiCopy, FiDownload, FiLink, FiX } from 'react-icons/fi';
 import { MdOutlineQrCode2 } from 'react-icons/md';
 import { generateShareLink, getShortLink } from 'src/utils/solve-link.js';
 
@@ -24,13 +23,14 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
 
         const shortenerLink = await getShortLink(fullShareLink);
 
+        console.log('shortLink: ', shortenerLink);
         try {
           setGeneratedLink(shortenerLink);
 
           const qrCode = await QRCode.toDataURL(shortenerLink, {
             errorCorrectionLevel: 'M',
             width: 900,
-            margin: 2
+            margin: 2,
           });
           setQrCodeDataUrl(qrCode);
         } catch (err) {
@@ -68,7 +68,7 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
 
       const canvas = await QRCode.toCanvas(generatedLink, {
         errorCorrectionLevel: 'M',
-        width: 900
+        width: 900,
       });
 
       canvas.toBlob(async (blob) => {
