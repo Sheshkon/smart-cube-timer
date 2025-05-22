@@ -24,17 +24,19 @@ export const parseShareLink = (shareLink) =>{
 
 const apiUrl = 'https://spoo.me';
 
-const payload = {};
-
 const headers = {
   'Accept': 'application/json',
-  'Content-Type': 'application/json',
+  'Content-Type': 'application/x-www-form-urlencoded'
 };
 
-export const getShortLink = async (url) => fetch(apiUrl, {
+export const getShortLink = async (url) => {
+  const payload = new URLSearchParams();
+  payload.append('url', url);
+
+  return fetch(apiUrl, {
     method: 'POST',
     headers: headers,
-    body: JSON.stringify({ ...payload, url }),
+    body: payload,
   })
     .then(async response => {
       if (!response.ok) {
@@ -49,4 +51,5 @@ export const getShortLink = async (url) => fetch(apiUrl, {
       console.warn('Error:', error);
       return url;
     });
+};
 
