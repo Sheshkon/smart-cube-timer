@@ -38,14 +38,7 @@ export const getShortLink = async (url) => {
     headers: headers,
     body: payload,
   })
-    .then(async response => {
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`HTTP error! status: ${response.status}, ${error}`);
-      }
-      console.log(response.json());
-      return response.json();
-    })
+    .then(response => response.json())
     .then(data => console.log(data))
     .catch(error => {
       console.warn('Error:', error);
