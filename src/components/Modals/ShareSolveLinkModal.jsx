@@ -21,7 +21,7 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
         const relativeLink = await generateShareLink(solveId);
         const fullShareLink = `${window.location.origin}${relativeLink}`;
 
-        const shortenerLink = await getShortLink(fullShareLink);
+        const shortenerLink = await getShortLink(fullShareLink) ?? fullShareLink;
         console.log('shortLink: ', shortenerLink);
 
         try {
