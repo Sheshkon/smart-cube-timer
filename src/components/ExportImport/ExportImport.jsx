@@ -5,7 +5,7 @@ import React, { useRef, useState } from 'react';
 
 import db from 'src/db/db.js';
 
-const ExportImport = ({classWrapper, onExport, onImport}) => {
+const ExportImport = ({ classWrapper, onExport, onImport }) => {
   const [status, setStatus] = useState('');
   const fileInputRef = useRef(null);
 

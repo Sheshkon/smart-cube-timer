@@ -1,5 +1,6 @@
-import QRCode from 'qrcode';
 import { useEffect, useRef, useState } from 'react';
+
+import QRCode from 'qrcode';
 import { FiCopy, FiDownload, FiLink, FiX } from 'react-icons/fi';
 import { MdOutlineQrCode2 } from 'react-icons/md';
 import { generateShareLink, getShortLink } from 'src/utils/solve-link.js';

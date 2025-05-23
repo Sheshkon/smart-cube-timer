@@ -189,7 +189,7 @@ export default defineConfig({
     exclude: [
       'search-worker-entry',
       // 'cubing'
-    ]
+    ],
   },
   worker: {
     format: 'es',
@@ -207,8 +207,8 @@ export default defineConfig({
   },
   server: {
     headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin',
-      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
     },
   },
 });

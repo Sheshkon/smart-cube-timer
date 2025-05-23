@@ -3,6 +3,7 @@ import React from 'react';
 import { Moon, Sun } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { IoIosHelpCircleOutline } from 'react-icons/io';
+import { GoogleAuth } from 'src/components/GoogleAuth.jsx';
 import { useSettings } from 'src/hooks/useSettings';
 
 const Header = ({ className = '' }) => {
@@ -21,6 +22,8 @@ const Header = ({ className = '' }) => {
               </h2>
             </div>
           </div>
+
+          <GoogleAuth className="p-2"/>
           <a
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
 
@@ -28,7 +31,7 @@ const Header = ({ className = '' }) => {
             target="https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md"
             rel="noopener noreferrer"
             >
-            <IoIosHelpCircleOutline size={25} />
+            <IoIosHelpCircleOutline size={38} />
           </a>
           <div className="flex items-center space-x-4 pr-4">
             <button
@@ -46,9 +49,9 @@ const Header = ({ className = '' }) => {
               }
             >
               {settings.theme === 'dark' ? (
-                <Sun size={20} />
+                <Sun size={30} />
               ) : (
-                <Moon size={20} />
+                <Moon size={30} />
               )}
             </button>
           </div>
