@@ -4,6 +4,7 @@ import { Cuboid } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import Cube from 'src/components/Cube/Cube.jsx';
 import CubeControls from 'src/components/CubeControls/CubeControls.jsx';
+import EnableEverything from 'src/components/EnableEverything.jsx';
 import Footer from 'src/components/Footer/Footer';
 import Header from 'src/components/Header/Header';
 import RefreshPrompt from 'src/components/Prompts/RefreshPrompt.jsx';
@@ -85,6 +86,9 @@ function App() {
       .then(sessions => {
         setSessions(sessions);
       });
+    Notification.requestPermission().then(function(permission) {
+      console.log('permiss', permission);
+    });
   }, []);
 
 
@@ -93,6 +97,7 @@ function App() {
       <RefreshPrompt />
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
         <Header />
+        <EnableEverything wrapperClassName="p-2 flex items-center justify-center relative"/>
         <main className="flex-grow container mx-auto px-4 py-6">
           <div className="flex flex-col space-y-4 md:space-y-6">
             <div

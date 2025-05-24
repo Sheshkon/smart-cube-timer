@@ -61,6 +61,7 @@ export const AuthProvider = ({ children }) => {
         }
       },
       error_callback: (error) => {
+        handleLogout();
         console.error('Drive access error:', error);
         resolve(null);
       },
