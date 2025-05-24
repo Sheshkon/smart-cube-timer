@@ -48,6 +48,8 @@ export const CubeProvider = ({ children }) => {
 
   useEffect(() => {
     connectionRef.current = connection;
+    if(connection?.deviceMAC)
+      localStorage.setItem('cubeMacAddress', connection?.deviceMAC?.trim());
   }, [connection]);
 
   useEffect(() => {
