@@ -36,6 +36,7 @@ const EnableEverything = ({ wrapperClassName = '' }) => {
           <li>Restart your browser</li>
         </ol>
         <p className="mt-2">Or manually enter your Cube's MAC address.</p>
+        <p>List of devices: <code>chrome://bluetooth-internals/#devices</code></p>
       </div>
     </div>
   );
