@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 import { Console, Hook, Unhook } from 'console-feed';
-import {TerminalSquare}  from 'lucide-react';
 
 function CustomConsole({showConsole = false}) {
   const [logs, setLogs] = useState([]);
 
-  // Hook into console
   useEffect(() => {
     Hook(
       window.console,
