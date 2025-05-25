@@ -21,7 +21,7 @@ const Header = ({ className = '' }) => {
           <div className="sticky top-0 z-10 w-full p-4 flex justify-between items-center shadow-sm">
             <div className="w-full max-w-[1800px] mx-auto px-4 flex justify-between items-center">
               <h2 className="text-xl font-bold">
-                SmartTimer
+                Smart³
               </h2>
             </div>
           </div>
