@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const EnableEverything = ({ wrapperClassName = '' }) => {
+const InfoPanel = ({ wrapperClassName = '' }) => {
   const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
@@ -42,4 +42,4 @@ const EnableEverything = ({ wrapperClassName = '' }) => {
   );
 };
 
-export default EnableEverything;
+export default InfoPanel;

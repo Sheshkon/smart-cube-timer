@@ -4,8 +4,8 @@ import 'dexie-export-import';
 import React, { useRef, useState } from 'react';
 
 import { toast } from 'react-toastify';
-import { GoogleAuth } from 'src/components/GoogleAuth.jsx';
-import { useAuth } from 'src/contexts/AuthContext.jsx';
+import { GoogleAuth } from 'src/components/GoogleAuth/GoogleAuth.jsx';
+import { useGoogleAuth } from 'src/contexts/GoogleAuthContext.jsx';
 import db from 'src/db/db.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 
@@ -13,7 +13,7 @@ const SESSIONS_TEMPLATE_NAME = 'smart_cube_timer_solves';
 
 const ExportImport = ({ classWrapper, onExport, onImport }) => {
   const { settingsRef } = useSettings();
-  const { driveState, user } = useAuth();
+  const { driveState, user } = useGoogleAuth();
   const [status, setStatus] = useState('');
   const fileInputRef = useRef(null);
 

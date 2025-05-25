@@ -2,21 +2,24 @@ import React, { useEffect, useState } from 'react';
 
 import { Cuboid } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
+import CustomConsole from 'src/components/Console/Console.jsx';
 import Cube from 'src/components/Cube/Cube.jsx';
 import CubeControls from 'src/components/CubeControls/CubeControls.jsx';
-import EnableEverything from 'src/components/EnableEverything.jsx';
 import Footer from 'src/components/Footer/Footer';
 import Header from 'src/components/Header/Header';
+import InfoPanel from 'src/components/InfoPanel/InfoPanel.jsx';
 import RefreshPrompt from 'src/components/Prompts/RefreshPrompt.jsx';
 import Scramble from 'src/components/Scramble/Scramble.jsx';
 import StatsDisplay from 'src/components/StatsDisplay/StatsDisplay';
 import Timer from 'src/components/Timer/Timer';
 import TimesTable from 'src/components/TimesTable/TimesTable';
+import { useConsole } from 'src/contexts/ConsoleContext.jsx';
 import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 
 function App() {
+  const { showConsole } = useConsole();
   const { settings, settingsRef, updateSetting } = useSettings();
   const [sessions, setSessions] = useState([]);
   const [storedTimes, setStoredTimes] = useState([]);
@@ -97,7 +100,8 @@ function App() {
       <RefreshPrompt />
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
         <Header />
-        <EnableEverything wrapperClassName="p-2 flex items-center justify-center relative"/>
+        <CustomConsole showConsole={showConsole}/>
+        <InfoPanel wrapperClassName="p-2 flex items-center justify-center relative"/>
         <main className="flex-grow container mx-auto px-4 py-6">
           <div className="flex flex-col space-y-4 md:space-y-6">
             <div

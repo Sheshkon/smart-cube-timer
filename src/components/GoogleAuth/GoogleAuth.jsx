@@ -1,5 +1,5 @@
 import { GoogleLogin } from '@react-oauth/google';
-import { useAuth } from 'src/contexts/AuthContext.jsx';
+import { useGoogleAuth } from 'src/contexts/GoogleAuthContext.jsx';
 
 export const GoogleAuth = ({ className = '' }) => {
   const {
@@ -7,7 +7,7 @@ export const GoogleAuth = ({ className = '' }) => {
     isLoading,
     error,
     handleLogin
-  } = useAuth();
+  } = useGoogleAuth();
 
   return (
     <div className={className}>

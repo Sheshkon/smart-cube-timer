@@ -1,15 +1,16 @@
 import React from 'react';
 
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, TerminalSquare } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { IoIosHelpCircleOutline } from 'react-icons/io';
-import { GoogleAuth } from 'src/components/GoogleAuth.jsx';
-import { useAuth } from 'src/contexts/AuthContext.jsx';
+import { useConsole } from 'src/contexts/ConsoleContext.jsx';
+import { useGoogleAuth } from 'src/contexts/GoogleAuthContext.jsx';
 import { useSettings } from 'src/hooks/useSettings';
 
 const Header = ({ className = '' }) => {
   const { settings, updateSetting } = useSettings();
-  const {user} = useAuth();
+  const { showConsole, setShowConsole } = useConsole();
+  const { user } = useGoogleAuth();
 
   return (
     <>
@@ -32,13 +33,13 @@ const Header = ({ className = '' }) => {
                 alt="Profile"
                 className="w-8 h-8 rounded-full"
               />
-            <div
-              className="text-gray-800 dark:text-gray-200 text-xs truncate min-w-0"
-              title={user.name}
-            >
-              {user.name}
+              <div
+                className="text-gray-800 dark:text-gray-200 text-xs truncate min-w-0"
+                title={user.name}
+              >
+                {user.name}
+              </div>
             </div>
-          </div>
           )}
 
           <a
@@ -47,7 +48,7 @@ const Header = ({ className = '' }) => {
             href="https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md"
             target="https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md"
             rel="noopener noreferrer"
-            >
+          >
             <IoIosHelpCircleOutline size={38} />
           </a>
           <div className="flex items-center space-x-4 pr-4">
@@ -70,6 +71,11 @@ const Header = ({ className = '' }) => {
               ) : (
                 <Moon size={30} />
               )}
+            </button>
+            <button
+              className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+              onClick={() => setShowConsole(!showConsole)}>
+              <TerminalSquare size={30} />
             </button>
           </div>
         </div>

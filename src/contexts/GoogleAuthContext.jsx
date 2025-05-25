@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import useLocalStorage from 'src/hooks/useLocalStorage.js';
 
-const AuthContext = createContext();
+const GoogleAuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
 
@@ -124,7 +124,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{
+    <GoogleAuthContext.Provider value={{
       user: authState.user,
       token: authState.token,
       driveState,
@@ -137,8 +137,8 @@ export const AuthProvider = ({ children }) => {
       handleLogout,
     }}>
       {children}
-    </AuthContext.Provider>
+    </GoogleAuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useGoogleAuth = () => useContext(GoogleAuthContext);

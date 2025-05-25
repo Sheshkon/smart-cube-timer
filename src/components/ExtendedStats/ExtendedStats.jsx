@@ -549,7 +549,7 @@ const ExtendedStats = ({ onClose, navigate }) => {
                       margin={{ top: 10, bottom: 10, left: 10 }}
                       slotProps={{
                         legend: {
-                          direction: 'column',
+                          direction: 'vertical',
                           position: { vertical: 'middle', horizontal: 'right' },
                           padding: 0,
 
