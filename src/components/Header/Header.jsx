@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Moon, Sun, TerminalSquare } from 'lucide-react';
+import { BluetoothSearching, Moon, Sun, TerminalSquare } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { IoIosHelpCircleOutline } from 'react-icons/io';
 import { useConsole } from 'src/contexts/ConsoleContext.jsx';
@@ -20,8 +20,9 @@ const Header = ({ className = '' }) => {
         <div className="container mx-auto flex justify-between items-center">
           <div className="sticky top-0 z-10 w-full p-4 flex justify-between items-center shadow-sm">
             <div className="w-full max-w-[1800px] mx-auto px-4 flex justify-between items-center">
-              <h2 className="text-xl font-bold">
-                Smart³
+              <h2 className="text-3xl font-bold inline-flex items-center">
+                Sm<span className="blink text-3xl text-blue-800 rotated mt-3 dark:text-blue-500"><BluetoothSearching/></span>rt<span
+                className="bli1nk text-blu1e-800 dark:tex1t-blue-500">³</span>
               </h2>
             </div>
           </div>

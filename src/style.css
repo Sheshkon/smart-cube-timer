@@ -59,3 +59,17 @@ twisty-player {
     cursor: pointer;
     border-radius: 1em;
 }
+
+.blink {
+    animation: blink 1.5s infinite;
+}
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.rotated {
+    display: inline-block; /* Required for transforms to work on inline elements */
+    transform: rotate(-90deg); /* Rotate 30 degrees clockwise */
+}
