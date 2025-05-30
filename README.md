@@ -127,3 +127,26 @@ git clone https://github.com/sheshkon/smart-cube-timer.git
 cd smart-cube-timer
 npm install
 npm run dev
+```
+
+### APK
+
+#### install dependency
+```bash
+npm i -g @bubblewrap/cli
+```
+
+#### init
+```bash
+bubblewrap init --manifest https://sheshkon.github.io/smart-cube-timer/manifest.webmanifest
+```
+
+#### update
+```bash
+bubblewrap update
+```
+
+#### build
+```bash
+bubblewrap build 
+```
