@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.sheshkon.twa",
+        "sha256_cert_fingerprints": ["10:AC:FC:A5:6B:C3:93:21:EE:C7:03:C9:16:4A:EA:B0:99:39:DB:6D:E3:61:B3:21:91:39:6F:C4:DA:24:5B:62"]
+      }
+    }]
