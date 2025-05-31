@@ -1,0 +1,92 @@
+name: Build APK (Manual Trigger)
+
+on:
+  workflow_dispatch: # Allows manual triggering from the Actions tab
+    inputs:
+      app_version_name:
+        description: 'App Version Name (e.g., 1.0.0)'
+        required: true
+        default: '1.0.0'
+      app_version_code:
+        description: 'App Version Code (integer, e.g., 1)'
+        required: true
+        default: '1'
+
+jobs:
+  build-apk:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubbleapps/bubblewrap-cli
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Decode and Restore Keystore
+        run: |
+          echo "Restoring keystore..."
+          # Ensure the decoded file is named android.keystore
+          echo "${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}" | base64 --decode > android.keystore
+          echo "Keystore restored to android.keystore"
+
+      - name: Build APK with Bubblewrap
+        id: build_apk
+        run: |
+          APP_VERSION_NAME="${{ github.event.inputs.app_version_name }}"
+          APP_VERSION_CODE="${{ github.event.inputs.app_version_code }}"
+
+          echo "Building APK for version ${APP_VERSION_NAME} (code ${APP_VERSION_CODE})"
+
+          bubblewrap build \
+            --manifest ./twa-manifest.json \
+            --signingKeyPath ./android.keystore \ # Points to the restored keystore
+            --signingKeyAlias "${{ secrets.ANDROID_KEY_ALIAS }}" \
+            --signingKeyPassword "${{ secrets.ANDROID_KEY_PASSWORD }}" \
+            --keystorePassword "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            --appVersionName "${APP_VERSION_NAME}" \
+            --appVersionCode "${APP_VERSION_CODE}" \
+            --skipPwaValidation # Optional: Speeds up build
+
+          # Default output APK name is app-release-signed.apk
+          APK_PATH="./app-release-signed.apk"
+          # Construct a more descriptive artifact name
+          ARTIFACT_FILENAME="YourAppName-${APP_VERSION_NAME}-code${APP_VERSION_CODE}.apk"
+
+          echo "apk_path=${APK_PATH}" >> $GITHUB_OUTPUT
+          echo "artifact_filename=${ARTIFACT_FILENAME}" >> $GITHUB_OUTPUT
+
+      - name: Upload APK as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-apk-${{ github.event.inputs.app_version_name }}
+          path: ${{ steps.build_apk.outputs.apk_path }}
+          if-no-files-found: error
+
+      # --- Optional: For renaming the APK file itself before zipping into artifact ---
+      # - name: Rename APK for Artifact
+      #   if: true # Change to true if you want the APK inside the zip to have a custom name
+      #   run: |
+      #     mv ${{ steps.build_apk.outputs.apk_path }} ./${{ steps.build_apk.outputs.artifact_filename }}
+      #     echo "Final APK Path: ./${{ steps.build_apk.outputs.artifact_filename }}"
+      #
+      # - name: Upload Renamed APK as Artifact
+      #   if: true # Must match the 'if' condition of the "Rename APK" step
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: signed-apk-files # Or ${{ steps.build_apk.outputs.artifact_filename }}
+      #     path: ./${{ steps.build_apk.outputs.artifact_filename }} # Path to the renamed APK
+      #     if-no-files-found: error
+      # --- End Optional Renaming Section ---
