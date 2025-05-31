@@ -24,28 +24,34 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '18' # Or your preferred LTS version
 
       - name: Install Bubblewrap CLI
         run: npm i -g @bubblewrap/cli
 
-      - name: Set up JDK
-        id: setup_jdk # Give an ID to access its outputs if needed
+      - name: Set up JDK 17
+        id: setup_jdk
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Debug JDK Installation
+      - name: Configure Bubblewrap with JDK Path
         run: |
-          echo "Workflow JAVA_HOME is: $JAVA_HOME"
-          echo "Path from setup_jdk step: ${{ steps.setup_jdk.outputs.path }}"
-          echo "Checking java version from JAVA_HOME:"
-          "$JAVA_HOME/bin/java" -version
-          echo "Checking javac version from JAVA_HOME:"
-          "$JAVA_HOME/bin/javac" -version
-          echo "Listing contents of JAVA_HOME/bin:"
-          ls -la "$JAVA_HOME/bin"
+          echo "Configuring Bubblewrap with JDK at: $JAVA_HOME"
+          # Use the JAVA_HOME set by actions/setup-java
+          bubblewrap updateConfig --jdkPath "$JAVA_HOME"
+          # We don't need to set androidSdkPath if Bubblewrap can download it,
+          # or if the runner has one, Bubblewrap might find it or download its own.
+          # If Android SDK also becomes an issue, we'd add --androidSdkPath here too.
+          echo "Bubblewrap configuration updated."
+
+      - name: Verify Bubblewrap Configuration (Doctor)
+        run: |
+          echo "Running bubblewrap doctor..."
+          bubblewrap doctor
+          echo "Contents of Bubblewrap config file:"
+          cat ~/.bubblewrap/config.json || echo "config.json not found or cat failed"
 
       - name: Decode and Restore Keystore
         run: |
@@ -55,20 +61,17 @@ jobs:
 
       - name: Build APK with Bubblewrap
         id: build_apk
-        env:
-          JAVA_HOME_FROM_SETUP: ${{ steps.setup_jdk.outputs.path }}
         run: |
           APP_VERSION_NAME="${{ github.event.inputs.app_version_name }}"
           APP_VERSION_CODE="${{ github.event.inputs.app_version_code }}"
 
           echo "Building APK for version ${APP_VERSION_NAME} (code ${APP_VERSION_CODE})"
-          echo "Using JDK from setup step: $JAVA_HOME_FROM_SETUP"
-          echo "Attempting with --noJdkInstall and --jdkPath flags."
-          
+          echo "JAVA_HOME for this step is: $JAVA_HOME"
+
           bubblewrap build \
             --manifest ./twa-manifest.json \
-            --noJdkInstall \
-#            --jdkPath "$JAVA_HOME_FROM_SETUP" \
+            --noJdkInstall \ # Still good practice to prevent it from trying to download
+            # We REMOVE --jdkPath from here, relying on the config.json set by updateConfig
             --signingKeyPath ./android.keystore \
             --signingKeyAlias "${{ secrets.ANDROID_KEY_ALIAS }}" \
             --signingKeyPassword "${{ secrets.ANDROID_KEY_PASSWORD }}" \
