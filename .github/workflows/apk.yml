@@ -27,7 +27,7 @@ jobs:
           node-version: '18'
 
       - name: Install Bubblewrap CLI
-        run: npm install -g @bubbleapps/bubblewrap-cli@latest # Ensure latest
+        run: npm i -g @bubblewrap/cli
 
       - name: Set up JDK
         id: setup_jdk # Give an ID to access its outputs if needed
