@@ -24,7 +24,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '18' # Or your preferred LTS version
 
       - name: Install Bubblewrap CLI
         run: npm i -g @bubblewrap/cli
@@ -42,28 +42,11 @@ jobs:
           CONFIG_DIR=~/.bubblewrap
           CONFIG_FILE=$CONFIG_DIR/config.json
           mkdir -p "$CONFIG_DIR"
-          # Create config.json with only the jdkPath.
-          # Ensure JAVA_HOME is correctly escaped if it could contain special characters, though unlikely for this path.
-          echo "{ \"jdkPath\": \"$JAVA_HOME\" }" > "$CONFIG_FILE"
+          echo "{ \"jdkPath\": \"$JAVA_HOME\" }" > "$CONFIG_FILE" # Only jdkPath
           echo "Bubblewrap config.json created with JDK path."
           echo "Contents of ~/.bubblewrap/config.json:"
           cat "$CONFIG_FILE"
           echo "----------------------------------------"
-
-      - name: Verify Bubblewrap Configuration (Doctor - for diagnostics)
-        # This step attempts to run 'bubblewrap doctor'.
-        # With jdkPath in config.json, it should find the JDK.
-        # It will likely then prompt for Android SDK installation. We pipe 'y'.
-        # We use '|| true' to prevent the workflow failing if doctor itself has a non-zero exit
-        # (e.g., after starting SDK download or if it still finds an issue).
-        run: |
-          echo "Running bubblewrap doctor (piping 'y' for potential Android SDK install)..."
-          (echo "y" | bubblewrap doctor) || echo "Bubblewrap doctor finished (command may have exited non-zero)."
-          echo "Contents of ~/.bubblewrap/config.json after doctor (to see if androidSdkPath was added):"
-          cat ~/.bubblewrap/config.json || echo "~/.bubblewrap/config.json not found or unreadable."
-          echo "----------------------------------------"
-          # Optional: Pause if SDK download by doctor happens in background. Unlikely needed.
-          # echo "Pausing briefly..." && sleep 15
 
       - name: Decode and Restore Keystore
         run: |
@@ -78,12 +61,15 @@ jobs:
           APP_VERSION_CODE="${{ github.event.inputs.app_version_code }}"
 
           echo "Building APK for version ${APP_VERSION_NAME} (code ${APP_VERSION_CODE})"
-          echo "Piping 'y' to bubblewrap build for anticipated Android SDK installation prompt..."
+          echo "Piping 'y' then 'y' to bubblewrap build for Android SDK install and license agreement..."
 
-          # With jdkPath in config.json, Bubblewrap should find JDK and only ask to install Android SDK.
-          echo "y" | bubblewrap build \
+          # 1. First 'y' for "Do you want Bubblewrap to install the Android SDK?"
+          # 2. Second 'y' for "Do you agree to the Android SDK terms and conditions?"
+          { \
+            echo "y"; \
+            echo "y"; \
+          } | bubblewrap build \
             --manifest ./twa-manifest.json \
-            # --noJdkInstall should be redundant if config.json is respected for JDK
             --signingKeyPath ./android.keystore \
             --signingKeyAlias "${{ secrets.ANDROID_KEY_ALIAS }}" \
             --signingKeyPassword "${{ secrets.ANDROID_KEY_PASSWORD }}" \
@@ -92,10 +78,21 @@ jobs:
             --appVersionCode "${APP_VERSION_CODE}" \
             --skipPwaValidation
 
+          # The Android SDK download and setup will happen here.
+          # This might take a few minutes the first time.
+
           APK_PATH="./app-release-signed.apk"
           ARTIFACT_FILENAME="YourAppName-${APP_VERSION_NAME}-code${APP_VERSION_CODE}.apk"
           echo "apk_path=${APK_PATH}" >> $GITHUB_OUTPUT
-          echo "artifact_filename=${ARTIFACT_FILENAME}" >> $GITHUB_OUTPUT
+          echo "artifact_filename=${ARTIFACT_FILENAME}" >> $GITHUBOUTPUT
+
+      - name: Verify Android SDK installation (Optional - for debugging)
+        run: |
+          echo "Checking for Android SDK installation..."
+          ls -la ~/.bubblewrap/ || echo "No ~/.bubblewrap directory"
+          ls -la ~/.bubblewrap/android_sdk/ || echo "No ~/.bubblewrap/android_sdk directory"
+          echo "Updated contents of ~/.bubblewrap/config.json:"
+          cat ~/.bubblewrap/config.json || echo "~/.bubblewrap/config.json not found"
 
       - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4
