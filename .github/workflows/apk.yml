@@ -38,18 +38,14 @@ jobs:
 
       - name: Debug JDK Installation
         run: |
-          echo "JAVA_HOME is: $JAVA_HOME"
-          echo "JDK Path from setup-java action: ${{ steps.setup_jdk.outputs.path }}"
-          echo "--- Checking for java executable ---"
-          ls -l "$JAVA_HOME/bin/java"
+          echo "Workflow JAVA_HOME is: $JAVA_HOME"
+          echo "Path from setup_jdk step: ${{ steps.setup_jdk.outputs.path }}"
+          echo "Checking java version from JAVA_HOME:"
           "$JAVA_HOME/bin/java" -version
-          echo "--- Checking for javac executable ---"
-          ls -l "$JAVA_HOME/bin/javac"
+          echo "Checking javac version from JAVA_HOME:"
           "$JAVA_HOME/bin/javac" -version
-          echo "--- Checking PATH ---"
-          echo "$PATH"
-          which java
-          which javac
+          echo "Listing contents of JAVA_HOME/bin:"
+          ls -la "$JAVA_HOME/bin"
 
       - name: Decode and Restore Keystore
         run: |
@@ -59,22 +55,20 @@ jobs:
 
       - name: Build APK with Bubblewrap
         id: build_apk
-        # JAVA_HOME should be inherited by the shell environment from the setup-java step
+        env:
+          JAVA_HOME_FROM_SETUP: ${{ steps.setup_jdk.outputs.path }}
         run: |
           APP_VERSION_NAME="${{ github.event.inputs.app_version_name }}"
           APP_VERSION_CODE="${{ github.event.inputs.app_version_code }}"
 
           echo "Building APK for version ${APP_VERSION_NAME} (code ${APP_VERSION_CODE})"
-          echo "Providing 'n' and then '$JAVA_HOME' to Bubblewrap prompts."
-
-          # Use a command group to pipe multiple lines to bubblewrap's stdin
-          # 1. Answer "n" to "Do you want Bubblewrap to install the JDK?"
-          # 2. Answer "$JAVA_HOME" to "Path to your existing JDK 17:"
-          { \
-            echo "n"; \
-            echo "$JAVA_HOME"; \
-          } | bubblewrap build \
+          echo "Using JDK from setup step: $JAVA_HOME_FROM_SETUP"
+          echo "Attempting with --noJdkInstall and --jdkPath flags."
+          
+          bubblewrap build \
             --manifest ./twa-manifest.json \
+            --noJdkInstall \
+            --jdkPath "$JAVA_HOME_FROM_SETUP" \
             --signingKeyPath ./android.keystore \
             --signingKeyAlias "${{ secrets.ANDROID_KEY_ALIAS }}" \
             --signingKeyPassword "${{ secrets.ANDROID_KEY_PASSWORD }}" \
