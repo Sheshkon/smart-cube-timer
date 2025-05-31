@@ -36,36 +36,34 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Configure Bubblewrap (answering initial prompts)
+      - name: Pre-create Bubblewrap config with JDK path
         run: |
-          echo "Attempting to configure Bubblewrap by answering initial prompts..."
-          echo "JAVA_HOME is: $JAVA_HOME"
-
-          # Answer prompts for initial Bubblewrap setup:
-          # 1. "No" to installing JDK.
-          # 2. Provide path to existing JDK ($JAVA_HOME).
-          # 3. "Yes" to installing Android SDK (Bubblewrap will manage this).
-          # The `updateConfig` part might be redundant if the prompts fully set up config.json,
-          # but we include it to explicitly set the JDK path if the prompts don't fully write it.
-          { \
-            echo "n"; \
-            echo "$JAVA_HOME"; \
-            echo "y"; \
-          } | bubblewrap updateConfig --jdkPath "$JAVA_HOME"
-
-          echo "Bubblewrap configuration attempt finished."
-          echo "----------------------------------------"
-          echo "Contents of Bubblewrap config file (if it exists):"
-          cat ~/.bubblewrap/config.json || echo "~/.bubblewrap/config.json not found."
+          echo "Manually creating Bubblewrap config directory and file..."
+          CONFIG_DIR=~/.bubblewrap
+          CONFIG_FILE=$CONFIG_DIR/config.json
+          mkdir -p "$CONFIG_DIR"
+          # Create config.json with only the jdkPath.
+          # Ensure JAVA_HOME is correctly escaped if it could contain special characters, though unlikely for this path.
+          echo "{ \"jdkPath\": \"$JAVA_HOME\" }" > "$CONFIG_FILE"
+          echo "Bubblewrap config.json created with JDK path."
+          echo "Contents of ~/.bubblewrap/config.json:"
+          cat "$CONFIG_FILE"
           echo "----------------------------------------"
 
-      - name: Verify Bubblewrap Configuration (Doctor)
+      - name: Verify Bubblewrap Configuration (Doctor - for diagnostics)
+        # This step attempts to run 'bubblewrap doctor'.
+        # With jdkPath in config.json, it should find the JDK.
+        # It will likely then prompt for Android SDK installation. We pipe 'y'.
+        # We use '|| true' to prevent the workflow failing if doctor itself has a non-zero exit
+        # (e.g., after starting SDK download or if it still finds an issue).
         run: |
-          echo "Running bubblewrap doctor..."
-          bubblewrap doctor
-          # The doctor command might also trigger prompts if config is still not right.
-          # If doctor fails, we may need to pipe answers to it as well,
-          # or accept that the Android SDK download will happen here.
+          echo "Running bubblewrap doctor (piping 'y' for potential Android SDK install)..."
+          (echo "y" | bubblewrap doctor) || echo "Bubblewrap doctor finished (command may have exited non-zero)."
+          echo "Contents of ~/.bubblewrap/config.json after doctor (to see if androidSdkPath was added):"
+          cat ~/.bubblewrap/config.json || echo "~/.bubblewrap/config.json not found or unreadable."
+          echo "----------------------------------------"
+          # Optional: Pause if SDK download by doctor happens in background. Unlikely needed.
+          # echo "Pausing briefly..." && sleep 15
 
       - name: Decode and Restore Keystore
         run: |
@@ -80,12 +78,12 @@ jobs:
           APP_VERSION_CODE="${{ github.event.inputs.app_version_code }}"
 
           echo "Building APK for version ${APP_VERSION_NAME} (code ${APP_VERSION_CODE})"
+          echo "Piping 'y' to bubblewrap build for anticipated Android SDK installation prompt..."
 
-          bubblewrap build \
+          # With jdkPath in config.json, Bubblewrap should find JDK and only ask to install Android SDK.
+          echo "y" | bubblewrap build \
             --manifest ./twa-manifest.json \
-            # --noJdkInstall might be redundant if config is now correct, but harmless.
-            --noJdkInstall \
-            # We REMOVE --jdkPath from here, relying on the config.json
+            # --noJdkInstall should be redundant if config.json is respected for JDK
             --signingKeyPath ./android.keystore \
             --signingKeyAlias "${{ secrets.ANDROID_KEY_ALIAS }}" \
             --signingKeyPassword "${{ secrets.ANDROID_KEY_PASSWORD }}" \
