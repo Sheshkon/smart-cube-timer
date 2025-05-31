@@ -24,7 +24,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Or your preferred LTS version
+          node-version: '18'
 
       - name: Install Bubblewrap CLI
         run: npm i -g @bubblewrap/cli
@@ -36,22 +36,36 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Configure Bubblewrap with JDK Path
+      - name: Configure Bubblewrap (answering initial prompts)
         run: |
-          echo "Configuring Bubblewrap with JDK at: $JAVA_HOME"
-          # Use the JAVA_HOME set by actions/setup-java
-          bubblewrap updateConfig --jdkPath "$JAVA_HOME"
-          # We don't need to set androidSdkPath if Bubblewrap can download it,
-          # or if the runner has one, Bubblewrap might find it or download its own.
-          # If Android SDK also becomes an issue, we'd add --androidSdkPath here too.
-          echo "Bubblewrap configuration updated."
+          echo "Attempting to configure Bubblewrap by answering initial prompts..."
+          echo "JAVA_HOME is: $JAVA_HOME"
+
+          # Answer prompts for initial Bubblewrap setup:
+          # 1. "No" to installing JDK.
+          # 2. Provide path to existing JDK ($JAVA_HOME).
+          # 3. "Yes" to installing Android SDK (Bubblewrap will manage this).
+          # The `updateConfig` part might be redundant if the prompts fully set up config.json,
+          # but we include it to explicitly set the JDK path if the prompts don't fully write it.
+          { \
+            echo "n"; \
+            echo "$JAVA_HOME"; \
+            echo "y"; \
+          } | bubblewrap updateConfig --jdkPath "$JAVA_HOME"
+
+          echo "Bubblewrap configuration attempt finished."
+          echo "----------------------------------------"
+          echo "Contents of Bubblewrap config file (if it exists):"
+          cat ~/.bubblewrap/config.json || echo "~/.bubblewrap/config.json not found."
+          echo "----------------------------------------"
 
       - name: Verify Bubblewrap Configuration (Doctor)
         run: |
           echo "Running bubblewrap doctor..."
           bubblewrap doctor
-          echo "Contents of Bubblewrap config file:"
-          cat ~/.bubblewrap/config.json || echo "config.json not found or cat failed"
+          # The doctor command might also trigger prompts if config is still not right.
+          # If doctor fails, we may need to pipe answers to it as well,
+          # or accept that the Android SDK download will happen here.
 
       - name: Decode and Restore Keystore
         run: |
@@ -66,12 +80,12 @@ jobs:
           APP_VERSION_CODE="${{ github.event.inputs.app_version_code }}"
 
           echo "Building APK for version ${APP_VERSION_NAME} (code ${APP_VERSION_CODE})"
-          echo "JAVA_HOME for this step is: $JAVA_HOME"
 
           bubblewrap build \
             --manifest ./twa-manifest.json \
-            --noJdkInstall \ # Still good practice to prevent it from trying to download
-            # We REMOVE --jdkPath from here, relying on the config.json set by updateConfig
+            # --noJdkInstall might be redundant if config is now correct, but harmless.
+            --noJdkInstall \
+            # We REMOVE --jdkPath from here, relying on the config.json
             --signingKeyPath ./android.keystore \
             --signingKeyAlias "${{ secrets.ANDROID_KEY_ALIAS }}" \
             --signingKeyPassword "${{ secrets.ANDROID_KEY_PASSWORD }}" \
