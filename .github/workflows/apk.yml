@@ -61,14 +61,12 @@ jobs:
           APP_VERSION_CODE="${{ github.event.inputs.app_version_code }}"
 
           echo "Building APK for version ${APP_VERSION_NAME} (code ${APP_VERSION_CODE})"
-          echo "Piping 'y' then 'y' to bubblewrap build for Android SDK install and license agreement..."
+          echo "Piping 'y' then 'y' to bubblewrap build for Android SDK install and license agreement using printf..."
 
-          # 1. First 'y' for "Do you want Bubblewrap to install the Android SDK?"
-          # 2. Second 'y' for "Do you agree to the Android SDK terms and conditions?"
-          { \
-            echo "y"; \
-            echo "y"; \
-          } | bubblewrap build \
+          # Use printf to send two 'y' characters, each followed by a newline.
+          # 1. First 'y\n' for "Do you want Bubblewrap to install the Android SDK?"
+          # 2. Second 'y\n' for "Do you agree to the Android SDK terms and conditions?"
+          printf 'y\ny\n' | bubblewrap build \
             --manifest ./twa-manifest.json \
             --signingKeyPath ./android.keystore \
             --signingKeyAlias "${{ secrets.ANDROID_KEY_ALIAS }}" \
@@ -78,21 +76,19 @@ jobs:
             --appVersionCode "${APP_VERSION_CODE}" \
             --skipPwaValidation
 
-          # The Android SDK download and setup will happen here.
-          # This might take a few minutes the first time.
-
           APK_PATH="./app-release-signed.apk"
           ARTIFACT_FILENAME="YourAppName-${APP_VERSION_NAME}-code${APP_VERSION_CODE}.apk"
           echo "apk_path=${APK_PATH}" >> $GITHUB_OUTPUT
-          echo "artifact_filename=${ARTIFACT_FILENAME}" >> $GITHUBOUTPUT
+          echo "artifact_filename=${ARTIFACT_FILENAME}" >> $GITHUB_OUTPUT
 
       - name: Verify Android SDK installation (Optional - for debugging)
+        if: always() # Run this step even if the build step fails, for diagnostics
         run: |
           echo "Checking for Android SDK installation..."
           ls -la ~/.bubblewrap/ || echo "No ~/.bubblewrap directory"
           ls -la ~/.bubblewrap/android_sdk/ || echo "No ~/.bubblewrap/android_sdk directory"
-          echo "Updated contents of ~/.bubblewrap/config.json:"
-          cat ~/.bubblewrap/config.json || echo "~/.bubblewrap/config.json not found"
+          echo "Updated contents of ~/.bubblewrap/config.json (if build was successful enough to write it):"
+          cat ~/.bubblewrap/config.json || echo "~/.bubblewrap/config.json not found or unreadable"
 
       - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4

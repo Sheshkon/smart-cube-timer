@@ -1,0 +1,51 @@
+{
+  "packageId": "io.github.sheshkon.twa",
+  "host": "sheshkon.github.io",
+  "name": "smart³",
+  "launcherName": "smart³",
+  "display": "minimal-ui",
+  "themeColor": "#000000",
+  "themeColorDark": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#000000",
+  "enableNotifications": true,
+  "startUrl": "/smart-cube-timer/",
+  "iconUrl": "https://sheshkon.github.io/smart-cube-timer/icons/icon512_rounded.png",
+  "maskableIconUrl": "https://sheshkon.github.io/smart-cube-timer/icons/icon512_maskable.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "C:\\Users\\sheshko\\IdeaProjects\\smart-cube-timer-1\\android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "3",
+  "appVersionCode": 3,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://sheshkon.github.io/smart-cube-timer/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://sheshkon.github.io/smart-cube-timer/",
+  "minSdkVersion": 21,
+  "orientation": "any",
+  "fingerprints": [
+    {
+      "name": 123456,
+      "value": "10:AC:FC:A5:6B:C3:93:21:EE:C7:03:C9:16:4A:EA:B0:99:39:DB:6D:E3:61:B3:21:91:39:6F:C4:DA:24:5B:62"
+    }
+  ],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "appVersion": "3"
+}
