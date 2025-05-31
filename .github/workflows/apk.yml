@@ -44,14 +44,19 @@ jobs:
 
       - name: Build APK with Bubblewrap
         id: build_apk
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+
         run: |
           APP_VERSION_NAME="${{ github.event.inputs.app_version_name }}"
           APP_VERSION_CODE="${{ github.event.inputs.app_version_code }}"
 
           echo "Building APK for version ${APP_VERSION_NAME} (code ${APP_VERSION_CODE})"
+          echo "Using JDK at: $JAVA_HOME" # For debugging
 
-          bubblewrap build \
+          echo "n" | bubblewrap build \
             --manifest ./twa-manifest.json \
+            --jdkPath "$JAVA_HOME" \
             --signingKeyPath ./android.keystore \ # Points to the restored keystore
             --signingKeyAlias "${{ secrets.ANDROID_KEY_ALIAS }}" \
             --signingKeyPassword "${{ secrets.ANDROID_KEY_PASSWORD }}" \
