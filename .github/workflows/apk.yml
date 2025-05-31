@@ -68,7 +68,7 @@ jobs:
           bubblewrap build \
             --manifest ./twa-manifest.json \
             --noJdkInstall \
-            --jdkPath "$JAVA_HOME_FROM_SETUP" \
+#            --jdkPath "$JAVA_HOME_FROM_SETUP" \
             --signingKeyPath ./android.keystore \
             --signingKeyAlias "${{ secrets.ANDROID_KEY_ALIAS }}" \
             --signingKeyPassword "${{ secrets.ANDROID_KEY_PASSWORD }}" \
