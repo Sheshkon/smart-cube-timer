@@ -1,4 +1,4 @@
-import { DownloadCloud, FileDown, FileUp, UploadCloud } from 'lucide-react';
+import { DownloadCloud, FileDown, FileUp, UploadCloud, Loader2 } from 'lucide-react';
 
 import 'dexie-export-import';
 import React, { useRef, useState } from 'react';
@@ -11,14 +11,19 @@ import { useSettings } from 'src/hooks/useSettings.js';
 
 const SESSIONS_TEMPLATE_NAME = 'smart_cube_timer_solves';
 
-const ExportImport = ({ classWrapper, onExport, onImport }) => {
+const ExportImport = ({ classWrapper, onImport }) => {
   const { settingsRef } = useSettings();
   const { driveState, user } = useGoogleAuth();
   const [status, setStatus] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [isDriveExporting, setIsDriveExporting] = useState(false);
+  const [isDriveImporting, setIsDriveImporting] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleExport = async () => {
     try {
+      setIsExporting(true);
       setStatus('Exporting...');
 
       const blob = await db.export({
@@ -33,10 +38,12 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
 
       URL.revokeObjectURL(url);
       setStatus('Export completed successfully!');
-      // onExport();
+      toast.success('Export completed successfully!', { theme: settingsRef.current.theme });
     } catch (error) {
       setStatus(`Export failed: ${error.message}`);
       toast.error(`Export failed: ${error.message}`, { theme: settingsRef.current.theme });
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -48,7 +55,7 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
         return;
       }
 
-
+      setIsImporting(true);
       setStatus('Importing...');
 
       await db.import(file, {
@@ -56,12 +63,14 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
       });
 
       setStatus('Import completed successfully!');
-      toast.info('Import completed successfully!', { theme: settingsRef.current.theme });
+      toast.success('Import completed successfully!', { theme: settingsRef.current.theme });
       fileInputRef.current.value = '';
+      onImport?.();
     } catch (error) {
       setStatus(`Import failed: ${error.message}`);
-      toast.info(`Import failed: ${error.message}`, { theme: settingsRef.current.theme });
-
+      toast.error(`Import failed: ${error.message}`, { theme: settingsRef.current.theme });
+    } finally {
+      setIsImporting(false);
     }
   };
 
@@ -71,13 +80,12 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
         throw new Error('Please authenticate with Google Drive first');
       }
 
+      setIsDriveExporting(true);
       setStatus('Exporting to Google Drive...');
 
-      // 1. Create the backup file
       const blob = await db.export({ prettyJson: false });
       const filename = `${SESSIONS_TEMPLATE_NAME}-${new Date().toISOString()}.json`;
 
-      // 2. Upload to Google Drive
       const metadata = {
         name: filename,
         mimeType: 'application/json',
@@ -106,12 +114,14 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
       }
 
       const result = await response.json();
-      toast.info(`Exported to Google Drive: ${result.name}`, { theme: settingsRef.current.theme });
+      toast.success(`Exported to Google Drive: ${result.name}`, { theme: settingsRef.current.theme });
       setStatus(`Exported to Google Drive: ${result.name}`);
-      // onExport();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setStatus(`Google Drive export failed: ${error.message}`);
+      toast.error(`Google Drive export failed: ${error.message}`, { theme: settingsRef.current.theme });
+    } finally {
+      setIsDriveExporting(false);
     }
   };
 
@@ -121,13 +131,14 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
         throw new Error('Please authenticate with Google Drive first');
       }
 
+      setIsDriveImporting(true);
       setStatus('Fetching from Google Drive...');
 
       const response = await fetch(
         'https://www.googleapis.com/drive/v3/files?' +
         'q=mimeType="application/json"' +
         '&orderBy=createdTime desc' +
-        '&fields=files(id,name,createdTime,modifiedTime)',  // Only request needed fields
+        '&fields=files(id,name,createdTime,modifiedTime)',
         {
           headers: {
             'Authorization': `Bearer ${driveState.accessToken}`,
@@ -144,25 +155,17 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
       }
 
       const { files } = await response.json();
-
-      if (!files || files.length === 0) {
-        throw new Error('No JSON files found in Google Drive');
-      }
-
       const matchingFiles = files.filter(file =>
-        file.name &&
-        file.name.includes(SESSIONS_TEMPLATE_NAME),
+        file.name && file.name.includes(SESSIONS_TEMPLATE_NAME),
       );
 
       if (matchingFiles.length === 0) {
         throw new Error(
-          `No files matching "${SESSIONS_TEMPLATE_NAME}" found in Google Drive. ` +
-          `Found files: ${files.map(f => f.name).join(', ') || 'none'}`,
+          `No files matching "${SESSIONS_TEMPLATE_NAME}" found in Google Drive`
         );
       }
 
       const latestFile = matchingFiles[0];
-
       const downloadResponse = await fetch(
         `https://www.googleapis.com/drive/v3/files/${latestFile.id}?alt=media`,
         {
@@ -177,32 +180,36 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
       }
 
       const fileBlob = await downloadResponse.blob();
-
       setStatus('Importing from Google Drive...');
       await db.import(fileBlob, {
         clearTablesBeforeImport: true,
       });
 
-      setStatus(`Successfully imported ${latestFile.name}`);
-      toast.info(`Successfully imported ${latestFile.name}`);
-
+      toast.success(`Successfully imported ${latestFile.name}`, { theme: settingsRef.current.theme });
       setStatus('Import completed successfully!');
-      onImport();
+      onImport?.();
     } catch (error) {
       toast.error(`Google Drive import failed: ${error.message}`, { theme: settingsRef.current.theme });
       setStatus(`Google Drive import failed: ${error.message}`);
+    } finally {
+      setIsDriveImporting(false);
     }
   };
 
   return (
     <div className={classWrapper}>
-      <div className="flex items-center gap-3 mb-3"> {/* Added margin-bottom */}
+      <div className="flex items-center gap-3 mb-3">
         <button
           onClick={handleExport}
           className="flex items-center gap-2 hover:text-green-500"
           title="Export data"
+          disabled={isExporting}
         >
-          <FileUp className="w-5 h-5" />
+          {isExporting ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <FileUp className="w-5 h-5" />
+          )}
           <span>Export</span>
         </button>
 
@@ -213,17 +220,24 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
             accept=".json"
             className="hidden"
             onChange={handleImport}
+            disabled={isImporting}
           />
           <button
-            onClick={() => fileInputRef.current.click()}
+            onClick={() => !isImporting && fileInputRef.current.click()}
             className="flex items-center gap-2 hover:text-green-500"
             title="Import data"
+            disabled={isImporting}
           >
-            <FileDown className="w-5 h-5" />
+            {isImporting ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <FileDown className="w-5 h-5" />
+            )}
             <span>Import</span>
           </button>
         </div>
       </div>
+
       <div className="flex items-center gap-3">
         {user ? (
           <div className="flex items-center gap-3">
@@ -231,9 +245,13 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
               onClick={exportToGoogleDrive}
               className="flex items-center gap-2 hover:text-blue-500"
               title="to Google Drive"
-              disabled={!driveState.accessToken}
+              disabled={!driveState.accessToken || isDriveExporting}
             >
-              <UploadCloud className="w-5 h-5" />
+              {isDriveExporting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <UploadCloud className="w-5 h-5" />
+              )}
               <span>To Drive</span>
             </button>
 
@@ -241,16 +259,26 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
               onClick={importFromGoogleDrive}
               className="flex items-center gap-2 hover:text-blue-500"
               title="from Google Drive"
-              disabled={!driveState.accessToken}
+              disabled={!driveState.accessToken || isDriveImporting}
             >
-              <DownloadCloud className="w-5 h-5" />
+              {isDriveImporting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <DownloadCloud className="w-5 h-5" />
+              )}
               <span>From Drive</span>
             </button>
           </div>
         ) : (
-          <GoogleAuth className="-ml-2"/>
+          <GoogleAuth className="-ml-2" />
         )}
       </div>
+
+      {status && (
+        <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 truncate">
+          {status}
+        </div>
+      )}
     </div>
   );
 };
