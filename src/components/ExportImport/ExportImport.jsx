@@ -1,4 +1,4 @@
-import { DownloadCloud, FileDown, FileUp, UploadCloud, Loader2 } from 'lucide-react';
+import { DownloadCloud, FileDown, FileUp, Loader2, UploadCloud } from 'lucide-react';
 
 import 'dexie-export-import';
 import React, { useRef, useState } from 'react';
@@ -161,7 +161,7 @@ const ExportImport = ({ classWrapper, onImport }) => {
 
       if (matchingFiles.length === 0) {
         throw new Error(
-          `No files matching "${SESSIONS_TEMPLATE_NAME}" found in Google Drive`
+          `No files matching "${SESSIONS_TEMPLATE_NAME}" found in Google Drive`,
         );
       }
 

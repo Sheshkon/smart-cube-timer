@@ -8,7 +8,7 @@ const Footer = ({ className = '' }) => (
     className={`py-4 px-4 text-center text-sm text-gray-500 dark:text-gray-400 ${className}`}
   >
     <div className="container mx-auto">
-      <div className="flex flex-col md:flex-row justify-between items-center">
+      <div className="flex flex-col justify-between items-center">
         <div className="mb-2 md:mb-0">
           © {new Date().getFullYear()} Smart³
         </div>

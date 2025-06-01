@@ -103,31 +103,23 @@ function App() {
       <RefreshPrompt />
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
         <Header />
-        <CustomConsole showConsole={showConsole}/>
-        <InfoPanel wrapperClassName="p-2 flex items-center justify-center relative"/>
-        <main className="flex-grow container mx-auto px-4 py-6">
+        <CustomConsole showConsole={showConsole} />
+        <InfoPanel wrapperClassName="p-2 flex items-center justify-center relative" />
+        <main className="flex-grow container mx-auto px-4 py-6 lg:px-64">
           <div className="flex flex-col space-y-4 md:space-y-6">
             <div
               className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center justify-center relative overflow-hidden">
-              <div className="absolute -right-16 -top-16 opacity-5 transform rotate-12">
-                <Cuboid size={200} />
-              </div>
-              <div className="py-4">
-                <CubeControls />
-              </div>
+              <Cuboid className="absolute -right-16 -top-16 opacity-5 transform rotate-12" size={200} />
+              <CubeControls className="py-4" />
               <div className="flex flex-col md:flex-row items-center w-full">
-                <div className="w-full md:w-1/2 flex justify-center md:mb-0">
-                  <div className="cube-container">
-                    <Cube containerId="main" />
-                  </div>
-                </div>
+                <Cube className="w-full md:w-1/2 flex justify-center md:mb-0" containerId="main" />
                 <div className="w-full md:w-1/2 flex flex-col items-center">
                   <Timer onSaveTime={handleSaveTime} className="mb-6" />
                   <Scramble className="w-full max-w-md" />
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 gap-4 md:gap-6">
               <StatsDisplay
                 times={storedTimes}
                 stats={stats}

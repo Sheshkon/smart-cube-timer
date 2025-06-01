@@ -1,9 +1,6 @@
 import { BarChart } from '@mui/x-charts/BarChart';
-import { useSettings } from 'src/hooks/useSettings.js';
 
 export const SolveReconstructionChart = ({ reconstruction }) => {
-  const { settings } = useSettings();
-
   if (!reconstruction || !reconstruction.steps) return null;
 
   const { method, steps } = reconstruction;
