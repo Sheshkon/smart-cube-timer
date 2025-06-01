@@ -82,7 +82,7 @@ export const sessionService = {
       return {
         ...solve,
         reconstruction: {
-          method: solve.reconstruction?.method || '',
+          method: solve?.reconstruction?.method || '',
           steps: stepsObject,
         },
       };
@@ -138,7 +138,6 @@ export const sessionService = {
         .equals(solveId)
         .first();
 
-      // Convert the array of steps into the expected object format
       const stepsObject = {};
       reconstructionSteps.forEach(step => {
         stepsObject[step.name] = {
@@ -153,7 +152,7 @@ export const sessionService = {
       return {
         ...solve,
         reconstruction: {
-          method: solve.reconstruction?.method || '',
+          method: solve?.reconstruction?.method || '',
           steps: stepsObject,
         },
       };

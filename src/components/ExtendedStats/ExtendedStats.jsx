@@ -163,7 +163,7 @@ const ExtendedStats = ({ onClose, navigate }) => {
 
           // 2. Method Distribution
           const methodCounts = currentProcessedSolves.reduce((acc, solve) => {
-            const method = solve.reconstruction?.method || 'Unknown';
+            const method = solve?.reconstruction?.method || 'Unknown';
             acc[method] = (acc[method] || 0) + 1;
             return acc;
           }, {});
