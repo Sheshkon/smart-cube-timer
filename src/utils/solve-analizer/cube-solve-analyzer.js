@@ -161,9 +161,9 @@ export class CubeSolveAnalyzer extends CubeCore {
     );
   }
 
-  matchesAnyOrientation(baseTemplate) {
-    const allOrientations = this.generateAllOrientations(baseTemplate);
-    return allOrientations.some(template => this.matchesTemplate(template));
+  matchesAnyOrientation(baseTemplates) {
+    return baseTemplates.flatMap(template => this.generateAllOrientations(template))
+      .some(template => this.matchesTemplate(template));
   }
 
   getMethodSteps(method) {
@@ -244,7 +244,7 @@ export class CubeSolveAnalyzer extends CubeCore {
         if (result.steps[step].found) continue;
         if (i > 0 && !result.steps[steps[i - 1]].found) break;
 
-        if (currentCube.matchesAnyOrientation(methodData.steps[step].template)) {
+        if (currentCube.matchesAnyOrientation(methodData.steps[step].templates)) {
           // Store moves
           const stepMoves = moves.slice(appliedMoves, currentMoveIndex + 1);
           result.steps[step].moves = stepMoves;
