@@ -23,8 +23,6 @@ function defineTimeColor(stats, item) {
   return '';
 }
 
-const ITEMS_PER_PAGE = 15;
-
 const TimesTable = ({
                       stats,
                       onImport,
@@ -63,16 +61,16 @@ const TimesTable = ({
   );
 
   // --- Pagination Calculations ---
-  const totalPages = Math.max(1, Math.ceil(sortedTimes.length / ITEMS_PER_PAGE));
-  const indexOfLastItemOnPage = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstItemOnPage = indexOfLastItemOnPage - ITEMS_PER_PAGE;
+  const totalPages = Math.max(1, Math.ceil(sortedTimes.length / settings.solvesPerPage));
+  const indexOfLastItemOnPage = currentPage * settings.solvesPerPage;
+  const indexOfFirstItemOnPage = indexOfLastItemOnPage - settings.solvesPerPage;
   // Get items for the current page
   const currentItems = sortedTimes.slice(indexOfFirstItemOnPage, indexOfLastItemOnPage);
   // --- End Pagination Calculations ---
 
   // Effect to adjust currentPage if it becomes invalid due to 'times' array changing
   useEffect(() => {
-    const newTotalPages = Math.max(1, Math.ceil(times.length / ITEMS_PER_PAGE));
+    const newTotalPages = Math.max(1, Math.ceil(times.length / settings.solvesPerPage));
     if (currentPage > newTotalPages) {
       setCurrentPage(newTotalPages);
     } else if (times.length > 0 && currentPage < 1) { // Ensure currentPage is at least 1 if there are items

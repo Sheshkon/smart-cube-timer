@@ -12,7 +12,8 @@ const defaultSettings = {
   fontSize: 16,
   selectedSessionId: DEFAULT_SESSION_ID,
   solutionChart: true,
-  inspection: false
+  inspection: false,
+  solvesPerPage: 15
 };
 
 export const SettingsProvider = ({ children }) => {
