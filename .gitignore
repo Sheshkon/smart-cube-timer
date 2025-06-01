@@ -14,7 +14,6 @@ app/
 /gradlew.bat
 /manifest-checksum.txt
 /store_icon.png
-#/twa-manifest.json
 /app-release-bundle.aab
 /app-release-signed.apk.idsig
 /build/reports/problems/problems-report.html

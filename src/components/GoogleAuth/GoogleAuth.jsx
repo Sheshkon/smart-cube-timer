@@ -23,9 +23,9 @@ export const GoogleAuth = ({ className = '' }) => {
               <GoogleLogin
                 onSuccess={handleLogin}
                 onError={() => console.log('Login failed')}
-                type="icon"
+                type="standard"
                 shape="circle"
-                theme="filled_blue"
+                theme="filled_black"
                 size="medium"
                 scope="openid email profile https://www.googleapis.com/auth/drive.file"
                 ux_mode="popup"

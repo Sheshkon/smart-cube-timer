@@ -196,34 +196,6 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
 
   return (
     <div className={classWrapper}>
-      <div className="flex items-center gap-3 mb-3">
-        {user ? (
-          <div className="flex items-center gap-3 mb-3">
-            <button
-              onClick={exportToGoogleDrive}
-              className="flex items-center gap-2 hover:text-blue-500"
-              title="to Google Drive"
-              disabled={!driveState.accessToken}
-            >
-              <UploadCloud className="w-5 h-5" />
-              <span>To Drive</span>
-            </button>
-
-            <button
-              onClick={importFromGoogleDrive}
-              className="flex items-center gap-2 hover:text-blue-500"
-              title="from Google Drive"
-              disabled={!driveState.accessToken}
-            >
-              <DownloadCloud className="w-5 h-5" />
-              <span>From Drive</span>
-            </button>
-          </div>
-        ) : (
-          <GoogleAuth />
-        )}
-      </div>
-
       <div className="flex items-center gap-3 mb-3"> {/* Added margin-bottom */}
         <button
           onClick={handleExport}
@@ -251,6 +223,33 @@ const ExportImport = ({ classWrapper, onExport, onImport }) => {
             <span>Import</span>
           </button>
         </div>
+      </div>
+      <div className="flex items-center gap-3">
+        {user ? (
+          <div className="flex items-center gap-3">
+            <button
+              onClick={exportToGoogleDrive}
+              className="flex items-center gap-2 hover:text-blue-500"
+              title="to Google Drive"
+              disabled={!driveState.accessToken}
+            >
+              <UploadCloud className="w-5 h-5" />
+              <span>To Drive</span>
+            </button>
+
+            <button
+              onClick={importFromGoogleDrive}
+              className="flex items-center gap-2 hover:text-blue-500"
+              title="from Google Drive"
+              disabled={!driveState.accessToken}
+            >
+              <DownloadCloud className="w-5 h-5" />
+              <span>From Drive</span>
+            </button>
+          </div>
+        ) : (
+          <GoogleAuth className="-ml-2"/>
+        )}
       </div>
     </div>
   );

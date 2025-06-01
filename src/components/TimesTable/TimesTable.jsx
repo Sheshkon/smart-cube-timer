@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { ExternalLink, Plus, Share2, Trash2 } from 'lucide-react';
 import ExportImport from 'src/components/ExportImport/ExportImport.jsx';
