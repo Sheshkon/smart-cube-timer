@@ -43,10 +43,9 @@ export const AuthProvider = ({ children }) => {
 
     const client = window.google.accounts.oauth2.initTokenClient({
       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      scope: 'openid email profile https://www.googleapis.com/auth/drive.file',
+      scope: 'openid email profile https://www.googleapis.com/auth/realtime-bidding https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive',
       prompt: 'none',
       callback: (tokenResponse) => {
-        console.log('refresh', tokenResponse);
         if (tokenResponse?.access_token) {
           const driveTokenExpiresAt = new Date(Date.now() + 3600000);
           console.log('token: ', tokenResponse);

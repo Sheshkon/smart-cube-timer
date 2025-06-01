@@ -27,7 +27,7 @@ export const GoogleAuth = ({ className = '' }) => {
                 shape="circle"
                 theme="filled_black"
                 size="medium"
-                scope="openid email profile https://www.googleapis.com/auth/drive.file"
+                scope="openid email profile https://www.googleapis.com/auth/realtime-bidding https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive"
                 ux_mode="popup"
               />
               {isLoading && (
