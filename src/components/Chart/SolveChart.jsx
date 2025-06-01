@@ -12,26 +12,16 @@ export const SolveReconstructionChart = ({ reconstruction }) => {
   const durations = stepNames.map(step => (steps[step]?.endTime - steps[step]?.startTime) / 1000); // Convert to seconds
 
 
-  const textColor = settings['theme'] === 'dark' ? 'white' : 'black';
-
   const chartSetting = {
-    legend:
-      {
-        labelStyle: {
-          fill: textColor,
-        },
-      },
     xAxis: [
       {
         label: `Solve Steps (${method})`,
         scaleType: 'band',
         data: stepNames,
         labelStyle: {
-          fill: textColor,
           fontSize: 12,
         },
         tickLabelStyle: {
-          fill: textColor,
           angle: 45,
           textAnchor: 'start',
           fontSize: 9,
@@ -48,21 +38,14 @@ export const SolveReconstructionChart = ({ reconstruction }) => {
         label: 'Duration (seconds)',
         labelStyle: {
           fontSize: 12,
-          fill: textColor,
-        },
-        tickLabelStyle: {
-          fill: textColor,
         },
       },
     ],
     series: [
       {
         data: durations,
-        // label: 'Time (s)',
-        labelStyle: {
-          fill: textColor,
-        },
-        color: '#dc2626',
+        label: 'Time (s)',
+        color: 'transparent',
       },
     ],
     height: 350,

@@ -25,7 +25,6 @@ const ExtendedStats = ({ onClose, navigate }) => {
   const [tpsStats, setTpsStats] = useState({}); // TPS specific stats
   const [isLoading, setIsLoading] = useState(true);
 
-  // Chart data states
   const [timeDistributionData, setTimeDistributionData] = useState(null);
   const [methodDistributionData, setMethodDistributionData] = useState(null);
   const [solvesOverTimeData, setSolvesOverTimeData] = useState(null);
@@ -35,9 +34,6 @@ const ExtendedStats = ({ onClose, navigate }) => {
   const [stepFrequencyData, setStepFrequencyData] = useState(null);
   const [stepAnalysis, setStepAnalysis] = useState(null);
 
-  const textColor = settings['theme'] === 'dark' ? 'white' : 'black';
-
-  // Load sessions on component mount
   useEffect(() => {
     const loadSessions = async () => {
       setIsLoading(true);
@@ -390,28 +386,22 @@ const ExtendedStats = ({ onClose, navigate }) => {
                       data: solvesOverTimeData.xAxis,
                       label: 'Solve Number',
                       scaleType: 'point',
-                      labelStyle: { fill: textColor },
-                      tickLabelStyle: { fill: textColor },
+                      zoom: true,
                     }]}
                     yAxis={[{
-                      labelStyle: { fill: textColor },
-                      tickLabelStyle: { fill: textColor },
+                      zoom: true,
                     }]}
                     series={[{
                       data: solvesOverTimeData.times,
                       label: 'Time (s)',
                       color: '#10b981',
                       area: true,
-                      labelStyle: { fill: textColor },
-                      tickLabelStyle: { fill: textColor },
-                      showMark: ({ index }) => solvesOverTimeData.times.length < 50 || index % Math.floor(solvesOverTimeData.times.length / 25) === 0,
                     }]}
                     height={300}
                     margin={{ left: -20 }}
                     slotProps={{
                       legend: {
-                        hidden: true, labelStyle: { fill: textColor },
-                        tickLabelStyle: { fill: textColor },
+                        hidden: true
                       },
                     }}
                   />
@@ -423,21 +413,18 @@ const ExtendedStats = ({ onClose, navigate }) => {
                 <ChartCard title="Solve Time Distribution">
                   <BarChart
                     xAxis={[{
-                      labelStyle: { fill: textColor },
-                      tickLabelStyle: { fill: textColor },
                       scaleType: 'band',
                       data: timeDistributionData.labels,
                       label: 'Time Buckets (s)',
+                      zoom: true,
                     }]}
                     yAxis={[{
-                      labelStyle: { fill: textColor },
-                      tickLabelStyle: { fill: textColor },
+                      zoom: true,
                     }]}
                     series={[{
                       data: timeDistributionData.counts,
                       label: 'Solves',
                       color: '#3b82f6',
-                      textColor: textColor,
                     }]}
                     height={300}
                     margin={{ left: -20 }}
@@ -540,7 +527,7 @@ const ExtendedStats = ({ onClose, navigate }) => {
                       series={[{
                         data: methodDistributionData,
                         innerRadius: 30,
-                        outerRadius: 100,
+                        outerRadius: 70,
                         paddingAngle: 2,
                         cornerRadius: 3,
                         highlightScope: { faded: 'global', highlighted: 'item' },
@@ -566,25 +553,19 @@ const ExtendedStats = ({ onClose, navigate }) => {
                 <ChartCard title="TPS Distribution">
                   <BarChart
                     xAxis={[{
-                      labelStyle: { fill: textColor },
-                      tickLabelStyle: { fill: textColor },
                       scaleType: 'band',
                       data: tpsDistributionData.labels,
                       label: 'TPS Buckets',
+                      zoom: true,
                     }]}
                     yAxis={[{
-                      labelStyle: { fill: textColor },
-                      tickLabelStyle: { fill: textColor },
+                      zoom: true,
                     }]}
                     series={[{
                       data: tpsDistributionData.counts, label: 'Solves', color: '#ef4444',
-                      labelStyle: {
-                        fill: textColor,    // Label text color
-                      },
                     }]}
                     height={300}
                     margin={{ right: 10, left: -20 }}
-                    slotProps={{ legend: { hidden: true }, labelStyle: { fill: textColor } }}
                   />
                 </ChartCard>
               ) : <ChartPlaceholder message="Not enough data for TPS distribution." />}
@@ -600,21 +581,18 @@ const ExtendedStats = ({ onClose, navigate }) => {
                       color: '#f97316',
                     }]}
                     xAxis={[{
-                      labelStyle: { fill: textColor },
-                      tickLabelStyle: { fill: textColor },
                       label: 'Solve Time (s)',
                       min: Math.min(...tpsVsTimeData.map(d => d.x)) * 0.9,
                       max: Math.max(...tpsVsTimeData.map(d => d.x)) * 1.1,
+                      zoom: true,
                     }]}
                     yAxis={[{
-                      labelStyle: { fill: textColor },
-                      tickLabelStyle: { fill: textColor },
                       label: 'TPS',
                       min: Math.min(...tpsVsTimeData.map(d => d.y)) * 0.9,
                       max: Math.max(...tpsVsTimeData.map(d => d.y)) * 1.1,
+                      zoom: true,
                     }]}
                     height={300}
-                    slotProps={{ legend: { hidden: true } }}
                   />
                 </ChartCard>
               ) : <ChartPlaceholder message="Not enough data for TPS vs Time." />}

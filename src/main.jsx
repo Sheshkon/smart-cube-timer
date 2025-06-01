@@ -8,6 +8,7 @@ import { ConsoleProvider } from 'src/contexts/ConsoleContext.jsx';
 import { AuthProvider } from 'src/contexts/GoogleAuthContext.jsx';
 import { CubeProvider } from 'src/providers/CubeProvider.jsx';
 import { SettingsProvider } from 'src/providers/SettingsProvider.jsx';
+import { ThemeProviderWrapper } from 'src/providers/ThemeProvider.jsx';
 
 const projectBaseUrl = import.meta.env.BASE_URL;
 
@@ -15,16 +16,18 @@ createRoot(document.getElementById('root')).render(
   <Router>
     <CubeProvider>
       <SettingsProvider>
-        <ConsoleProvider>
-          <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-            <AuthProvider>
-              <Routes>
-                <Route path={`/${projectBaseUrl}/`} element={<App />} />
-                <Route path={`/${projectBaseUrl}share/:encodedData`} element={<ShareSolveViewPage />} />
-              </Routes>
-            </AuthProvider>
-          </GoogleOAuthProvider>
-        </ConsoleProvider>
+        <ThemeProviderWrapper>
+          <ConsoleProvider>
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+              <AuthProvider>
+                <Routes>
+                  <Route path={`/${projectBaseUrl}/`} element={<App />} />
+                  <Route path={`/${projectBaseUrl}share/:encodedData`} element={<ShareSolveViewPage />} />
+                </Routes>
+              </AuthProvider>
+            </GoogleOAuthProvider>
+          </ConsoleProvider>
+        </ThemeProviderWrapper>
       </SettingsProvider>
     </CubeProvider>
   </Router>,
