@@ -119,23 +119,27 @@ function App() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-4 md:gap-6">
-              <StatsDisplay
-                times={storedTimes}
-                stats={stats}
-                setStats={setStats}
-              />
-              <TimesTable
-                stats={stats}
-                onImport={handleImport}
-                sessions={sessions}
-                onDeleteTimes={handleDeleteTimes}
-                times={storedTimes}
-                onDeleteTime={handleDeleteTime}
-                onDeleteSession={handleDeleteSession}
-                onAddSession={handleAddSession}
-              />
-            </div>
+            <>
+              {!settings.practiceMode.isEnabled && (
+                <div className="grid grid-cols-1 gap-4 md:gap-6">
+                  <StatsDisplay
+                    times={storedTimes}
+                    stats={stats}
+                    setStats={setStats}
+                  />
+                  <TimesTable
+                    stats={stats}
+                    onImport={handleImport}
+                    sessions={sessions}
+                    onDeleteTimes={handleDeleteTimes}
+                    times={storedTimes}
+                    onDeleteTime={handleDeleteTime}
+                    onDeleteSession={handleDeleteSession}
+                    onAddSession={handleAddSession}
+                  />
+                </div>
+              )}
+            </>
           </div>
         </main>
         <Footer />

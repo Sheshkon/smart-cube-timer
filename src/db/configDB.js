@@ -1,6 +1,6 @@
 export const DB_NAME = 'session_data';
 
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 export const DEFAULT_SESSION_ID = 1;
 
 export const DB_SCHEMA = {
@@ -26,5 +26,18 @@ export const DB_SCHEMA = {
     startTime,
     endTime,
     found
-  `
+  `,
+
+  practiceScrambles: `
+    ++id,
+    sheetId,
+    category,
+    scramble,
+    [sheetId+category] 
+  `,
+  // Название таблицы в meta должно совпадать
+  practiceScrambleMeta: `
+    &sheetId,
+    timestamp
+  `,
 };

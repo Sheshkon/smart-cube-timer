@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { cubeTimestampLinearFit, makeTimeFromTimestamp } from 'gan-web-bluetooth';
+import { matchesPattern } from 'src/components/CubeControls/util.js';
 import StatsResult from 'src/components/StatsDisplay/util.js';
 import { getReconstruction, TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
 import 'src/style.css';
+import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime, ganTimeToMilliseconds } from 'src/utils/time.js';
-import { patternToFacelets, SOLVED_STATE } from 'src/utils/util.ts';
+import { patternToFacelets, PRACTICE_TEPMPLATES, SOLVED_STATE } from 'src/utils/util.ts';
 
 const Timer = ({ onSaveTime }) => {
   const {
@@ -21,6 +23,8 @@ const Timer = ({ onSaveTime }) => {
     connectionRef,
   } = useCube();
 
+  const { settingsRef, settings } = useSettings();
+
   const localTimerRef = useRef(null);
   const [showTimer, setShowTimer] = useState(false);
   const [timeValue, setTimeValue] = useState('');
@@ -34,16 +38,20 @@ const Timer = ({ onSaveTime }) => {
     const firstMove = fittedMoves[0];
     const timestamp = lastMove.cubeTimestamp - firstMove.cubeTimestamp;
 
-    const { formattedTime, originalTime } = getTimerValueFromTimestamp(timestamp);
+    if (!settingsRef.current.practiceMode.isEnabled) {
+      console.log(settingsRef.current.practiceMode.isEnabled);
+      const { formattedTime, originalTime } = getTimerValueFromTimestamp(timestamp);
 
-    const solve = new StatsResult(
-      originalTime,
-      formattedTime,
-      getReconstruction(lastScrambleRef.current.toString(), solutionMovesRef.current),
-    );
+      const solve = new StatsResult(
+        originalTime,
+        formattedTime,
+        getReconstruction(lastScrambleRef.current.toString(), solutionMovesRef.current),
+      );
 
-    setShowTimer(false);
-    onSaveTime(solve);
+      onSaveTime(solve);
+      setShowTimer(false);
+    }
+
     clearTimerAndSolvingData();
     setShowScramble(true);
   }, [onSaveTime, setShowScramble]);
@@ -98,18 +106,25 @@ const Timer = ({ onSaveTime }) => {
     setLastMoves([]);
     solutionMovesRef.current = [];
     setTimerState(TimerState.IDLE);
-    setTimeValue(formatTime(0));
+    if (!settingsRef.current.practiceMode.isEnabled) {
+      setTimeValue(formatTime(0));
+    }
   }, [setLastMoves, setTimerState]);
 
   useEffect(() => {
     const handleFreshPattern = async (kpattern) => {
       const facelets = patternToFacelets(kpattern);
+
+      const isSolved = settingsRef.current.practiceMode.isEnabled
+        ? matchesPattern(facelets, PRACTICE_TEPMPLATES[settingsRef.current.practiceMode.category])
+        : facelets === SOLVED_STATE;
+
       if (
-        facelets === SOLVED_STATE &&
+        isSolved &&
         timerStateRef.current === TimerState.RUNNING
       ) {
         setTimerState(TimerState.STOPPED);
-        twistyPlayerRef.current.alg = '';
+        // twistyPlayerRef.current.alg = '';
       }
     };
 

@@ -13,7 +13,12 @@ const defaultSettings = {
   selectedSessionId: DEFAULT_SESSION_ID,
   solutionChart: true,
   inspection: false,
-  solvesPerPage: 15
+  solvesPerPage: 15,
+  practiceMode: {
+    isEnabled: false,
+    googleSheetId: '1kmIGneMt2r5mTj7DarIBKd350Rd51Joo0W6ZxbtwiBY',
+    category: 'ROUX_CMLL'
+  }
 };
 
 export const SettingsProvider = ({ children }) => {
@@ -55,11 +60,36 @@ export const SettingsProvider = ({ children }) => {
   }, [settings]);
 
   const updateSetting = (key, value) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+    const keys = key.split('.');
+
+    if (keys.length === 1) {
+      setSettings((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+      return;
+    }
+
+    setSettings((prev) => {
+      const updateNestedState = (obj, path, val) => {
+        const [currentKey, ...restOfPath] = path;
+
+        if (restOfPath.length === 0) {
+          return {
+            ...obj,
+            [currentKey]: val,
+          };
+        }
+
+        return {
+          ...obj,
+          [currentKey]: updateNestedState(obj[currentKey] || {}, restOfPath, val),
+        };
+      };
+      return updateNestedState(prev, keys, value);
+    });
   };
+
 
   const resetSettings = () => {
     setSettings(defaultSettings);

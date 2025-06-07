@@ -7,6 +7,17 @@ let kPuzzle333: KPuzzle;
 cube3x3x3.kpuzzle().then((v) => (kPuzzle333 = v));
 
 const SOLVED_STATE = 'UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB';
+
+export const PRACTICE_TEPMPLATES = {
+  ROUX_CMLL: 'U*U*U*U*U' + // U face corners
+    'R*R*R*R*R' + // R face corners
+    'F*F*F*F*F' + // F face corners
+    'D*D*D*D*D' + // D face corners
+    'L*L*L*L*L' + // L face corners
+    'B*B*B*B*B',
+  LSE: SOLVED_STATE,
+};
+
 const REID_EDGE_ORDER = 'UF UR UB UL DF DR DB DL FR FL BR BL'.split(' ');
 const REID_CORNER_ORDER = 'UFR URB UBL ULF DRF DFL DLB DBR'.split(' ');
 const REID_CENTER_ORDER = 'U L F R B D'.split(' ');

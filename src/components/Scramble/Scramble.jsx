@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { Alg } from 'cubing/alg';
 import { randomScrambleForEvent } from 'cubing/scramble';
 import Inspection from 'src/components/Inspection/Inspection.jsx';
+import { getCategories, getRandomPracticeScramble } from 'src/components/Scramble/practiceScramble.js';
 import { getMoveComponent } from 'src/components/Scramble/svgMapper.js';
 import { TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
@@ -10,6 +12,8 @@ import { prepareMoves } from 'src/utils/util.ts';
 
 import { ColoredMove, getInverseMoves, MoveColor } from './/util.js';
 import 'src/style.css';
+
+const GOOGLE_SHEET_ID = '1kmIGneMt2r5mTj7DarIBKd350Rd51Joo0W6ZxbtwiBY';
 
 const isReadyTimerCondition = (
   wrongCounter,
@@ -55,10 +59,24 @@ const Scramble = ({ className = '' }) => {
     setShouldBeSolved,
   } = useCube();
 
-  const { settings, settingsRef } = useSettings();
+  const { settings, settingsRef, updateSetting} = useSettings();
+
+  const [scrambleName, setScrambleName] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const generateScramble = async () => {
-    const newScramble = await randomScrambleForEvent('333');
+
+    let newScramble = '';
+    if (settings.practiceMode.isEnabled) {
+      const practiceScrambleRecord = await getRandomPracticeScramble(settings.practiceMode.googleSheetId, settings.practiceMode.category);
+      newScramble = Alg.fromString(practiceScrambleRecord.scramble);
+      setScrambleName(practiceScrambleRecord.name);
+    } else {
+      newScramble = await randomScrambleForEvent('333');
+      setScrambleName('');
+    }
+
     const newScrambleDisplay = newScramble
       .toString()
       .split(' ')
@@ -138,12 +156,21 @@ const Scramble = ({ className = '' }) => {
   }, [lastMoves, timerState]);
 
   useEffect(() => {
-    generateScramble().then();
-  }, []);
+    generateScramble().then(() => console.log(settings.practiceMode));
+  }, [settings]);
 
   useEffect(() => {
     connection ? setShowScramble(true) : setShowScramble(false);
   }, [connection]);
+
+  useEffect(() => {
+    getCategories(GOOGLE_SHEET_ID)
+      .then(categories => {
+        setCategories(categories);
+        setSelectedCategory(categories[0]);
+    });
+
+  }, []);
 
   return (
     <>
@@ -155,10 +182,28 @@ const Scramble = ({ className = '' }) => {
         <div
           className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
         >
-          <div className="flex justify-between items-center mb-2">
+
+          <div className="flex justify-start items-center mb-2">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              Scramble
+              {scrambleName !== '' ?  scrambleName : 'Scramble'}
             </h3>
+
+            {settings.practiceMode.isEnabled && (
+              <select
+                value={selectedCategory}
+                className="select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none"
+                onChange={(e) =>{
+                  updateSetting('practiceMode.category', e.target.value);
+                  setSelectedCategory(e.target.value);
+                }}
+              >
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div className={`

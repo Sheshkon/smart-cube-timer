@@ -6,10 +6,16 @@ import { toast } from 'react-toastify';
 import { TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
-import { cubeQuaternion, faceletsToPattern, HOME_ORIENTATION, SOLVED_STATE } from 'src/utils/util.ts';
+import {
+  cubeQuaternion,
+  faceletsToPattern,
+  HOME_ORIENTATION,
+  PRACTICE_TEPMPLATES,
+  SOLVED_STATE,
+} from 'src/utils/util.ts';
 import * as THREE from 'three';
 
-import { CubeCommand, CubeEventType, customMacAddressProvider } from './/util.js';
+import { CubeCommand, CubeEventType, customMacAddressProvider, matchesPattern } from './/util.js';
 
 const cubeControls = () => {
   const {
@@ -28,10 +34,10 @@ const cubeControls = () => {
     setBatteryLevel,
     connectionRef,
     setShouldBeSolved,
-    setShowScramble
+    setShowScramble,
   } = useCube();
 
-  const { settingsRef } = useSettings();
+  const { settingsRef, settings } = useSettings();
 
   const basisRef = useRef(null);
 
@@ -150,10 +156,13 @@ const cubeControls = () => {
   let cubeInitialized = false;
 
   async function handleFaceletsEvent(event) {
-    if (
-      event.type === CubeEventType.FACELETS &&
-      event.facelets === SOLVED_STATE
-    ) {
+
+    const isSolved = settingsRef.current.practiceMode.isEnabled
+      ? matchesPattern(event.facelets, PRACTICE_TEPMPLATES[settingsRef.current.practiceMode.category])
+      : event.facelets === SOLVED_STATE;
+
+    if (event.type === CubeEventType.FACELETS && isSolved)
+    {
       setLastMoves([]);
       setShouldBeSolved(false);
     }
