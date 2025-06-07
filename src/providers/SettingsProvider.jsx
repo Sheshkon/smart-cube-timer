@@ -16,7 +16,7 @@ const defaultSettings = {
   solvesPerPage: 15,
   practiceMode: {
     isEnabled: false,
-    googleSheetId: '1kmIGneMt2r5mTj7DarIBKd350Rd51Joo0W6ZxbtwiBY',
+    googleSheetId: '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oyH0',
     category: 'ROUX_CMLL'
   }
 };

@@ -21,6 +21,7 @@ const Timer = ({ onSaveTime }) => {
     setLastMoves,
     lastScrambleRef,
     connectionRef,
+    connection,
   } = useCube();
 
   const { settingsRef, settings } = useSettings();
@@ -106,7 +107,7 @@ const Timer = ({ onSaveTime }) => {
     setLastMoves([]);
     solutionMovesRef.current = [];
     setTimerState(TimerState.IDLE);
-    if (!settingsRef.current.practiceMode.isEnabled) {
+    if (!settingsRef.current.practiceMode.isEnabled || !connectionRef?.current) {
       setTimeValue(formatTime(0));
     }
   }, [setLastMoves, setTimerState]);
@@ -166,6 +167,11 @@ const Timer = ({ onSaveTime }) => {
         break;
     }
   }, [timerState, getTimerValueFromTimestamp, startTimer, handleSolvedState]);
+
+  useEffect(() => {
+    if (!connection)
+      clearTimerAndSolvingData();
+  }, [connection]);
 
   return (
     <>
