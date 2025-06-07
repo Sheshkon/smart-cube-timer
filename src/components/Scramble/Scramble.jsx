@@ -279,12 +279,15 @@ const Scramble = ({ className = '' }) => {
           </div>
         </div>
       )}
-      <HintSolution
-        practiceRecord={practiceRecord}
-        className={`mt-5 ${className}`}
-        visible={visibleHint}
-        toggleVisible={toggleVisibleHint}
-      />
+
+      {connection && (
+        <HintSolution
+          practiceRecord={practiceRecord}
+          className={`mt-5 ${className}`}
+          visible={visibleHint}
+          toggleVisible={toggleVisibleHint}
+        />
+      )}
     </>
   );
 };
