@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Alg } from 'cubing/alg';
 import { randomScrambleForEvent } from 'cubing/scramble';
 import Inspection from 'src/components/Inspection/Inspection.jsx';
+import HintSolution from 'src/components/Scramble/HintSolution.jsx';
 import { getCategories, getRandomPracticeScramble } from 'src/components/Scramble/practiceScramble.js';
 import { getMoveComponent } from 'src/components/Scramble/svgMapper.js';
 import { TimerState } from 'src/components/Timer/util.js';
@@ -13,7 +14,7 @@ import { prepareMoves } from 'src/utils/util.ts';
 import { ColoredMove, getInverseMoves, MoveColor } from './/util.js';
 import 'src/style.css';
 
-const GOOGLE_SHEET_ID = '1kmIGneMt2r5mTj7DarIBKd350Rd51Joo0W6ZxbtwiBY';
+const GOOGLE_SHEET_ID = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oyH0';
 
 const isReadyTimerCondition = (
   wrongCounter,
@@ -59,22 +60,23 @@ const Scramble = ({ className = '' }) => {
     setShouldBeSolved,
   } = useCube();
 
-  const { settings, settingsRef, updateSetting} = useSettings();
-
-  const [scrambleName, setScrambleName] = useState('');
+  const { settings, settingsRef, updateSetting } = useSettings();
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [practiceRecord, setPracticeRecord] = useState({});
+  const [visibleHint, setVisibleHint] = useState(false);
+
+  const toggleVisibleHint = () => setVisibleHint(!visibleHint);
 
   const generateScramble = async () => {
-
     let newScramble = '';
     if (settings.practiceMode.isEnabled) {
       const practiceScrambleRecord = await getRandomPracticeScramble(settings.practiceMode.googleSheetId, settings.practiceMode.category);
+      setPracticeRecord(practiceScrambleRecord);
       newScramble = Alg.fromString(practiceScrambleRecord.scramble);
-      setScrambleName(practiceScrambleRecord.name);
     } else {
+      setPracticeRecord({});
       newScramble = await randomScrambleForEvent('333');
-      setScrambleName('');
     }
 
     const newScrambleDisplay = newScramble
@@ -140,9 +142,7 @@ const Scramble = ({ className = '' }) => {
       ? setScrambleDisplay(getInverseMoves(cubeMoves, startWrongIndex))
       : setScrambleDisplay(coloredScramble);
 
-    if (
-      isReadyTimerCondition(wrongCounter, scrambleMoves, cubeMoves, timerState)
-    ) {
+    if (isReadyTimerCondition(wrongCounter, scrambleMoves, cubeMoves, timerState)) {
       settingsRef.current.inspection ? setTimerState(TimerState.INSPECTION) : setTimerState(TimerState.READY);
       setShowScramble(false);
       await generateScramble();
@@ -168,9 +168,15 @@ const Scramble = ({ className = '' }) => {
       .then(categories => {
         setCategories(categories);
         setSelectedCategory(categories[0]);
-    });
+      });
 
   }, []);
+
+  useEffect(() => {
+    if (timerState === TimerState.STOPPED || timerState === TimerState.STOPPED) {
+      setVisibleHint(false);
+    }
+  }, [timerState]);
 
   return (
     <>
@@ -185,14 +191,14 @@ const Scramble = ({ className = '' }) => {
 
           <div className="flex justify-start items-center mb-2">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              {scrambleName !== '' ?  scrambleName : 'Scramble'}
+              {practiceRecord?.name ? practiceRecord.name : 'Scramble'}
             </h3>
 
             {settings.practiceMode.isEnabled && (
               <select
                 value={selectedCategory}
                 className="select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none"
-                onChange={(e) =>{
+                onChange={(e) => {
                   updateSetting('practiceMode.category', e.target.value);
                   setSelectedCategory(e.target.value);
                 }}
@@ -273,6 +279,12 @@ const Scramble = ({ className = '' }) => {
           </div>
         </div>
       )}
+      <HintSolution
+        practiceRecord={practiceRecord}
+        className={`mt-5 ${className}`}
+        visible={visibleHint}
+        toggleVisible={toggleVisibleHint}
+      />
     </>
   );
 };

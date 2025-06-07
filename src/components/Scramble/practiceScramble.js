@@ -41,11 +41,14 @@ async function syncScrambles(sheetId, sheetName = '1') {
       await db.practiceScrambles.where({ sheetId }).delete();
 
       // Готовим данные для сохранения, добавляя sheetId к каждой записи
-      const scramblesToSave = networkData.map(item => ({
+      const scramblesToSave = networkData.map(item => (
+        {
         sheetId: sheetId,
-        category: item.Category, // <- Из столбца 'Category'
-        scramble: item.Scramble, // <- Из столбца 'Scramble'
-        name: item.Name
+        category: item.Category,
+        scramble: item.Scramble,
+        name: item.Name,
+        recommendedSolution: item.RecommenedSolution,
+        solutions: item.Solutions.split('\n')
       }));
 
       await db.practiceScrambles.bulkAdd(scramblesToSave);

@@ -3,7 +3,7 @@ export const ganTimeToMilliseconds = (time) =>
 
 
 export const formatTime = (milliseconds) => {
-  if (!milliseconds) return '00:00.000';
+  if (!milliseconds) return '';
 
   const ms = parseInt(milliseconds);
   if (isNaN(ms)) return '--';
