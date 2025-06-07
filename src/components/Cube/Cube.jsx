@@ -1,24 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Info, Settings } from 'lucide-react';
+import clsx from 'clsx';
+import { Dumbbell, Info, Settings } from 'lucide-react';
 import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
 import { SettingsModal } from 'src/components/Modals/SettingsModal.jsx';
 import { useCube } from 'src/hooks/useCube';
+import { useSettings } from 'src/hooks/useSettings.js';
 import { cubeQuaternion } from 'src/utils/util.ts';
 import 'src/style.css';
 
 const Cube = ({ className = '' }) => {
+  const { settings, settingsRef, updateSetting } = useSettings();
   const initialized = useRef(false);
   const cubeRef = useRef(null);
   const animationRef = useRef(-1);
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-
   const { twistyPlayerRef, hardwareInfo, connection, batteryLevel } = useCube();
 
   const handleInfoModalOpen = () => setInfoModalOpen(!infoModalOpen);
-  const handleSettingsModalOpen = () =>
-    setSettingsModalOpen(!settingsModalOpen);
+  const handleSettingsModalOpen = () => setSettingsModalOpen(!settingsModalOpen);
+  const handlePracticeMode = () => updateSetting('practiceMode.isEnabled', !settings.practiceMode.isEnabled);
 
   const animateCubeOrientation = async () => {
     try {
@@ -89,12 +91,30 @@ const Cube = ({ className = '' }) => {
                 <Info size={18} />
               </button>
 
+              <>
+                {!settings.practiceMode.isEnabled && (
+                  <button
+                    onClick={handleSettingsModalOpen}
+                    className="p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    title="Settings"
+                  >
+                    <Settings size={18} />
+                  </button>
+                )}
+              </>
+
               <button
-                onClick={handleSettingsModalOpen}
-                className="p-1.5 rounded-full my-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                title="Settings"
+                onClick={handlePracticeMode}
+                className={clsx(
+                  'p-1.5 rounded-full mt-2 transition-colors',
+                  {
+                    'bg-green-600 text-white hover:bg-green-700': settings.practiceMode.isEnabled,
+                    'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600': !settings.practiceMode.isEnabled,
+                  },
+                )}
+                title="Practice"
               >
-                <Settings size={18} />
+                <Dumbbell size={18} />
               </button>
 
               <CubeInfoModal

@@ -30,3 +30,26 @@ const customMacAddressProvider = async (device, isFallbackCall) => {
 };
 
 export { customMacAddressProvider, CubeCommand, CubeEventType };
+
+
+/**
+ * Сравнивает две строки, игнорируя символы '*' в строке-шаблоне.
+ * @param {string} faceletString - Текущее состояние куба в виде строки из 54 символов.
+ * @param {string} patternString - Шаблон для проверки, где '*' - любой символ.
+ * @returns {boolean} - Возвращает true, если состояние соответствует шаблону.
+ */
+export function matchesPattern(faceletString, patternString) {
+  if (faceletString.length !== patternString.length) {
+    return false;
+  }
+
+  for (let i = 0; i < patternString.length; i++) {
+    const patternChar = patternString[i];
+
+    if (patternChar !== '*' && patternChar !== faceletString[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
