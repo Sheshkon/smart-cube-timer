@@ -71,7 +71,7 @@ const Scramble = ({ className = '' }) => {
   const generateScramble = async () => {
     let newScramble = '';
     if (settings.practiceMode.isEnabled) {
-      const practiceScrambleRecord = await getRandomPracticeScramble(settings.practiceMode.googleSheetId, settings.practiceMode.category);
+      const practiceScrambleRecord = await getRandomPracticeScramble(GOOGLE_SHEET_ID, settings.practiceMode.category);
       setPracticeRecord(practiceScrambleRecord);
       newScramble = Alg.fromString(practiceScrambleRecord.scramble);
     } else {

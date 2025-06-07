@@ -15,6 +15,7 @@ export const PRACTICE_TEPMPLATES = {
     'D*D*D*D*D' + // D face corners
     'L*L*L*L*L' + // L face corners
     'B*B*B*B*B',
+  PLL: SOLVED_STATE,
   LSE: SOLVED_STATE,
 };
 
