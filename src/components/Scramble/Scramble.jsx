@@ -14,7 +14,7 @@ import { prepareMoves } from 'src/utils/util.ts';
 import { ColoredMove, getInverseMoves, MoveColor } from './/util.js';
 import 'src/style.css';
 
-const GOOGLE_SHEET_ID = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oyH0';
+const GOOGLE_SHEET_ID = import.meta.env.VITE_GOOGLE_SHEET_ID
 
 const isReadyTimerCondition = (
   wrongCounter,
@@ -62,14 +62,13 @@ const Scramble = ({ className = '' }) => {
 
   const { settings, settingsRef, updateSetting } = useSettings();
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [practiceRecord, setPracticeRecord] = useState({});
   const [visibleHint, setVisibleHint] = useState(false);
 
   const toggleVisibleHint = () => setVisibleHint(!visibleHint);
 
   const generateScramble = async () => {
-    let newScramble = '';
+    let newScramble;
     if (settings.practiceMode.isEnabled) {
       const practiceScrambleRecord = await getRandomPracticeScramble(GOOGLE_SHEET_ID, settings.practiceMode.category);
       setPracticeRecord(practiceScrambleRecord);
@@ -167,7 +166,6 @@ const Scramble = ({ className = '' }) => {
     getCategories(GOOGLE_SHEET_ID)
       .then(categories => {
         setCategories(categories);
-        setSelectedCategory(categories[0]);
       });
 
   }, []);
@@ -196,11 +194,10 @@ const Scramble = ({ className = '' }) => {
 
             {settings.practiceMode.isEnabled && (
               <select
-                value={selectedCategory}
+                value={settings.practiceMode.category}
                 className="select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none"
                 onChange={(e) => {
                   updateSetting('practiceMode.category', e.target.value);
-                  setSelectedCategory(e.target.value);
                 }}
               >
                 {categories.map((category) => (
