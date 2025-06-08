@@ -14,7 +14,7 @@ import { prepareMoves } from 'src/utils/util.ts';
 import { ColoredMove, getInverseMoves, MoveColor } from './/util.js';
 import 'src/style.css';
 
-const GOOGLE_SHEET_ID = import.meta.env.VITE_GOOGLE_SHEET_ID
+const GOOGLE_SHEET_ID = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oyH0';
 
 const isReadyTimerCondition = (
   wrongCounter,

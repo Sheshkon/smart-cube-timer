@@ -67,7 +67,6 @@ export default defineConfig({
           },
         ],
         screenshots: [
-
           {
             src: 'screenshots/dark-screenshot-desktop.jpg',
             sizes: '1280x782',
@@ -100,6 +99,11 @@ export default defineConfig({
         lang: 'en-US',
         theme_color: '#000000',
         background_color: '#000000',
+        handle_links: 'preferred',
+        scope_extensions: [
+          { origin: 'https://sheshkon.github.io' },
+          { origin: 'https://*.github.io/sheshkon' },
+        ],
       },
       devOptions: {
         enabled: true,
