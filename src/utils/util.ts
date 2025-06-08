@@ -9,11 +9,12 @@ cube3x3x3.kpuzzle().then((v) => (kPuzzle333 = v));
 const SOLVED_STATE = 'UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB';
 
 export const PRACTICE_TEPMPLATES = {
-  ROUX_CMLL: 'U*U*U*U*U' + // U face corners
-    'R*R*R*R*R' + // R face corners
-    'F*F*F*F*F' + // F face corners
-    'D*D*D*D*D' + // D face corners
-    'L*L*L*L*L' + // L face corners
+  ROUX_CMLL:
+    'U*U*U*U*U' +
+    'R*R*R*R*R' +
+    'F*F*F*F*F' +
+    'D*D*D*D*D' +
+    'L*L*L*L*L' +
     'B*B*B*B*B',
   PLL: SOLVED_STATE,
   LSE: SOLVED_STATE,

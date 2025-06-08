@@ -50,35 +50,27 @@ const TimesTable = ({
   const [solveData, setSolveData] = useState({});
   const [actionSolveId, setActionSolveId] = useState(-1);
 
-  // --- Pagination State ---
   const [currentPage, setCurrentPage] = useState(1);
-  // --- End Pagination State ---
 
-  // Sort times once (descending by date - newest first)
-  // This is re-calculated on every render. For very large 'times' arrays, consider useMemo.
   const sortedTimes = [...times].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 
-  // --- Pagination Calculations ---
   const totalPages = Math.max(1, Math.ceil(sortedTimes.length / settings.solvesPerPage));
   const indexOfLastItemOnPage = currentPage * settings.solvesPerPage;
   const indexOfFirstItemOnPage = indexOfLastItemOnPage - settings.solvesPerPage;
-  // Get items for the current page
   const currentItems = sortedTimes.slice(indexOfFirstItemOnPage, indexOfLastItemOnPage);
-  // --- End Pagination Calculations ---
 
-  // Effect to adjust currentPage if it becomes invalid due to 'times' array changing
   useEffect(() => {
     const newTotalPages = Math.max(1, Math.ceil(times.length / settings.solvesPerPage));
     if (currentPage > newTotalPages) {
       setCurrentPage(newTotalPages);
-    } else if (times.length > 0 && currentPage < 1) { // Ensure currentPage is at least 1 if there are items
+    } else if (times.length > 0 && currentPage < 1) {
       setCurrentPage(1);
-    } else if (times.length === 0 && currentPage !== 1) { // If no items, ensure currentPage is 1
+    } else if (times.length === 0 && currentPage !== 1) {
       setCurrentPage(1);
     }
-  }, [times.length, currentPage]); // Re-evaluate if number of items changes or if currentPage changes
+  }, [times.length, currentPage]);
 
 
   const formatDate = (date) =>
@@ -93,7 +85,6 @@ const TimesTable = ({
       setShowSolveInfo(true);
     } catch (error) {
       console.error('Error fetching solve details:', error);
-      // Optionally, show a toast notification for the error
     }
   };
 
@@ -108,7 +99,6 @@ const TimesTable = ({
     });
   };
 
-  // --- Pagination Handlers ---
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -118,15 +108,14 @@ const TimesTable = ({
   const getPageNumbers = () => {
     if (totalPages <= 1) return [];
 
-    const delta = 1; // Number of pages to show around current page (e.g., 1 means P-1, P, P+1)
+    const delta = 1;
     const pageNumbers = [];
-    let l; // last page number added
+    let l;
 
     for (let i = 1; i <= totalPages; i++) {
       if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
         if (l !== undefined) {
-          // Add ellipsis if there's a gap larger than 1
-          if (i - l === 2) { // Gap of 1, just add the missing number
+          if (i - l === 2) {
             pageNumbers.push(l + 1);
           } else if (i - l > 1) {
             pageNumbers.push('...');
@@ -138,8 +127,6 @@ const TimesTable = ({
     }
     return pageNumbers;
   };
-  // --- End Pagination Handlers ---
-
 
   return (
     <>

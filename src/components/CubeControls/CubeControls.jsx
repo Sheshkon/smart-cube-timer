@@ -89,7 +89,6 @@ const cubeControls = () => {
     setConnection(null);
     connectionRef.current = null;
     setLastMoves([]);
-    // window.location.reload()
   }
 
   const handleResetCubeState = () => {

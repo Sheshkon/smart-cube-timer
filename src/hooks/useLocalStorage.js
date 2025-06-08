@@ -19,10 +19,8 @@ function useLocalStorage(key, initialValue) {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value;
 
-      // Update state
       setStoredValue(valueToStore);
 
-      // Update localStorage
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
@@ -31,7 +29,6 @@ function useLocalStorage(key, initialValue) {
     }
   };
 
-  // Optional: Sync between tabs
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === key) {

@@ -4,12 +4,11 @@ import { BarChart, LineChart, PieChart, ScatterChart } from '@mui/x-charts';
 import { FiArrowLeft } from 'react-icons/fi';
 import db from 'src/db/db.js';
 import { sessionService } from 'src/db/sessionService.js';
-import { useSettings } from 'src/hooks/useSettings.js'; // Keep for other functions if needed, or rely on direct db access
+import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime } from 'src/utils/time.js';
 
 const projectBaseUrl = import.meta.env.BASE_URL;
 
-// Helper function to count moves from a space-separated string
 function countMoves(moveString) {
   if (!moveString || typeof moveString !== 'string') return 0;
   const moves = moveString.trim().split(/\s+/);
@@ -53,7 +52,6 @@ const ExtendedStats = ({ onClose, navigate }) => {
     loadSessions();
   }, []);
 
-  // Load and process solves and reconstruction steps when session changes
   useEffect(() => {
     if (!selectedSessionId) {
       setProcessedSolves([]);
@@ -91,10 +89,9 @@ const ExtendedStats = ({ onClose, navigate }) => {
             .map(step => ({
               ...step,
               moveCount: countMoves(step.moves),
-              // Duration of reconstruction entry, not actual solve step duration from this data
               entryDurationMs: step.endTime - step.startTime,
             }))
-            .sort((a, b) => a.startTime - b.startTime); // ensure steps are somewhat ordered if needed
+            .sort((a, b) => a.startTime - b.startTime);
 
           return {
             ...solve,
@@ -225,7 +222,7 @@ const ExtendedStats = ({ onClose, navigate }) => {
                 stepAggregates[step.name] = {
                   totalMoves: 0,
                   count: 0,
-                  totalEntryDuration: 0, // Duration of entering reconstruction data
+                  totalEntryDuration: 0,
                 };
               }
               stepAggregates[step.name].totalMoves += step.moveCount;
