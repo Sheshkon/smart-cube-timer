@@ -16,9 +16,11 @@ import TimesTable from 'src/components/TimesTable/TimesTable';
 import { useConsole } from 'src/contexts/ConsoleContext.jsx';
 import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 import { sessionService } from 'src/db/sessionService.js';
+import { useCube } from 'src/hooks/useCube.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 
 function App() {
+  const { practiceModeEnabled } = useCube();
   const { showConsole } = useConsole();
   const { settings, settingsRef, updateSetting } = useSettings();
   const [sessions, setSessions] = useState([]);
@@ -120,7 +122,7 @@ function App() {
               </div>
             </div>
             <>
-              {!settings.practiceMode.isEnabled && (
+              {!practiceModeEnabled && (
                 <div className="grid grid-cols-1 gap-4 md:gap-6">
                   <StatsDisplay
                     times={storedTimes}

@@ -10,17 +10,24 @@ import { cubeQuaternion } from 'src/utils/util.ts';
 import 'src/style.css';
 
 const Cube = ({ className = '' }) => {
-  const { settings, settingsRef, updateSetting } = useSettings();
+  const {
+    twistyPlayerRef,
+    hardwareInfo,
+    connection,
+    batteryLevel,
+    practiceModeEnabled,
+    setPracticeModeEnabled
+  } = useCube();
+
   const initialized = useRef(false);
   const cubeRef = useRef(null);
   const animationRef = useRef(-1);
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-  const { twistyPlayerRef, hardwareInfo, connection, batteryLevel } = useCube();
 
   const handleInfoModalOpen = () => setInfoModalOpen(!infoModalOpen);
   const handleSettingsModalOpen = () => setSettingsModalOpen(!settingsModalOpen);
-  const handlePracticeMode = () => updateSetting('practiceMode.isEnabled', !settings.practiceMode.isEnabled);
+  const handlePracticeMode = () => setPracticeModeEnabled(!practiceModeEnabled);
 
   const animateCubeOrientation = async () => {
     try {
@@ -92,15 +99,13 @@ const Cube = ({ className = '' }) => {
               </button>
 
               <>
-                {!settings.practiceMode.isEnabled && (
-                  <button
-                    onClick={handleSettingsModalOpen}
-                    className="p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                    title="Settings"
-                  >
-                    <Settings size={18} />
-                  </button>
-                )}
+                <button
+                  onClick={handleSettingsModalOpen}
+                  className="p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  title="Settings"
+                >
+                  <Settings size={18} />
+                </button>
               </>
 
               <button
@@ -108,8 +113,8 @@ const Cube = ({ className = '' }) => {
                 className={clsx(
                   'p-1.5 rounded-full mt-2 transition-colors',
                   {
-                    'bg-green-600 text-white hover:bg-green-700': settings.practiceMode.isEnabled,
-                    'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600': !settings.practiceMode.isEnabled,
+                    'bg-green-600 text-white hover:bg-green-700': practiceModeEnabled,
+                    'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600': !practiceModeEnabled,
                   },
                 )}
                 title="Practice"

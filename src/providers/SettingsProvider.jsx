@@ -15,7 +15,6 @@ const defaultSettings = {
   inspection: false,
   solvesPerPage: 15,
   practiceMode: {
-    isEnabled: false,
     category: 'ROUX_CMLL'
   }
 };

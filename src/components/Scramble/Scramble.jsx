@@ -58,6 +58,7 @@ const Scramble = ({ className = '' }) => {
     lastScrambleRef,
     shouldBeSolved,
     setShouldBeSolved,
+    practiceModeEnabled,
   } = useCube();
 
   const { settings, settingsRef, updateSetting } = useSettings();
@@ -69,10 +70,12 @@ const Scramble = ({ className = '' }) => {
 
   const generateScramble = async () => {
     let newScramble;
-    if (settings.practiceMode.isEnabled) {
+    console.log('generate');
+    if (practiceModeEnabled) {
       const practiceScrambleRecord = await getRandomPracticeScramble(GOOGLE_SHEET_ID, settings.practiceMode.category);
       setPracticeRecord(practiceScrambleRecord);
       newScramble = Alg.fromString(practiceScrambleRecord.scramble);
+      console.log('Practice Record: ', practiceScrambleRecord);
     } else {
       setPracticeRecord({});
       newScramble = await randomScrambleForEvent('333');
@@ -156,7 +159,7 @@ const Scramble = ({ className = '' }) => {
 
   useEffect(() => {
     generateScramble().then(() => console.log(settings.practiceMode));
-  }, [settings]);
+  }, [settings, practiceModeEnabled]);
 
   useEffect(() => {
     connection ? setShowScramble(true) : setShowScramble(false);
@@ -192,7 +195,7 @@ const Scramble = ({ className = '' }) => {
               {practiceRecord?.name ? practiceRecord.name : 'Scramble'}
             </h3>
 
-            {settings.practiceMode.isEnabled && (
+            {practiceModeEnabled && (
               <select
                 value={settings.practiceMode.category}
                 className="select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none"

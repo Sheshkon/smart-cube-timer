@@ -30,6 +30,7 @@ export const CubeProvider = ({ children }) => {
   const [lastMoves, setLastMoves] = useState([]);
   const [showScramble, setShowScramble] = useState(false);
   const [shouldBeSolved, setShouldBeSolved] = useState(false);
+  const [practiceModeEnabled, setPracticeModeEnabled] = useState(false);
 
   const twistyPlayerRef = useRef(twistyPlayer);
   const connectionRef = useRef(connection);
@@ -41,10 +42,10 @@ export const CubeProvider = ({ children }) => {
   const hardwareInfoRef = useRef(hardwareInfo);
   const deviceNameRef = useRef(deviceName);
   const deviceMacRef = useRef(deviceMac);
+  const practiceModeEnabledRef = useRef(practiceModeEnabled);
 
   const [scrambleDisplay, setScrambleDisplay] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
-
 
   useEffect(() => {
     connectionRef.current = connection;
@@ -54,6 +55,10 @@ export const CubeProvider = ({ children }) => {
 
   useEffect(() => {
     timerStateRef.current = timerState;
+  }, [timerState]);
+
+  useEffect(() => {
+    practiceModeEnabledRef.current = practiceModeEnabled;
   }, [timerState]);
 
   return (
@@ -70,6 +75,7 @@ export const CubeProvider = ({ children }) => {
         lastMoves,
         results,
         shouldBeSolved,
+        practiceModeEnabled,
 
         connectionRef,
         timerStateRef,
@@ -79,7 +85,9 @@ export const CubeProvider = ({ children }) => {
         hardwareInfoRef,
         deviceMacRef,
         deviceNameRef,
+        practiceModeEnabledRef,
 
+        setPracticeModeEnabled,
         setConnection,
         setHardwareInfo,
         setBatteryLevel,

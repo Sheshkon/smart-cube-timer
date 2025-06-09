@@ -35,6 +35,7 @@ const cubeControls = () => {
     connectionRef,
     setShouldBeSolved,
     setShowScramble,
+    practiceModeEnabledRef
   } = useCube();
 
   const { settingsRef, settings } = useSettings();
@@ -156,7 +157,7 @@ const cubeControls = () => {
 
   async function handleFaceletsEvent(event) {
 
-    const isSolved = settingsRef.current.practiceMode.isEnabled
+    const isSolved = practiceModeEnabledRef.current
       ? matchesPattern(event.facelets, PRACTICE_TEPMPLATES[settingsRef.current.practiceMode.category])
       : event.facelets === SOLVED_STATE;
 

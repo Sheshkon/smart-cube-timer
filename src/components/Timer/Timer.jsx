@@ -22,9 +22,11 @@ const Timer = ({ onSaveTime }) => {
     lastScrambleRef,
     connectionRef,
     connection,
+    practiceModeEnabled,
+    practiceModeEnabledRef,
   } = useCube();
 
-  const { settingsRef, settings } = useSettings();
+  const { settingsRef } = useSettings();
 
   const localTimerRef = useRef(null);
   const [showTimer, setShowTimer] = useState(false);
@@ -39,8 +41,7 @@ const Timer = ({ onSaveTime }) => {
     const firstMove = fittedMoves[0];
     const timestamp = lastMove.cubeTimestamp - firstMove.cubeTimestamp;
 
-    if (!settingsRef.current.practiceMode.isEnabled) {
-      console.log(settingsRef.current.practiceMode.isEnabled);
+    if (!practiceModeEnabledRef.current) {
       const { formattedTime, originalTime } = getTimerValueFromTimestamp(timestamp);
 
       const solve = new StatsResult(
@@ -107,16 +108,16 @@ const Timer = ({ onSaveTime }) => {
     setLastMoves([]);
     solutionMovesRef.current = [];
     setTimerState(TimerState.IDLE);
-    if (!settingsRef.current.practiceMode.isEnabled || !connectionRef?.current) {
+    if (!practiceModeEnabledRef.current || !connectionRef?.current) {
       setTimeValue(formatTime(0));
     }
-  }, [setLastMoves, setTimerState]);
+  }, [setLastMoves, setTimerState, practiceModeEnabled]);
 
   useEffect(() => {
     const handleFreshPattern = async (kpattern) => {
       const facelets = patternToFacelets(kpattern);
 
-      const isSolved = settingsRef.current.practiceMode.isEnabled
+      const isSolved = practiceModeEnabledRef.current
         ? matchesPattern(facelets, PRACTICE_TEPMPLATES[settingsRef.current.practiceMode.category])
         : facelets === SOLVED_STATE;
 
@@ -157,8 +158,10 @@ const Timer = ({ onSaveTime }) => {
         getTimerValueFromTimestamp(0);
         break;
       case TimerState.RUNNING:
-        setShowTimer(true);
-        startTimer();
+        if (!localTimerRef.current) {
+          setShowTimer(true);
+          startTimer();
+        }
         break;
       case TimerState.STOPPED:
         handleSolvedState();
