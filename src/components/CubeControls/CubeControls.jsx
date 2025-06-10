@@ -35,6 +35,7 @@ const cubeControls = () => {
     connectionRef,
     setShouldBeSolved,
     setShowScramble,
+    setPracticeModeEnabled,
     practiceModeEnabledRef
   } = useCube();
 
@@ -89,6 +90,7 @@ const cubeControls = () => {
 
     setConnection(null);
     connectionRef.current = null;
+    setPracticeModeEnabled(false);
     setLastMoves([]);
   }
 

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
+import clsx from 'clsx';
 import { Alg } from 'cubing/alg';
 import { randomScrambleForEvent } from 'cubing/scramble';
 import Inspection from 'src/components/Inspection/Inspection.jsx';
-import HintSolution from 'src/components/Scramble/HintSolution.jsx';
+import AdditionalScrambleOptions from 'src/components/Scramble/HintSolution.jsx';
 import { getCategories, getRandomPracticeScramble } from 'src/components/Scramble/practiceScramble.js';
 import { getMoveComponent } from 'src/components/Scramble/svgMapper.js';
 import { TimerState } from 'src/components/Timer/util.js';
@@ -63,7 +64,8 @@ const Scramble = ({ className = '' }) => {
 
   const { settings, settingsRef, updateSetting } = useSettings();
   const [categories, setCategories] = useState([]);
-  const [practiceRecord, setPracticeRecord] = useState({});
+  const [currentPracticeRecord, setCurrentPracticeRecord] = useState(null);
+  const [prevPracticeRecord, setPrevPracticeRecord] = useState(null);
   const [visibleHint, setVisibleHint] = useState(false);
 
   const toggleVisibleHint = () => setVisibleHint(!visibleHint);
@@ -73,11 +75,13 @@ const Scramble = ({ className = '' }) => {
     console.log('generate');
     if (practiceModeEnabled) {
       const practiceScrambleRecord = await getRandomPracticeScramble(GOOGLE_SHEET_ID, settings.practiceMode.category);
-      setPracticeRecord(practiceScrambleRecord);
+      setPrevPracticeRecord(currentPracticeRecord);
+      setCurrentPracticeRecord(practiceScrambleRecord);
       newScramble = Alg.fromString(practiceScrambleRecord.scramble);
       console.log('Practice Record: ', practiceScrambleRecord);
     } else {
-      setPracticeRecord({});
+      setPrevPracticeRecord(null);
+      setCurrentPracticeRecord(null);
       newScramble = await randomScrambleForEvent('333');
     }
 
@@ -185,66 +189,75 @@ const Scramble = ({ className = '' }) => {
         <Inspection />
       )}
 
-      {showScramble && timerState === TimerState.IDLE && (
-        <div
-          className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}
-        >
+      <div
+        className={clsx(
+          {
+            className: showScramble && timerState === TimerState.IDLE,
+          },
+          {
+            'bg-white dark:bg-gray-800 rounded-lg shadow-md p-4': showScramble && timerState === TimerState.IDLE,
+          },
+        )}
+      >
+        {showScramble && timerState === TimerState.IDLE && (
+          <>
+            <div className="flex justify-start items-center mb-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                {currentPracticeRecord?.name ? currentPracticeRecord.name : 'Scramble'}
+              </h3>
 
-          <div className="flex justify-start items-center mb-2">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              {practiceRecord?.name ? practiceRecord.name : 'Scramble'}
-            </h3>
+              {practiceModeEnabled && (
+                <>
+                  <select
+                    value={settings.practiceMode.category}
+                    className="select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none"
+                    onChange={(e) => {
+                      updateSetting('practiceMode.category', e.target.value);
+                    }}
+                  >
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+            </div>
 
-            {practiceModeEnabled && (
-              <select
-                value={settings.practiceMode.category}
-                className="select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none"
-                onChange={(e) => {
-                  updateSetting('practiceMode.category', e.target.value);
-                }}
-              >
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-          <div className={`
+            <div className={`
                 bg-white dark:bg-gray-800 
                 p-3 rounded-md font-mono 
                 ${settings.scrambleSize}
                 overflow-x-auto
           `}>
-            <div className="whitespace-normal break-all leading-relaxed text-gray-900 dark:text-gray-50">
-              {shouldBeSolved ? (
-                <div className="text-red-500 px-10 py-2">
-                  Cube should be solved
-                </div>
-              ) : (
-                scrambleDisplay.map((el) => {
-                  const textProps = {
-                    style: {
-                      color:
-                        el.color !== MoveColor.WHITE ? el.color : 'inherit',
-                    },
-                    children: el.move,
-                  };
+              <div className="whitespace-normal break-all leading-relaxed text-gray-900 dark:text-gray-50">
+                {shouldBeSolved ? (
+                  <div className="text-red-500 px-10 py-2">
+                    Cube should be solved
+                  </div>
+                ) : (
+                  scrambleDisplay.map((el) => {
+                    const textProps = {
+                      style: {
+                        color:
+                          el.color !== MoveColor.WHITE ? el.color : 'inherit',
+                      },
+                      children: el.move,
+                    };
 
-                  if (settings.imageNotation) {
-                    const MoveComponent = getMoveComponent(
-                      el.move.replace('2', ''),
-                    );
-                    if (MoveComponent) {
-                      const color =
-                        settings.theme === 'dark' ? 'white' : 'black';
-                      return (
-                        <span
-                          key={el.index}
-                          className={`${el.isCurrent ? 'is-current-move' : ''} inline-block px-1`}
-                        >
+                    if (settings.imageNotation) {
+                      const MoveComponent = getMoveComponent(
+                        el.move.replace('2', ''),
+                      );
+                      if (MoveComponent) {
+                        const color =
+                          settings.theme === 'dark' ? 'white' : 'black';
+                        return (
+                          <span
+                            key={el.index}
+                            className={`${el.isCurrent ? 'is-current-move' : ''} inline-block px-1`}
+                          >
                           <div className="relative">
                             {el.move.includes('2') && (
                               <span className="absolute -right-2 -top-4">
@@ -262,32 +275,36 @@ const Scramble = ({ className = '' }) => {
                             />
                           </div>
                         </span>
-                      );
+                        );
+                      }
                     }
-                  }
-                  return (
-                    <span
-                      key={el.index}
-                      className={`${el.isCurrent ? 'is-current-move' : ''} inline-block px-1`}
-                    >
+                    return (
+                      <span
+                        key={el.index}
+                        className={`${el.isCurrent ? 'is-current-move' : ''} inline-block px-1`}
+                      >
                       <span {...textProps} />
                     </span>
-                  );
-                })
-              )}
+                    );
+                  })
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {connection && (
-        <HintSolution
-          practiceRecord={practiceRecord}
-          className={`mt-5 ${className}`}
-          visible={visibleHint}
-          toggleVisible={toggleVisibleHint}
-        />
-      )}
+            {practiceModeEnabled && (
+              <AdditionalScrambleOptions
+                practiceRecord={timerState === TimerState.IDLE ? currentPracticeRecord : prevPracticeRecord}
+                visible={visibleHint}
+                toggleVisible={toggleVisibleHint}
+                reload={() => {
+                  setVisibleHint(false);
+                  generateScramble();
+                }}
+              />
+            )}
+          </>
+        )}
+      </div>
     </>
   );
 };
