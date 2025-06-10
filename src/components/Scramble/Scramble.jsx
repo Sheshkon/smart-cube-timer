@@ -290,19 +290,18 @@ const Scramble = ({ className = '' }) => {
                 )}
               </div>
             </div>
-
-            {practiceModeEnabled && (
-              <AdditionalScrambleOptions
-                practiceRecord={timerState === TimerState.IDLE ? currentPracticeRecord : prevPracticeRecord}
-                visible={visibleHint}
-                toggleVisible={toggleVisibleHint}
-                reload={() => {
-                  setVisibleHint(false);
-                  generateScramble();
-                }}
-              />
-            )}
           </>
+        )}
+        {practiceModeEnabled && (
+          <AdditionalScrambleOptions
+            practiceRecord={timerState === TimerState.IDLE ? currentPracticeRecord : prevPracticeRecord}
+            visible={visibleHint}
+            toggleVisible={toggleVisibleHint}
+            reload={() => {
+              setVisibleHint(false);
+              generateScramble();
+            }}
+          />
         )}
       </div>
     </>
