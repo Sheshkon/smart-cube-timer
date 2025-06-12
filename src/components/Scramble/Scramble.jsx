@@ -5,7 +5,10 @@ import { Alg } from 'cubing/alg';
 import { randomScrambleForEvent } from 'cubing/scramble';
 import Inspection from 'src/components/Inspection/Inspection.jsx';
 import AdditionalScrambleOptions from 'src/components/Scramble/HintSolution.jsx';
-import { getCategories, getRandomPracticeScramble } from 'src/components/Scramble/practiceScramble.js';
+import {
+  getCategories,
+  getRandomPracticeScramble,
+} from 'src/components/Scramble/practiceScramble.js';
 import { getMoveComponent } from 'src/components/Scramble/svgMapper.js';
 import { TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
@@ -17,12 +20,7 @@ import 'src/style.css';
 
 const GOOGLE_SHEET_ID = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oyH0';
 
-const isReadyTimerCondition = (
-  wrongCounter,
-  scrambleMoves,
-  cubeMoves,
-  timerState,
-) =>
+const isReadyTimerCondition = (wrongCounter, scrambleMoves, cubeMoves, timerState) =>
   wrongCounter === 0 &&
   scrambleMoves.length > 1 &&
   cubeMoves.length === scrambleMoves.length &&
@@ -74,7 +72,10 @@ const Scramble = ({ className = '' }) => {
     let newScramble;
     console.log('generate');
     if (practiceModeEnabled) {
-      const practiceScrambleRecord = await getRandomPracticeScramble(GOOGLE_SHEET_ID, settings.practiceMode.category);
+      const practiceScrambleRecord = await getRandomPracticeScramble(
+        GOOGLE_SHEET_ID,
+        settings.practiceMode.category
+      );
       setPrevPracticeRecord(currentPracticeRecord);
       setCurrentPracticeRecord(practiceScrambleRecord);
       newScramble = Alg.fromString(practiceScrambleRecord.scramble);
@@ -110,8 +111,7 @@ const Scramble = ({ className = '' }) => {
       if (
         index > cubeMoves.length - 1 ||
         cubeMoves[index] === '' ||
-        (move.includes('2') &&
-          move.replace('2', '') === cubeMoves[index].replace(/'/g, ''))
+        (move.includes('2') && move.replace('2', '') === cubeMoves[index].replace(/'/g, ''))
       ) {
         return new ColoredMove(move, index);
       }
@@ -140,8 +140,7 @@ const Scramble = ({ className = '' }) => {
       ? coloredMoves.findIndex((el) => el.color === MoveColor.WHITE)
       : 0;
     const coloredScramble = coloredMoves?.map(
-      (el, index) =>
-        new ColoredMove(el.move, index, el.color, index === currentMoveIndex),
+      (el, index) => new ColoredMove(el.move, index, el.color, index === currentMoveIndex)
     );
 
     wrongCounter > 1
@@ -149,7 +148,9 @@ const Scramble = ({ className = '' }) => {
       : setScrambleDisplay(coloredScramble);
 
     if (isReadyTimerCondition(wrongCounter, scrambleMoves, cubeMoves, timerState)) {
-      settingsRef.current.inspection ? setTimerState(TimerState.INSPECTION) : setTimerState(TimerState.READY);
+      settingsRef.current.inspection
+        ? setTimerState(TimerState.INSPECTION)
+        : setTimerState(TimerState.READY);
       setShowScramble(false);
       await generateScramble();
     }
@@ -170,11 +171,9 @@ const Scramble = ({ className = '' }) => {
   }, [connection]);
 
   useEffect(() => {
-    getCategories(GOOGLE_SHEET_ID)
-      .then(categories => {
-        setCategories(categories);
-      });
-
+    getCategories(GOOGLE_SHEET_ID).then((categories) => {
+      setCategories(categories);
+    });
   }, []);
 
   useEffect(() => {
@@ -185,24 +184,19 @@ const Scramble = ({ className = '' }) => {
 
   return (
     <>
-      {(timerState === TimerState.INSPECTION || timerState === TimerState.DNS) && (
-        <Inspection />
-      )}
+      {(timerState === TimerState.INSPECTION || timerState === TimerState.DNS) && <Inspection />}
 
       <div
-        className={clsx(
-          {
-            className: showScramble && timerState === TimerState.IDLE,
-          },
-          {
-            'bg-white dark:bg-gray-800 rounded-lg shadow-md p-4': showScramble && timerState === TimerState.IDLE,
-          },
-        )}
+        className={clsx({
+          [className]: showScramble && timerState === TimerState.IDLE,
+          'bg-white dark:bg-gray-800 rounded-lg shadow-md p-4':
+            showScramble && timerState === TimerState.IDLE,
+        })}
       >
         {showScramble && timerState === TimerState.IDLE && (
           <>
-            <div className="flex justify-start items-center mb-2">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+            <div className='flex justify-start items-center mb-2'>
+              <h3 className='text-lg font-medium text-gray-900 dark:text-white'>
                 {currentPracticeRecord?.name ? currentPracticeRecord.name : 'Scramble'}
               </h3>
 
@@ -210,7 +204,7 @@ const Scramble = ({ className = '' }) => {
                 <>
                   <select
                     value={settings.practiceMode.category}
-                    className="select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none"
+                    className='select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none'
                     onChange={(e) => {
                       updateSetting('practiceMode.category', e.target.value);
                     }}
@@ -225,56 +219,46 @@ const Scramble = ({ className = '' }) => {
               )}
             </div>
 
-            <div className={`
+            <div
+              className={`
                 bg-white dark:bg-gray-800 
                 p-3 rounded-md font-mono 
                 ${settings.scrambleSize}
                 overflow-x-auto
-          `}>
-              <div className="whitespace-normal break-all leading-relaxed text-gray-900 dark:text-gray-50">
+          `}
+            >
+              <div className='whitespace-normal break-all leading-relaxed text-gray-900 dark:text-gray-50'>
                 {shouldBeSolved ? (
-                  <div className="text-red-500 px-10 py-2">
-                    Cube should be solved
-                  </div>
+                  <div className='text-red-500 px-10 py-2'>Cube should be solved</div>
                 ) : (
                   scrambleDisplay.map((el) => {
                     const textProps = {
                       style: {
-                        color:
-                          el.color !== MoveColor.WHITE ? el.color : 'inherit',
+                        color: el.color !== MoveColor.WHITE ? el.color : 'inherit',
                       },
                       children: el.move,
                     };
 
                     if (settings.imageNotation) {
-                      const MoveComponent = getMoveComponent(
-                        el.move.replace('2', ''),
-                      );
+                      const MoveComponent = getMoveComponent(el.move.replace('2', ''));
                       if (MoveComponent) {
-                        const color =
-                          settings.theme === 'dark' ? 'white' : 'black';
+                        const color = settings.theme === 'dark' ? 'white' : 'black';
                         return (
                           <span
                             key={el.index}
                             className={`${el.isCurrent ? 'is-current-move' : ''} inline-block px-1`}
                           >
-                          <div className="relative">
-                            {el.move.includes('2') && (
-                              <span className="absolute -right-2 -top-4">
-                                x2
-                              </span>
-                            )}
-                            <MoveComponent
-                              fill={
-                                el.color !== MoveColor.WHITE ? el.color : color
-                              }
-                              stroke={
-                                el.color !== MoveColor.WHITE ? el.color : color
-                              }
-                              className={getImageScrambleSizeClass(settings.scrambleSize)}
-                            />
-                          </div>
-                        </span>
+                            <div className='relative'>
+                              {el.move.includes('2') && (
+                                <span className='absolute -right-2 -top-4'>x2</span>
+                              )}
+                              <MoveComponent
+                                fill={el.color !== MoveColor.WHITE ? el.color : color}
+                                stroke={el.color !== MoveColor.WHITE ? el.color : color}
+                                className={getImageScrambleSizeClass(settings.scrambleSize)}
+                              />
+                            </div>
+                          </span>
                         );
                       }
                     }
@@ -283,8 +267,8 @@ const Scramble = ({ className = '' }) => {
                         key={el.index}
                         className={`${el.isCurrent ? 'is-current-move' : ''} inline-block px-1`}
                       >
-                      <span {...textProps} />
-                    </span>
+                        <span {...textProps} />
+                      </span>
                     );
                   })
                 )}
@@ -294,7 +278,9 @@ const Scramble = ({ className = '' }) => {
         )}
         {practiceModeEnabled && (
           <AdditionalScrambleOptions
-            practiceRecord={timerState === TimerState.IDLE ? currentPracticeRecord : prevPracticeRecord}
+            practiceRecord={
+              timerState === TimerState.IDLE ? currentPracticeRecord : prevPracticeRecord
+            }
             visible={visibleHint}
             toggleVisible={toggleVisibleHint}
             reload={() => {

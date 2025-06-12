@@ -117,7 +117,7 @@ function App() {
                 <Cube className="w-full md:w-1/2 flex justify-center md:mb-0" containerId="main" />
                 <div className="w-full md:w-1/2 flex flex-col items-center">
                   <Timer onSaveTime={handleSaveTime} className="mb-6" />
-                  <Scramble className="w-full max-w-md" />
+                  <Scramble className="w-full max-w-md p-4" />
                 </div>
               </div>
             </div>
