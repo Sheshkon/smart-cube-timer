@@ -27,6 +27,7 @@ const HintSolution = ({ className = '', practiceRecord, visible, toggleVisible, 
 
       {visible && hasSolutions && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+          <h2>{practiceRecord.name}</h2>
           {practiceRecord.solutions.map(solution => (
             <h1 className="px-4" key={solution}>
               {solution === practiceRecord.recommendedSolution ? (

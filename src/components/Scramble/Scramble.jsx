@@ -197,7 +197,7 @@ const Scramble = ({ className = '' }) => {
           <>
             <div className='flex justify-start items-center mb-2'>
               <h3 className='text-lg font-medium text-gray-900 dark:text-white'>
-                {currentPracticeRecord?.name ? currentPracticeRecord.name : 'Scramble'}
+                Scramble
               </h3>
 
               {practiceModeEnabled && (
@@ -278,6 +278,7 @@ const Scramble = ({ className = '' }) => {
         )}
         {practiceModeEnabled && (
           <AdditionalScrambleOptions
+            className="pt-2"
             practiceRecord={
               timerState === TimerState.IDLE ? currentPracticeRecord : prevPracticeRecord
             }
