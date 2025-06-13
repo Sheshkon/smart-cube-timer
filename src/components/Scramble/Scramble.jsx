@@ -62,11 +62,16 @@ const Scramble = ({ className = '' }) => {
 
   const { settings, settingsRef, updateSetting } = useSettings();
   const [categories, setCategories] = useState([]);
-  const [currentPracticeRecord, setCurrentPracticeRecord] = useState(null);
-  const [prevPracticeRecord, setPrevPracticeRecord] = useState(null);
+  const [historyPracticeRecords, setHistoryPracticeRecords] = useState([]);
   const [visibleHint, setVisibleHint] = useState(false);
 
   const toggleVisibleHint = () => setVisibleHint(!visibleHint);
+
+  const addPracticeRecord = (newRecord) => {
+    setHistoryPracticeRecords(prev => prev.length >= 10
+        ? [...prev.slice(1), newRecord]
+        : [...prev, newRecord]);
+  };
 
   const generateScramble = async () => {
     let newScramble;
@@ -76,13 +81,11 @@ const Scramble = ({ className = '' }) => {
         GOOGLE_SHEET_ID,
         settings.practiceMode.category
       );
-      setPrevPracticeRecord(currentPracticeRecord);
-      setCurrentPracticeRecord(practiceScrambleRecord);
+      addPracticeRecord(practiceScrambleRecord);
       newScramble = Alg.fromString(practiceScrambleRecord.scramble);
       console.log('Practice Record: ', practiceScrambleRecord);
     } else {
-      setPrevPracticeRecord(null);
-      setCurrentPracticeRecord(null);
+      setHistoryPracticeRecords([]);
       newScramble = await randomScrambleForEvent('333');
     }
 
@@ -279,11 +282,10 @@ const Scramble = ({ className = '' }) => {
         {practiceModeEnabled && (
           <AdditionalScrambleOptions
             className="pt-2"
-            practiceRecord={
-              timerState === TimerState.IDLE ? currentPracticeRecord : prevPracticeRecord
-            }
+            records={historyPracticeRecords}
             visible={visibleHint}
-            toggleVisible={toggleVisibleHint}
+            showPrev={timerState !== TimerState.IDLE}
+            toggleHintVisible={toggleVisibleHint}
             reload={() => {
               setVisibleHint(false);
               generateScramble();

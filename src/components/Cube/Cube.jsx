@@ -5,7 +5,6 @@ import { Dumbbell, Info, Settings } from 'lucide-react';
 import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
 import { SettingsModal } from 'src/components/Modals/SettingsModal.jsx';
 import { useCube } from 'src/hooks/useCube';
-import { useSettings } from 'src/hooks/useSettings.js';
 import { cubeQuaternion } from 'src/utils/util.ts';
 import 'src/style.css';
 
