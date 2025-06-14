@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import HistoryIcon from '@mui/icons-material/History';
-import { useCube } from 'src/hooks/useCube.js';
 
 const HintSolution = ({
   className = '',
@@ -13,7 +12,6 @@ const HintSolution = ({
   reload,
   showPrev,
 }) => {
-  const { lastSolveTimeRef } = useCube();
   const hasSolutions = records?.[records?.length - 1]?.solutions?.length > 0;
   const [historyVisible, setHistoryVisible] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -55,7 +53,7 @@ const HintSolution = ({
             <b>{records?.[records?.length - (showPrev ? 2 : 1)]?.name}</b>
           </h2>
           {records?.[records?.length - (showPrev ? 2 : 1)]?.solutions.map((solution, index) => (
-            <h1 className='pl-2' key={index + solution}>
+            <h1 className='pl-2 text-sm' key={index + solution}>
               {solution === records?.[records?.length - (showPrev ? 2 : 1)].recommendedSolution ? (
                 <strong>{solution}</strong>
               ) : (
@@ -88,7 +86,8 @@ const HintSolution = ({
                     </span>
                   </h1>
                   {selectedRecord === record && (
-                    <div className='pl-3'>
+                    <div className='pl-3 text-xs'>
+                      <h1><b>Setup: </b> {record.scramble}</h1>
                       {record.solutions.map((solution, index) => (
                         <div key={solution + index + record.name}>
                           {solution === record.recommendedSolution ? (

@@ -76,7 +76,7 @@ const Scramble = ({ className = '' }) => {
 
   const setTimeForHistory = (time) =>
     setHistoryPracticeRecords((prev) => {
-      if (prev.length < 2) return prev; // Нельзя обновить предпоследний, если элементов меньше 2
+      if (prev.length < 2) return prev;
       const updated = [...prev];
       const secondLastIndex = updated.length - 2;
       updated[secondLastIndex] = { ...updated[secondLastIndex], time };
