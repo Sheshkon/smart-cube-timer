@@ -28,6 +28,7 @@ export const CubeProvider = ({ children }) => {
   const [scramble, setScramble] = useState([]);
   const [timerState, setTimerState] = useState(TimerState.IDLE);
   const [lastMoves, setLastMoves] = useState([]);
+  const [lastSolveTime, setLastSolveTime] = useState(null);
   const [showScramble, setShowScramble] = useState(false);
   const [shouldBeSolved, setShouldBeSolved] = useState(false);
   const [practiceModeEnabled, setPracticeModeEnabled] = useState(false);
@@ -36,7 +37,6 @@ export const CubeProvider = ({ children }) => {
   const connectionRef = useRef(connection);
   const timerStateRef = useRef(timerState);
   const solutionMovesRef = useRef([]);
-  const [results, setResults] = useState([]);
   const lastScrambleRef = useRef(scramble);
   const batteryLevelRef = useRef(batteryLevel);
   const hardwareInfoRef = useRef(hardwareInfo);
@@ -73,9 +73,9 @@ export const CubeProvider = ({ children }) => {
         scrambleDisplay,
         timerState,
         lastMoves,
-        results,
         shouldBeSolved,
         practiceModeEnabled,
+        lastSolveTime,
 
         connectionRef,
         timerStateRef,
@@ -96,12 +96,12 @@ export const CubeProvider = ({ children }) => {
         setScrambleDisplay,
         setTimerState,
         setLastMoves,
-        setResults,
         isAnimating,
         setIsAnimating,
         setDeviceMac,
         setDeviceName,
         setShouldBeSolved,
+        setLastSolveTime,
       }}
     >
       {children}

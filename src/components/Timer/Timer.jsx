@@ -24,6 +24,7 @@ const Timer = ({ onSaveTime }) => {
     connection,
     practiceModeEnabled,
     practiceModeEnabledRef,
+    setLastSolveTime,
   } = useCube();
 
   const { settingsRef } = useSettings();
@@ -40,14 +41,14 @@ const Timer = ({ onSaveTime }) => {
     const lastMove = fittedMoves.at(-1);
     const firstMove = fittedMoves[0];
     const timestamp = lastMove.cubeTimestamp - firstMove.cubeTimestamp;
+    const { formattedTime, originalTime } = getTimerValueFromTimestamp(timestamp);
+    setLastSolveTime(formattedTime);
 
     if (!practiceModeEnabledRef.current) {
-      const { formattedTime, originalTime } = getTimerValueFromTimestamp(timestamp);
-
       const solve = new StatsResult(
         originalTime,
         formattedTime,
-        getReconstruction(lastScrambleRef.current.toString(), solutionMovesRef.current),
+        getReconstruction(lastScrambleRef.current.toString(), solutionMovesRef.current)
       );
 
       onSaveTime(solve);
@@ -94,7 +95,6 @@ const Timer = ({ onSaveTime }) => {
     localTimerRef.current = {
       stop: () => clearTimeout(timeoutId),
     };
-
   }, [connectionRef, getTimerValueFromTimestamp]);
 
   const stopTimer = useCallback(() => {
@@ -121,10 +121,7 @@ const Timer = ({ onSaveTime }) => {
         ? matchesPattern(facelets, PRACTICE_TEPMPLATES[settingsRef.current.practiceMode.category])
         : facelets === SOLVED_STATE;
 
-      if (
-        isSolved &&
-        timerStateRef.current === TimerState.RUNNING
-      ) {
+      if (isSolved && timerStateRef.current === TimerState.RUNNING) {
         setTimerState(TimerState.STOPPED);
         // twistyPlayerRef.current.alg = '';
       }
@@ -133,14 +130,14 @@ const Timer = ({ onSaveTime }) => {
     if (twistyPlayerRef.current) {
       freshListenerRef.current =
         twistyPlayerRef.current.experimentalModel.currentPattern.addFreshListener(
-          handleFreshPattern,
+          handleFreshPattern
         );
     }
 
     return () => {
       if (freshListenerRef.current && twistyPlayerRef.current) {
         twistyPlayerRef.current.experimentalModel.currentPattern.removeFreshListener(
-          freshListenerRef.current,
+          freshListenerRef.current
         );
       }
       stopTimer();
@@ -172,17 +169,13 @@ const Timer = ({ onSaveTime }) => {
   }, [timerState, getTimerValueFromTimestamp, startTimer, handleSolvedState]);
 
   useEffect(() => {
-    if (!connection)
-      clearTimerAndSolvingData();
+    if (!connection) clearTimerAndSolvingData();
   }, [connection]);
 
   return (
     <>
       {showTimer && (
-        <div
-          id="timer"
-          className="font-mono font-semibold text-lg text-gray-900 dark:text-white"
-        >
+        <div id='timer' className='font-mono font-semibold text-lg text-gray-900 dark:text-white p-3'>
           {timeValue}
         </div>
       )}

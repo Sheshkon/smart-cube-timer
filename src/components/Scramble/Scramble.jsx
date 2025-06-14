@@ -58,6 +58,7 @@ const Scramble = ({ className = '' }) => {
     shouldBeSolved,
     setShouldBeSolved,
     practiceModeEnabled,
+    lastSolveTime,
   } = useCube();
 
   const { settings, settingsRef, updateSetting } = useSettings();
@@ -72,6 +73,15 @@ const Scramble = ({ className = '' }) => {
       prev.length >= 10 ? [...prev.slice(1), newRecord] : [...prev, newRecord]
     );
   };
+
+  const setTimeForHistory = (time) =>
+    setHistoryPracticeRecords((prev) => {
+      if (prev.length < 2) return prev; // Нельзя обновить предпоследний, если элементов меньше 2
+      const updated = [...prev];
+      const secondLastIndex = updated.length - 2;
+      updated[secondLastIndex] = { ...updated[secondLastIndex], time };
+      return updated;
+    });
 
   const generateScramble = async () => {
     let newScramble;
@@ -184,6 +194,10 @@ const Scramble = ({ className = '' }) => {
       setVisibleHint(false);
     }
   }, [timerState]);
+
+  useEffect(() => {
+    setTimeForHistory(lastSolveTime);
+  }, [lastSolveTime]);
 
   return (
     <>
