@@ -86,7 +86,7 @@ const HintSolution = ({
                     </span>
                   </h1>
                   {selectedRecord === record && (
-                    <div className='pl-3 text-xs'>
+                    <div className='pl-3 text-sm'>
                       <h1><b>Setup: </b> {record.scramble}</h1>
                       {record.solutions.map((solution, index) => (
                         <div key={solution + index + record.name}>
