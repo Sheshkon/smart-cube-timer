@@ -23,7 +23,7 @@ const HintSolution = ({
   };
 
   return (
-    <div className={className}>
+    <div className={`${className} w-full max-w-md`}>
       {hasSolutions && (
         <div className='flex justify-end items-center gap-3'>
           <button
@@ -59,13 +59,13 @@ const HintSolution = ({
       )}
 
       {historyVisible && (
-        <div className='p-4 mt-3 bg-white dark:bg-gray-800 rounded-lg shadow-md'>
+        <div className='p-4 mt-3 bg-white dark:bg-gray-800 rounded-lg shadow-md w-full max-w-full'>
           <h1 className='pb-2'><b>History</b></h1>
           <div>
             {records
               .slice()
               .reverse()
-              .slice(showPrev ? 0 : 1, records.length)
+              .slice(showPrev ? 2 : 1, records.length)
               .map((record) => (
                 <div className='pl-2'>
                   <h1

@@ -68,9 +68,9 @@ const Scramble = ({ className = '' }) => {
   const toggleVisibleHint = () => setVisibleHint(!visibleHint);
 
   const addPracticeRecord = (newRecord) => {
-    setHistoryPracticeRecords(prev => prev.length >= 10
-        ? [...prev.slice(1), newRecord]
-        : [...prev, newRecord]);
+    setHistoryPracticeRecords((prev) =>
+      prev.length >= 10 ? [...prev.slice(1), newRecord] : [...prev, newRecord]
+    );
   };
 
   const generateScramble = async () => {
@@ -190,7 +190,7 @@ const Scramble = ({ className = '' }) => {
       {(timerState === TimerState.INSPECTION || timerState === TimerState.DNS) && <Inspection />}
 
       <div
-        className={clsx({
+        className={clsx('w-full', {
           [className]: showScramble && timerState === TimerState.IDLE,
           'bg-white dark:bg-gray-800 rounded-lg shadow-md p-4':
             showScramble && timerState === TimerState.IDLE,
@@ -199,9 +199,7 @@ const Scramble = ({ className = '' }) => {
         {showScramble && timerState === TimerState.IDLE && (
           <>
             <div className='flex justify-start items-center mb-2'>
-              <h3 className='text-lg font-medium text-gray-900 dark:text-white'>
-                Scramble
-              </h3>
+              <h3 className='text-lg font-medium text-gray-900 dark:text-white'>Scramble</h3>
 
               {practiceModeEnabled && (
                 <>
@@ -281,7 +279,7 @@ const Scramble = ({ className = '' }) => {
         )}
         {practiceModeEnabled && (
           <AdditionalScrambleOptions
-            className="pt-2"
+            className='pt-2'
             records={historyPracticeRecords}
             visible={visibleHint}
             showPrev={timerState !== TimerState.IDLE}
