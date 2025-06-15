@@ -13,7 +13,7 @@ const CACHE_LIFETIME_MS = 24 * 60 * 60 * 1000;
  */
 async function syncScrambles(sheetId, sheetName = '1') {
   const meta = await db.practiceScrambleMeta.get(sheetId);
-  if (meta && (Date.now() - meta.timestamp) < CACHE_LIFETIME_MS) {
+  if (meta && Date.now() - meta.timestamp < CACHE_LIFETIME_MS) {
     console.log(`[ScrambleService] Cache is fresh for sheetId: ${sheetId}`);
     return;
   }
@@ -27,6 +27,7 @@ async function syncScrambles(sheetId, sheetName = '1') {
     }
     const networkData = await response.json();
 
+    console.log('networkData: ', networkData);
     // ВАЖНО: Убедитесь, что заголовки в Google Sheet - 'Category' и 'Scramble'
     // 'Category' и 'Scramble' - это ключи, которые создаст opensheet
 
@@ -34,14 +35,14 @@ async function syncScrambles(sheetId, sheetName = '1') {
       await db.practiceScrambles.where({ sheetId }).delete();
 
       // Готовим данные для сохранения, добавляя sheetId к каждой записи
-      const scramblesToSave = networkData.map(item => (
-        {
+      const scramblesToSave = networkData.map((item) => ({
         sheetId: sheetId,
         category: item.Category,
         scramble: item.Scramble,
         name: item.Name,
         recommendedSolution: item.RecommenedSolution,
-        solutions: item.Solutions.split('\n')
+        solutions: item.Solutions.split('\n'),
+        visualization: item.Base64
       }));
 
       await db.practiceScrambles.bulkAdd(scramblesToSave);
@@ -50,12 +51,13 @@ async function syncScrambles(sheetId, sheetName = '1') {
     });
 
     console.log(`[ScrambleService] Synced ${networkData.length} scrambles for sheetId: ${sheetId}`);
-
   } catch (error) {
     console.error('[ScrambleService] Sync failed:', error);
     if (!meta) throw new Error('Network failed and no cache available.');
   }
 }
+
+
 
 /**
  * @param {string} sheetId - ID таблицы.
@@ -68,19 +70,14 @@ export async function getRandomPracticeScramble(sheetId, category) {
 
   await syncScrambles(sheetId);
 
-  const count = await db.practiceScrambles
-    .where({ sheetId, category })
-    .count();
+  const count = await db.practiceScrambles.where({ sheetId, category }).count();
 
   if (count === 0) {
     return `No scrambles found for "${category}"`;
   }
 
   const randomIndex = Math.floor(Math.random() * count);
-  return await db.practiceScrambles
-    .where({ sheetId, category })
-    .offset(randomIndex)
-    .first();
+  return await db.practiceScrambles.where({ sheetId, category }).offset(randomIndex).first();
 }
 
 /**
@@ -94,5 +91,9 @@ export async function getCategories(sheetId) {
   await syncScrambles(sheetId);
 
   const allRecords = await db.practiceScrambles.where({ sheetId }).toArray();
-  return Array.from(new Set(allRecords.map(s => s.category)));
+  return Array.from(new Set(allRecords.map((s) => s.category)));
+}
+
+export async function getAllBySheetIdAndCategory(sheetId, category) {
+  return await db.practiceScrambles.where({ sheetId, category }).toArray();
 }

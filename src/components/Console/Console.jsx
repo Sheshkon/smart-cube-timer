@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 import { Console, Hook, Unhook } from 'console-feed';
+import { useConsole } from 'src/contexts/ConsoleContext.jsx';
 
-function CustomConsole({showConsole = false}) {
+function CustomConsole() {
   const [logs, setLogs] = useState([]);
+  const { showConsole } = useConsole();
 
   useEffect(() => {
     Hook(
