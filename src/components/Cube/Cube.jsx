@@ -1,12 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import clsx from 'clsx';
+import { TwistyPlayer } from 'cubing/twisty';
 import { Dumbbell, Info, Settings } from 'lucide-react';
 import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
 import { SettingsModal } from 'src/components/Modals/SettingsModal.jsx';
 import { useCube } from 'src/hooks/useCube';
 import { cubeQuaternion } from 'src/utils/util.ts';
 import 'src/style.css';
+
+const twistyConfig =  {
+  puzzle: '3x3x3',
+  visualization: 'PG3D',
+  alg: '',
+  experimentalSetupAnchor: 'start',
+  background: 'none',
+  controlPanel: 'none',
+  hintFacelets: 'none',
+  experimentalDragInput: 'none',
+  cameraLatitude: 0,
+  cameraLongitude: 0,
+  cameraLatitudeLimit: 0,
+  tempoScale: 5,
+};
 
 const Cube = ({ className = '' }) => {
   const {
@@ -61,7 +77,10 @@ const Cube = ({ className = '' }) => {
   };
 
   useEffect(() => {
+
     if (initialized.current) return;
+
+    twistyPlayerRef.current = new TwistyPlayer(twistyConfig);
 
     if (cubeRef.current && twistyPlayerRef.current) {
       cubeRef.current.appendChild(twistyPlayerRef.current);
@@ -74,7 +93,7 @@ const Cube = ({ className = '' }) => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [twistyPlayerRef]);
+  }, []);
 
   return (
     <div className={className}>

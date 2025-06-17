@@ -1,23 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { TwistyPlayer } from 'cubing/twisty';
 import { TimerState } from 'src/components/Timer/util.js';
 import { CubeContext } from 'src/contexts/CubeContext.jsx';
-
-const twistyPlayer = new TwistyPlayer({
-  puzzle: '3x3x3',
-  visualization: 'PG3D',
-  alg: '',
-  experimentalSetupAnchor: 'start',
-  background: 'none',
-  controlPanel: 'none',
-  hintFacelets: 'none',
-  experimentalDragInput: 'none',
-  cameraLatitude: 0,
-  cameraLongitude: 0,
-  cameraLatitudeLimit: 0,
-  tempoScale: 5,
-});
 
 export const CubeProvider = ({ children }) => {
   const [connection, setConnection] = useState(false);
@@ -33,7 +17,7 @@ export const CubeProvider = ({ children }) => {
   const [shouldBeSolved, setShouldBeSolved] = useState(false);
   const [practiceModeEnabled, setPracticeModeEnabled] = useState(false);
 
-  const twistyPlayerRef = useRef(twistyPlayer);
+  const twistyPlayerRef = useRef(null);
   const connectionRef = useRef(connection);
   const timerStateRef = useRef(timerState);
   const solutionMovesRef = useRef([]);
