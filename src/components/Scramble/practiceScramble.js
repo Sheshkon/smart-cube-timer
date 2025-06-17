@@ -38,11 +38,12 @@ async function syncScrambles(sheetId, sheetName = '1') {
       const scramblesToSave = networkData.map((item) => ({
         sheetId: sheetId,
         category: item.Category,
+        group: item.Group,
         scramble: item.Scramble,
         name: item.Name,
-        recommendedSolution: item.RecommenedSolution,
-        solutions: item.Solutions.split('\n'),
-        visualization: item.Base64
+        recommendedSolution: item.RecommenedSolution?.trim(),
+        solutions: item.Solutions.split('\n').map(solution => solution.trim()),
+        fileName: item.FileName
       }));
 
       await db.practiceScrambles.bulkAdd(scramblesToSave);
@@ -94,6 +95,18 @@ export async function getCategories(sheetId) {
   return Array.from(new Set(allRecords.map((s) => s.category)));
 }
 
-export async function getAllBySheetIdAndCategory(sheetId, category) {
-  return await db.practiceScrambles.where({ sheetId, category }).toArray();
+export async function getGroups(sheetId, category) {
+  console.log('call', sheetId, category);
+  if (!sheetId) throw new Error('Sheet ID must be provided.');
+
+  await syncScrambles(sheetId);
+
+  const allRecords = await db.practiceScrambles.where({ sheetId, category }).toArray();
+  return Array.from(new Set(allRecords.map((s) => s.group))).filter(el => el);
+}
+
+export async function getAllBySheetIdAndCategoryAndGroup(sheetId, category, group) {
+  return (!group || group === 'All')
+    ? await db.practiceScrambles.where({ sheetId, category }).toArray()
+    : await db.practiceScrambles.where({ sheetId, category, group }).toArray();
 }

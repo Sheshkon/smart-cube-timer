@@ -32,10 +32,12 @@ export const DB_SCHEMA = {
     ++id,
     sheetId,
     category,
+    group,
     scramble,
-    [sheetId+category] 
+    [sheetId+category],
+    [sheetId+category+group]
   `,
-  // Название таблицы в meta должно совпадать
+
   practiceScrambleMeta: `
     &sheetId,
     timestamp

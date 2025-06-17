@@ -6,46 +6,71 @@ import { useNavigate } from 'react-router-dom';
 const projectBaseUrl = import.meta.env.BASE_URL;
 
 import {
-  getAllBySheetIdAndCategory,
-  getCategories,
+  getAllBySheetIdAndCategoryAndGroup,
+  getCategories, getGroups,
 } from 'src/components/Scramble/practiceScramble.js';
 
 function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oyH0' }) {
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedGroup, setSelectedGroup] = useState('All');
   const [categories, setCategories] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [formulas, setFormulas] = useState([]);
   const navigate = useNavigate();
 
+  const updateGroups = (category) =>
+    getGroups(sheetId, category).then((groups) => {
+      setGroups([...groups, 'All']);
+    });
+
   useEffect(() => {
     getCategories(sheetId).then((categories) => {
-      getAllBySheetIdAndCategory(sheetId, categories[0]).then(setFormulas);
+      getAllBySheetIdAndCategoryAndGroup(sheetId, categories[0]).then(setFormulas);
       setCategories(categories);
       setSelectedCategory(categories[0]);
+      updateGroups(categories[0]);
     });
   }, []);
 
   useEffect(() => {
-    getAllBySheetIdAndCategory(sheetId, selectedCategory).then(setFormulas);
+    getAllBySheetIdAndCategoryAndGroup(sheetId, selectedCategory, selectedGroup).then(setFormulas);
+  }, [selectedGroup]);
+
+  useEffect(() => {
+    getAllBySheetIdAndCategoryAndGroup(sheetId, selectedCategory)
+      .then(setFormulas)
+      .then(() => updateGroups(selectedCategory));
   }, [selectedCategory]);
 
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-  };
+  const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
+
+  const handleGroupChange = (e) => setSelectedGroup(e.target.value);
 
   return (
     <div className='p-5'>
       <button
-        onClick={() => navigate(projectBaseUrl, {replace: false })}
+        onClick={() => navigate(projectBaseUrl, { replace: false })}
         className="flex items-center gap-2 mb-6 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
       >
         <FiArrowLeft /> To Timer
       </button>
       <div className='pb-2'>
-        <label htmlFor='category-select'>Category: </label>
+        <label htmlFor='category-select'><b>Category: </b></label>
         <select id='category-select' value={selectedCategory} onChange={handleCategoryChange}>
           {categories.map((category) => (
             <option key={category} value={category}>
               {category}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className='pb-5'>
+        <label htmlFor='group-select'><b>Group: </b></label>
+        <select id='group-select' value={selectedGroup} onChange={handleGroupChange}>
+          {groups.map((group) => (
+            <option key={group} value={group}>
+              {group}
             </option>
           ))}
         </select>
@@ -57,11 +82,11 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
             <h3>
               <b>{scramble.name}</b>
             </h3>
-            {scramble.visualization && (
+            {scramble.fileName && (
               <div className='visualization'>
                 <img
                   className='w-20'
-                  src={scramble?.visualization}
+                  src={`${projectBaseUrl}formulas/${scramble.category}/${scramble.fileName}`}
                   alt={`Visualization ${scramble.name}`}
                 />
               </div>
@@ -73,9 +98,14 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
 
             <div className='solutions'>
               <ul>
-                {scramble.solutions.map((solution, i) => (
-                  <li key={i}>{solution}</li>
-                ))}
+                {scramble.solutions.map((solution, i) => {
+                  const isRecommended = solution === scramble.recommendedSolution;
+                  return (
+                    <li key={i}>
+                      {isRecommended ? <b>{solution}</b> : solution}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>
