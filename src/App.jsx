@@ -78,7 +78,8 @@ function App() {
   }, [settings.selectedSessionId]);
 
   useEffect(() => {
-    sessionService.getAllSessions().then(console.log);
+    sessionService.getAllSessions()
+      .then(setSessions);
 
     if (!('Notification' in window)) {
       console.warn('Notifications not supported in this browser');

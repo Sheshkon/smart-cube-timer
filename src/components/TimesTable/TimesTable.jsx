@@ -168,7 +168,7 @@ const TimesTable = ({
                 className="select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none"
                 onChange={(e) => {
                   updateSetting('selectedSessionId', e.target.value);
-                  setCurrentPage(1); // Reset to first page on session change
+                  setCurrentPage(1);
                 }}
               >
                 {sessions.map((session) => (
