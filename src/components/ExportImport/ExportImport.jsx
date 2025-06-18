@@ -238,41 +238,41 @@ const ExportImport = ({ classWrapper, onImport }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        {user ? (
-          <div className="flex items-center gap-3">
-            <button
-              onClick={exportToGoogleDrive}
-              className="flex items-center gap-2 hover:text-blue-500"
-              title="to Google Drive"
-              disabled={!driveState.accessToken || isDriveExporting}
-            >
-              {isDriveExporting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <UploadCloud className="w-5 h-5" />
-              )}
-              <span>To Drive</span>
-            </button>
+      {/*<div className="flex items-center gap-3">*/}
+      {/*  {user ? (*/}
+      {/*    <div className="flex items-center gap-3">*/}
+      {/*      <button*/}
+      {/*        onClick={exportToGoogleDrive}*/}
+      {/*        className="flex items-center gap-2 hover:text-blue-500"*/}
+      {/*        title="to Google Drive"*/}
+      {/*        disabled={!driveState.accessToken || isDriveExporting}*/}
+      {/*      >*/}
+      {/*        {isDriveExporting ? (*/}
+      {/*          <Loader2 className="w-5 h-5 animate-spin" />*/}
+      {/*        ) : (*/}
+      {/*          <UploadCloud className="w-5 h-5" />*/}
+      {/*        )}*/}
+      {/*        <span>To Drive</span>*/}
+      {/*      </button>*/}
 
-            <button
-              onClick={importFromGoogleDrive}
-              className="flex items-center gap-2 hover:text-blue-500"
-              title="from Google Drive"
-              disabled={!driveState.accessToken || isDriveImporting}
-            >
-              {isDriveImporting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <DownloadCloud className="w-5 h-5" />
-              )}
-              <span>From Drive</span>
-            </button>
-          </div>
-        ) : (
-          <GoogleAuth className="-ml-2" />
-        )}
-      </div>
+      {/*      <button*/}
+      {/*        onClick={importFromGoogleDrive}*/}
+      {/*        className="flex items-center gap-2 hover:text-blue-500"*/}
+      {/*        title="from Google Drive"*/}
+      {/*        disabled={!driveState.accessToken || isDriveImporting}*/}
+      {/*      >*/}
+      {/*        {isDriveImporting ? (*/}
+      {/*          <Loader2 className="w-5 h-5 animate-spin" />*/}
+      {/*        ) : (*/}
+      {/*          <DownloadCloud className="w-5 h-5" />*/}
+      {/*        )}*/}
+      {/*        <span>From Drive</span>*/}
+      {/*      </button>*/}
+      {/*    </div>*/}
+      {/*  ) : (*/}
+      {/*    <GoogleAuth className="-ml-2" />*/}
+      {/*  )}*/}
+      {/*</div>*/}
 
       {status && (
         <div className="mt-2 text-sm text-gray-600 dark:text-gray-400 truncate">

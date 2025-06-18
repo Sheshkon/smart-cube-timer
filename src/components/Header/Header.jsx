@@ -8,7 +8,6 @@ import TerminalIcon from '@mui/icons-material/Terminal';
 import { BluetoothSearching } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { UserProfile } from 'src/components/UserProfile/UserProfile.jsx';
 import { useConsole } from 'src/contexts/ConsoleContext.jsx';
 import { useGoogleAuth } from 'src/contexts/GoogleAuthContext.jsx';
 import { useSettings } from 'src/hooks/useSettings';
@@ -36,7 +35,7 @@ const Header = ({ className = '' }) => {
             </div>
           </div>
 
-          <UserProfile user={user} />
+          {/*<UserProfile user={user} />*/}
 
           <Link to={`${projectBaseUrl}library/`}
                 className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors'
