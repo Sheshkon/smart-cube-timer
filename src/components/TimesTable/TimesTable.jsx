@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import FirstPageOutlinedIcon from '@mui/icons-material/FirstPageOutlined';
+import LastPageOutlinedIcon from '@mui/icons-material/LastPageOutlined';
+import NavigateBeforeOutlinedIcon from '@mui/icons-material/NavigateBeforeOutlined';
+import NavigateNextOutlinedIcon from '@mui/icons-material/NavigateNextOutlined';
 import { ExternalLink, Plus, Share2, Trash2 } from 'lucide-react';
 import ExportImport from 'src/components/ExportImport/ExportImport.jsx';
 import AddModal from 'src/components/Modals/AddModal.jsx';
@@ -287,14 +287,14 @@ const TimesTable = ({
                     disabled={currentPage === 1}
                     className="border rounded text-xs sm:text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <FirstPageIcon/>
+                    <FirstPageOutlinedIcon/>
                   </button>
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className="border rounded text-xs sm:text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <NavigateBeforeIcon/>
+                    <NavigateBeforeOutlinedIcon/>
                   </button>
                   {getPageNumbers().map((page, index) =>
                     typeof page === 'number' ? (
@@ -320,14 +320,14 @@ const TimesTable = ({
                     disabled={currentPage === totalPages}
                     className="border rounded text-xs sm:text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <NavigateNextIcon />
+                    <NavigateNextOutlinedIcon />
                   </button>
                   <button
                     onClick={() => handlePageChange(totalPages)}
                     disabled={currentPage === totalPages}
                     className="border rounded text-xs sm:text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <LastPageIcon/>
+                    <LastPageOutlinedIcon/>
                   </button>
                 </div>
               )}

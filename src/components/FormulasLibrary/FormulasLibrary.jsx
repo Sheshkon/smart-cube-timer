@@ -59,7 +59,7 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
         <select id='category-select' value={selectedCategory} onChange={handleCategoryChange}>
           {categories.map((category) => (
             <option key={category} value={category}>
-              {category}
+              {category?.replaceAll('_', ' ')}
             </option>
           ))}
         </select>
@@ -70,7 +70,7 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
         <select id='group-select' value={selectedGroup} onChange={handleGroupChange}>
           {groups.map((group) => (
             <option key={group} value={group}>
-              {group}
+              {group?.replaceAll('_', ' ')}
             </option>
           ))}
         </select>

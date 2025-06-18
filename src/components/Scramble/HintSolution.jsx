@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-import AutorenewIcon from '@mui/icons-material/Autorenew';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import HistoryIcon from '@mui/icons-material/History';
+import AutorenewOutlinedIcon from '@mui/icons-material/AutorenewOutlined';
+import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
+import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
 
 const HintSolution = ({
   className = '',
@@ -30,19 +30,19 @@ const HintSolution = ({
             className='p-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
             onClick={reload}
           >
-            <AutorenewIcon />
+            <AutorenewOutlinedIcon />
           </button>
           <button
             className='p-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
             onClick={toggleHintVisible}
           >
-            <AutoStoriesIcon />
+            <AutoStoriesOutlinedIcon />
           </button>
           <button
             className='p-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
             onClick={toggleHistory}
           >
-            <HistoryIcon />
+            <HistoryOutlinedIcon />
           </button>
         </div>
       )}
