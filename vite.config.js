@@ -18,11 +18,11 @@ export default defineConfig({
   plugins: [
     react(),
     svgr(),
-    eslint({
-      fix: true,
-      lintOnStart: true,
-      failOnError: false,
-    }),
+    // eslint({
+    //   fix: true,
+    //   lintOnStart: true,
+    //   failOnError: false,
+    // }),
     {
       files: ['**/*.{js,jsx,ts,tsx}'],
       languageOptions: {
