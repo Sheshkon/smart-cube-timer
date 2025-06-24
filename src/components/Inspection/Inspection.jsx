@@ -27,9 +27,12 @@ const Inspection = () => {
   useEffect(() => {
     if (!started) return;
 
+    const startTime = Date.now();
+
     const interval = setInterval(() => {
+      const timeDiff = Math.floor((Date.now() - startTime) / 1000);
       setCounter(prev => {
-        const newVal = prev + 1;
+        const newVal = prev + timeDiff;
 
         if (newVal === 8)
           play8();
