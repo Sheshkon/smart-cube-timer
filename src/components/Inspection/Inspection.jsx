@@ -8,7 +8,6 @@ import { useCube } from 'src/hooks/useCube.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 import useSound from 'use-sound';
 
-
 const Inspection = () => {
   const [counter, setCounter] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -30,23 +29,18 @@ const Inspection = () => {
     const startTime = Date.now();
 
     const interval = setInterval(() => {
-      const timeDiff = Math.floor((Date.now() - startTime) / 1000);
-      setCounter(prev => {
-        const newVal = prev + timeDiff;
+      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
 
-        if (newVal === 8)
-          play8();
+      setCounter(elapsedSeconds);
 
-        if (newVal === 12)
-          play12();
+      if (elapsedSeconds === 8) play8();
 
-        if (newVal > 15) {
-          clearInterval(interval);
-          setIsComplete(true);
-        }
+      if (elapsedSeconds === 12) play12();
 
-        return newVal >= 0 ? newVal : 0;
-      });
+      if (elapsedSeconds > 15) {
+        clearInterval(interval);
+        setIsComplete(true);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
@@ -63,17 +57,13 @@ const Inspection = () => {
     startInspection();
   }, []);
 
-
   return (
     <div>
       {isComplete ? (
-        <div className="text-error text-6xl">DNS</div>
+        <div className='text-error text-6xl'>DNS</div>
       ) : (
-        <span className="countdown font-mono text-6xl">
-          <span
-            style={{ '--value': counter }}
-            className={counter >= 12 ? 'text-error' : ''}
-          >
+        <span className='countdown font-mono text-6xl'>
+          <span style={{ '--value': counter }} className={counter >= 12 ? 'text-error' : ''}>
             {counter}
           </span>
         </span>
