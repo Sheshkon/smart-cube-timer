@@ -3,6 +3,10 @@ import { mergeConsecutiveWords } from 'src/utils/string.js';
 
 export const sessionService = {
 
+  async renameSession(sessionId, newName) {
+    return db.sessions.update(parseInt(sessionId), { name: newName });
+  },
+
   async getSolvesBySessionId(sessionId) {
     return db.solves
       .where('sessionId')

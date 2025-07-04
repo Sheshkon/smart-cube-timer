@@ -38,13 +38,13 @@ const Header = ({ className = '' }) => {
           {/*<UserProfile user={user} />*/}
 
           <Link to={`${projectBaseUrl}library/`}
-                className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors'
+                className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
           >
             <AutoStoriesOutlinedIcon/>
           </Link>
 
           <a
-            className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors'
+            className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
             href='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
             target='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
             rel='noopener noreferrer'
@@ -54,13 +54,13 @@ const Header = ({ className = '' }) => {
           <div className='flex items-center space-x-2 pr-4'>
             <button
               onClick={() => updateSetting('theme', settings.theme === 'light' ? 'dark' : 'light')}
-              className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors'
+              className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
               title={settings.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {settings.theme === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
             </button>
             <button
-              className='rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors'
+              className='rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
               onClick={() => setShowConsole(!showConsole)}
             >
               <TerminalIcon />

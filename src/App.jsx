@@ -116,6 +116,7 @@ function App() {
                   stats={stats}
                   onImport={handleImport}
                   sessions={sessions}
+                  setSessions={setSessions}
                   onDeleteTimes={handleDeleteTimes}
                   times={storedTimes}
                   onDeleteTime={handleDeleteTime}
