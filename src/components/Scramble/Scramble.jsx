@@ -177,7 +177,7 @@ const Scramble = ({ className = '' }) => {
 
   useEffect(() => {
     generateScramble().then(() => console.log(settings.practiceMode));
-  }, [settings, practiceModeEnabled]);
+  }, [settings.practiceMode, settings.practiceMode.category, practiceModeEnabled]);
 
   useEffect(() => {
     connection ? setShowScramble(true) : setShowScramble(false);
