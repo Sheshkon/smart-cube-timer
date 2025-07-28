@@ -16,7 +16,8 @@ const defaultSettings = {
   solvesPerPage: 15,
   practiceMode: {
     category: 'ROUX_CMLL'
-  }
+  },
+  showCubeAnimation: true,
 };
 
 export const SettingsProvider = ({ children }) => {

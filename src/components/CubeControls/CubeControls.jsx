@@ -1,7 +1,6 @@
-import { useEffect, useRef } from 'react';
-
 import { experimentalSolve3x3x3IgnoringCenters } from 'cubing/search';
 import { connectGanCube } from 'gan-web-bluetooth';
+import { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
@@ -36,10 +35,10 @@ const cubeControls = () => {
     setShouldBeSolved,
     setShowScramble,
     setPracticeModeEnabled,
-    practiceModeEnabledRef
+    practiceModeEnabledRef,
   } = useCube();
 
-  const { settingsRef, settings } = useSettings();
+  const { settingsRef, settings, updateSetting } = useSettings();
 
   const basisRef = useRef(null);
 
@@ -68,11 +67,10 @@ const cubeControls = () => {
 
         batteryPollIntervalRef.current = setInterval(() => {
           cn?.sendCubeCommand(CubeCommand.BATTERY).catch((err) => {
-              clearInterval(batteryPollIntervalRef.current);
-              console.error('Battery poll error:', err);
-              disconnect().then(() => cubeDisconnectedNotification());
-            },
-          );
+            clearInterval(batteryPollIntervalRef.current);
+            console.error('Battery poll error:', err);
+            disconnect().then(() => cubeDisconnectedNotification());
+          });
         }, 5000);
       }
     } catch (e) {
@@ -85,8 +83,7 @@ const cubeControls = () => {
   async function disconnect() {
     clearInterval(batteryPollIntervalRef.current);
 
-    if (connection)
-      await connection.disconnect().catch(() => console.log('no connection'));
+    if (connection) await connection.disconnect().catch(() => console.log('no connection'));
 
     setConnection(null);
     connectionRef.current = null;
@@ -132,9 +129,7 @@ const cubeControls = () => {
       if (!basisRef.current) {
         basisRef.current = quat.clone().conjugate();
       }
-      cubeQuaternion.copy(
-        quat.premultiply(basisRef.current).premultiply(HOME_ORIENTATION),
-      );
+      cubeQuaternion.copy(quat.premultiply(basisRef.current).premultiply(HOME_ORIENTATION));
     }
   }
 
@@ -158,19 +153,19 @@ const cubeControls = () => {
   let cubeInitialized = false;
 
   async function handleFaceletsEvent(event) {
-
     const isSolved = practiceModeEnabledRef.current
-      ? matchesPattern(event.facelets, PRACTICE_TEPMPLATES[settingsRef.current.practiceMode.category])
+      ? matchesPattern(
+          event.facelets,
+          PRACTICE_TEPMPLATES[settingsRef.current.practiceMode.category]
+        )
       : event.facelets === SOLVED_STATE;
 
-    if (event.type === CubeEventType.FACELETS && isSolved)
-    {
+    if (event.type === CubeEventType.FACELETS && isSolved) {
       setLastMoves([]);
       setShouldBeSolved(false);
     }
 
     if (event.type === CubeEventType.FACELETS && !cubeInitialized) {
-
       if (event.facelets !== SOLVED_STATE) {
         setShouldBeSolved(true);
         const kpattern = faceletsToPattern(event.facelets);
@@ -201,7 +196,10 @@ const cubeControls = () => {
       setLastMoves(lastMoves.slice(-256));
     }
 
-    if (timerStateRef.current === TimerState.READY || timerStateRef.current === TimerState.INSPECTION) {
+    if (
+      timerStateRef.current === TimerState.READY ||
+      timerStateRef.current === TimerState.INSPECTION
+    ) {
       setTimerState(TimerState.RUNNING);
     }
 
@@ -212,35 +210,41 @@ const cubeControls = () => {
       solutionMovesRef.current = [];
       setTimerState(TimerState.IDLE);
     }
-
   }, [lastMoves]);
 
   return (
-    <div className="controls">
-      <button
-        className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-        onClick={handleConnect}
-      >
-        {connection ? 'Disconnect' : 'Connect'}
-      </button>
-      {connection && (
-        <>
-          {timerState === TimerState.IDLE && (
-            <button
-              onClick={handleResetCubeState}
-              className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            >
-              Reset State
-            </button>
-          )}
+    <div className='controls flex flex-col md:flex-row items-center justify-center gap-2 py-2'>
+      <div className='flex flex-row'>
+        <button
+          className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+          onClick={handleConnect}
+        >
+          {connection ? 'Disconnect' : 'Connect'}
+        </button>
+        <button
+          className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+          onClick={() => updateSetting('showCubeAnimation', !settings.showCubeAnimation)}
+        >
+          {settings.showCubeAnimation ? 'Hide' : 'Show'} Cube
+        </button>
+      </div>
+      {connection && settings.showCubeAnimation && (
+      <div className='flex flex-row'>
+        <button
+          className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+          onClick={() => (basisRef.current = null)}
+        >
+          Reset Gyro
+        </button>
+        {timerState === TimerState.IDLE && (
           <button
-            className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            onClick={() => (basisRef.current = null)}
+            onClick={handleResetCubeState}
+            className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
           >
-            Reset Gyro
+            Reset State
           </button>
-        </>
-      )}
+        )}
+      </div>)}
     </div>
   );
 };

@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-
 import clsx from 'clsx';
 import { TwistyPlayer } from 'cubing/twisty';
 import { Dumbbell, Info, Settings } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
 import { SettingsModal } from 'src/components/Modals/SettingsModal.jsx';
 import { useCube } from 'src/hooks/useCube';
+import { useSettings } from 'src/hooks/useSettings.js';
 import { cubeQuaternion } from 'src/utils/util.ts';
 import 'src/style.css';
 
-const twistyConfig =  {
+const twistyConfig = {
   puzzle: '3x3x3',
   visualization: 'PG3D',
   alg: '',
@@ -25,13 +25,15 @@ const twistyConfig =  {
 };
 
 const Cube = ({ className = '' }) => {
+  const { settings } = useSettings();
+
   const {
     twistyPlayerRef,
     hardwareInfo,
     connection,
     batteryLevel,
     practiceModeEnabled,
-    setPracticeModeEnabled
+    setPracticeModeEnabled,
   } = useCube();
 
   const initialized = useRef(false);
@@ -48,8 +50,7 @@ const Cube = ({ className = '' }) => {
     try {
       if (!twistyPlayerRef.current) return;
 
-      const vantageList =
-        await twistyPlayerRef.current.experimentalCurrentVantages();
+      const vantageList = await twistyPlayerRef.current.experimentalCurrentVantages();
       if (!vantageList || vantageList.size === 0) {
         animationRef.current = requestAnimationFrame(animateCubeOrientation);
         return;
@@ -77,7 +78,6 @@ const Cube = ({ className = '' }) => {
   };
 
   useEffect(() => {
-
     if (initialized.current) return;
 
     twistyPlayerRef.current = new TwistyPlayer(twistyConfig);
@@ -97,21 +97,33 @@ const Cube = ({ className = '' }) => {
 
   return (
     <div className={className}>
-      <div className="cube-container">
-        <div className="relative" id="cube" ref={cubeRef}>
+      <div className='cube-container'>
+        <div
+          className={`relative ${settings.showCubeAnimation ? '' : 'hidden'}`}
+          id='cube'
+          ref={cubeRef}
+        >
           {connection && (
-            <div
-              className="absolute flex"
-              style={{
-                flexDirection: 'column',
-                right: '-0.80rem',
-                top: '1.25rem',
-              }}
+          <div>
+            <button
+              onClick={handlePracticeMode}
+              className={clsx(
+                'absolute flex right-[3.30rem] top-[-0.40rem] p-1.5 rounded-full mt-2 transition-colors',
+                {
+                  'bg-green-600 text-white hover:bg-green-700': practiceModeEnabled,
+                  'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600':
+                    !practiceModeEnabled,
+                }
+              )}
+              title='Practice'
             >
+              <Dumbbell size={18} />
+            </button>
+            <div className='absolute flex flex-col right-[0.9rem] top-[0.1rem]'>
               <button
                 onClick={handleInfoModalOpen}
-                className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                title="Cube info"
+                className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+                title='Cube info'
               >
                 <Info size={18} />
               </button>
@@ -119,26 +131,12 @@ const Cube = ({ className = '' }) => {
               <>
                 <button
                   onClick={handleSettingsModalOpen}
-                  className="p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                  title="Settings"
+                  className='p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+                  title='Settings'
                 >
                   <Settings size={18} />
                 </button>
               </>
-
-              <button
-                onClick={handlePracticeMode}
-                className={clsx(
-                  'p-1.5 rounded-full mt-2 transition-colors',
-                  {
-                    'bg-green-600 text-white hover:bg-green-700': practiceModeEnabled,
-                    'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600': !practiceModeEnabled,
-                  },
-                )}
-                title="Practice"
-              >
-                <Dumbbell size={18} />
-              </button>
 
               <CubeInfoModal
                 info={{
@@ -151,11 +149,9 @@ const Cube = ({ className = '' }) => {
                 onClose={handleInfoModalOpen}
               />
 
-              <SettingsModal
-                isOpen={settingsModalOpen}
-                onClose={handleSettingsModalOpen}
-              />
+              <SettingsModal isOpen={settingsModalOpen} onClose={handleSettingsModalOpen} />
             </div>
+          </div>
           )}
         </div>
       </div>

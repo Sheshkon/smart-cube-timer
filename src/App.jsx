@@ -101,7 +101,7 @@ function App() {
             />
             <CubeControls className='py-4' />
             <div className='flex flex-col md:flex-row items-center'>
-              <Cube className='w-full flex justify-center items-center' containerId='main' />
+              <Cube className='flex justify-center items-center' containerId='main' />
               <div className='w-full flex flex-col items-center'>
                 <Timer onSaveTime={handleSaveTime} className='mb-6' />
                 <Scramble className='w-full max-w-md p-4' />
