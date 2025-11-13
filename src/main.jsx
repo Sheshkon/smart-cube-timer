@@ -32,7 +32,7 @@ createRoot(document.getElementById('root')).render(
                 <Router>
                   <Header />
                   <CustomConsole />
-                  <InfoPanel wrapperClassName='p-2 flex items-center justify-center relative' />
+                  <InfoPanel wrapperClassName="p-2 flex flex-col items-center justify-center relative" />
                   <Routes>
                     <Route path={`/${projectBaseUrl}/`} element={<App />} />
                     <Route
