@@ -115,7 +115,7 @@ const InfoPanel = ({ wrapperClassName = '' }) => {
               <li>
                 Install APK via{' '}
                 <a
-                  href='https://www.rustore.ru/instruction?appName=Smart+Timer&utm_campaign=io.github.sheshkon.twa&sign=dozYhwxCBmXfEJNXsdkKqrOvk-lB86ZKfR63Tbg-Loo'
+                  href='https://www.rustore.ru/catalog/app/io.github.sheshkon.twa'
                   target='_blank'
                   rel='noopener noreferrer'
                   className='text-blue-600 underline'
