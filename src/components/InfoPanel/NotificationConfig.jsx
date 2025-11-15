@@ -1,4 +1,5 @@
 import AndroidNotification from 'src/components/InfoPanel/notification/AndroidNotification.jsx';
+import FeedbackNotification from 'src/components/InfoPanel/notification/FeedbackNotification.jsx';
 import IsIosNotSupportedNotification from 'src/components/InfoPanel/notification/IosNotSupportedNotification.jsx';
 import UnsupportedNotification from 'src/components/InfoPanel/notification/UnsupportedNotification.jsx';
 
@@ -37,5 +38,12 @@ export const notifications = [
       if (typeof window === 'undefined') return false;
       return /Android/.test(navigator.userAgent);
     },
+  },
+
+  {
+    id: 'feedback',
+    type: 'success',
+    content: <FeedbackNotification />,
+    shouldShow: () => true,
   },
 ].filter((notification) => notification.shouldShow());

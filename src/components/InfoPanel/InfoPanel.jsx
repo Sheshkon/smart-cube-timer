@@ -38,7 +38,7 @@ const InfoPanel = ({ wrapperClassName = '' }) => {
         return (
           <div
             key={panel.id}
-            className={`${panelStyle} w-[calc(100%-35px)] min-h-[200px] p-3 rounded border relative text-sm`}
+            className={`${panelStyle} w-[calc(100%-35px)] min-h-[100px] p-3 rounded border relative text-sm`}
           >
             <button
               onClick={() => handleCloseTemporary(panel.id)}
