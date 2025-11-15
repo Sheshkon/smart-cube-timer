@@ -216,13 +216,13 @@ const cubeControls = () => {
     <div className='controls flex flex-col md:flex-row items-center justify-center gap-2 py-2'>
       <div className='flex flex-row'>
         <button
-          className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+          className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
           onClick={handleConnect}
         >
           {connection ? 'Disconnect' : 'Connect'}
         </button>
         <button
-          className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+          className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
           onClick={() => updateSetting('showCubeAnimation', !settings.showCubeAnimation)}
         >
           {settings.showCubeAnimation ? 'Hide' : 'Show'} Cube
@@ -231,7 +231,7 @@ const cubeControls = () => {
       {connection && settings.showCubeAnimation && (
       <div className='flex flex-row'>
         <button
-          className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+          className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
           onClick={() => (basisRef.current = null)}
         >
           Reset Gyro
@@ -239,7 +239,7 @@ const cubeControls = () => {
         {timerState === TimerState.IDLE && (
           <button
             onClick={handleResetCubeState}
-            className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+            className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
           >
             Reset State
           </button>
