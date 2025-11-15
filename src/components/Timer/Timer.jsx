@@ -156,6 +156,7 @@ const Timer = ({ onSaveTime }) => {
         break;
       case TimerState.RUNNING:
         if (!localTimerRef.current) {
+          solutionMovesRef.current = [];
           setShowTimer(true);
           startTimer();
         }
