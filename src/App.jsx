@@ -92,14 +92,14 @@ function App() {
   }, []);
 
   return (
-      <main className='flex-grow container mx-auto px-4 py-6 lg:px-64'>
+      <main className='flex-grow container mx-auto px-4 py-4 lg:px-64'>
         <div className='flex flex-col space-y-4 md:space-y-6'>
           <div className='bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center justify-center relative overflow-hidden'>
             <Cuboid
               className='absolute -right-16 -top-16 opacity-5 transform rotate-12'
               size={200}
             />
-            <CubeControls className='py-4' />
+            <CubeControls />
             <div className='flex flex-col md:flex-row items-center'>
               <Cube className='flex justify-center items-center' containerId='main' />
               <div className='w-full flex flex-col items-center'>

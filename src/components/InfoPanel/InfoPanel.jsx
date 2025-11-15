@@ -33,12 +33,12 @@ const InfoPanel = ({ wrapperClassName = '' }) => {
       {panels.map((panel) => {
         const panelStyle =
           panel.type === 'success'
-            ? 'bg-green-100 text-green-900 border-green-300'
-            : 'bg-yellow-100 text-yellow-900 border-yellow-300';
+            ? 'border-green-600 border-1 bg-white dark:bg-gray-800'
+            : 'border-yellow-400 border-1 bg-white dark:bg-gray-800';
         return (
           <div
             key={panel.id}
-            className={`${panelStyle} w-full min-h-[200px] p-3 rounded border relative mb-3`}
+            className={`${panelStyle} w-[calc(100%-35px)] min-h-[200px] p-3 rounded border relative text-sm`}
           >
             <button
               onClick={() => handleCloseTemporary(panel.id)}
@@ -52,7 +52,7 @@ const InfoPanel = ({ wrapperClassName = '' }) => {
 
             <button
               onClick={() => handleCloseForever(panel.id)}
-              className='mt-3 px-2 py-1 bg-gray-200 rounded hover:bg-gray-300'
+              className='mt-3 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
             >
               Don&#39;t show again
             </button>
