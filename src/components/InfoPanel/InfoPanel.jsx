@@ -33,12 +33,12 @@ const InfoPanel = ({ wrapperClassName = '' }) => {
       {panels.map((panel) => {
         const panelStyle =
           panel.type === 'success'
-            ? 'border-green-600 border-1 bg-white dark:bg-gray-800'
-            : 'border-yellow-400 border-1 bg-white dark:bg-gray-800';
+            ? 'bg-white dark:bg-gray-800'
+            : 'bg-white dark:bg-gray-800';
         return (
           <div
             key={panel.id}
-            className={`${panelStyle} w-[calc(100%-35px)] min-h-[100px] p-3 rounded border relative text-sm`}
+            className={`${panelStyle} w-[calc(100%-35px)] min-h-[100px] p-3 rounded relative text-sm mt-1`}
           >
             <button
               onClick={() => handleCloseTemporary(panel.id)}
