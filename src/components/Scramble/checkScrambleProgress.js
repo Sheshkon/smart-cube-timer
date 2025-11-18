@@ -33,15 +33,15 @@ export function checkScrambleProgress(scramble, cubeMoves) {
   const extraErrors = [];
   let failure = false;
 
-  for (const uMove of cubeMoves) {
+  for (const cMove of cubeMoves) {
 
     if (failure) {
       extraErrors.push({
-        move: uMove,
+        move: cMove,
         status: MoveScrambleStatus.INCORRECT,
         comment: 'unexpected move (after previous error)',
       });
-      rollback.push(invertMove(uMove));
+      rollback.push(invertMove(cMove));
       continue;
     }
 
@@ -58,7 +58,7 @@ export function checkScrambleProgress(scramble, cubeMoves) {
       // 2. Handle Partial slot (already started, e.g., R from R2)
       if (slot.state === 'partial') {
         // Try to complete (second R arrived)
-        if (slot.expected.endsWith('2') && uMove[0] === slot.expected[0]) {
+        if (slot.expected.endsWith('2') && cMove[0] === slot.expected[0]) {
           matchedIndex = i;
           matchType = 'completion';
           break;
@@ -67,7 +67,7 @@ export function checkScrambleProgress(scramble, cubeMoves) {
         // If the move does not complete this partial slot, check independence.
         // If uMove is independent of slot.expected (e.g., R and L), we can search further.
         // If dependent (e.g., R and F), we are blocked.
-        if (!areIndependent(uMove, slot.expected)) {
+        if (!areIndependent(cMove, slot.expected)) {
           break; // Dependent move blocks further search
         }
         // If independent — go to the next slot (continue)
@@ -76,9 +76,9 @@ export function checkScrambleProgress(scramble, cubeMoves) {
 
       // 3. Handle Pending slot (not yet started)
       if (slot.state === 'pending') {
-        const isExact = uMove === slot.expected;
+        const isExact = cMove === slot.expected;
         // Partial match: waiting for X2, got X or X' (but not X2)
-        const isPartial = slot.expected.endsWith('2') && uMove[0] === slot.expected[0] && !uMove.endsWith('2');
+        const isPartial = slot.expected.endsWith('2') && cMove[0] === slot.expected[0] && !cMove.endsWith('2');
 
         if (isExact || isPartial) {
           matchedIndex = i;
@@ -87,7 +87,7 @@ export function checkScrambleProgress(scramble, cubeMoves) {
         }
 
         // If no match, check if we can skip this slot (independence)
-        if (!areIndependent(uMove, slot.expected)) {
+        if (!areIndependent(cMove, slot.expected)) {
           break; // Dependent move blocks
         }
       }
@@ -107,7 +107,7 @@ export function checkScrambleProgress(scramble, cubeMoves) {
       }
       else if (matchType === 'exact') {
         slot.output = {
-          move: uMove,
+          move: cMove,
           status: MoveScrambleStatus.CORRECT,
           comment: matchedIndex === getFirstPendingIndex(slots) ? 'matches expected' : 'independent swap allowed'
         };
@@ -115,7 +115,7 @@ export function checkScrambleProgress(scramble, cubeMoves) {
       }
       else if (matchType === 'partial') {
         slot.output = {
-          move: uMove,
+          move: cMove,
           status: MoveScrambleStatus.PARTIAL,
           comment: 'partial move, independent allowed'
         };
@@ -124,11 +124,11 @@ export function checkScrambleProgress(scramble, cubeMoves) {
     } else {
       failure = true;
       extraErrors.push({
-        move: uMove,
+        move: cMove,
         status: MoveScrambleStatus.INCORRECT,
         comment: 'unexpected move',
       });
-      rollback.push(invertMove(uMove));
+      rollback.push(invertMove(cMove));
     }
   }
 
