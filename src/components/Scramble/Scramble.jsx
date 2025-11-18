@@ -15,17 +15,11 @@ import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
 import { prepareMoves } from 'src/utils/util.ts';
 
-import { ColoredMove, getInverseMoves, MoveColor } from './/util.js';
+import { ColoredMove, MoveColor, MoveScrambleStatus } from './/util.js';
 import 'src/style.css';
+import { checkScrambleProgress } from './checkScrambleProgress.js';
 
 const GOOGLE_SHEET_ID = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oyH0';
-
-const isReadyTimerCondition = (wrongCounter, scrambleMoves, cubeMoves, timerState) =>
-  wrongCounter === 0 &&
-  scrambleMoves.length > 1 &&
-  cubeMoves.length === scrambleMoves.length &&
-  cubeMoves.every((move, index) => move === scrambleMoves[index]) &&
-  timerState !== TimerState.RUNNING;
 
 const getImageScrambleSizeClass = (textSize) => {
   const sizeMap = {
@@ -110,60 +104,54 @@ const Scramble = ({ className = '' }) => {
   };
 
   const checkScramble = async (cubeMoves) => {
-    const scrambleMoves = scramble?.toString().split(' ');
     if (timerState !== TimerState.IDLE) return;
 
-    let wrongCounter = 0;
-    let startWrongIndex = 0;
+    const scrambleMoves = scramble?.toString().split(' ');
 
-    const coloredMoves = scrambleMoves?.map((move, index) => {
-      if (move === cubeMoves[index] && wrongCounter === 0) {
-        return new ColoredMove(move, index, MoveColor.GRAY);
+    const { moves, rollbackMoves } = checkScrambleProgress(scrambleMoves, cubeMoves);
+
+    console.log('Check scramble progress: ', { moves, rollbackMoves });
+
+    if (rollbackMoves.length > 0) {
+      const rollbackDisplay = rollbackMoves.map((move, index) =>
+        new ColoredMove(move, index, MoveColor.RED, index === 0)
+      );
+
+      setScrambleDisplay(rollbackDisplay);
+
+      if (rollbackMoves.length > 10) {
+        setShouldBeSolved(true);
+      }
+      return;
+    }
+
+    const currentMoveIndex = moves.findIndex(m => m.status !== MoveScrambleStatus.CORRECT);
+
+    const coloredScramble = moves.map((item, index) => {
+      let color = MoveColor.WHITE;
+
+      // if (item.status === MoveScrambleStatus.PARTIAL) {
+      //   color = MoveColor.YELLOW;
+      // }
+
+      if (item.status === MoveScrambleStatus.CORRECT) {
+        color = MoveColor.GRAY;
+      }
+      else if (item.status === MoveScrambleStatus.INCORRECT) {
+        color = MoveColor.RED;
       }
 
-      if (
-        index > cubeMoves.length - 1 ||
-        cubeMoves[index] === '' ||
-        (move.includes('2') && move.replace('2', '') === cubeMoves[index].replace(/'/g, ''))
-      ) {
-        return new ColoredMove(move, index);
-      }
+      const isCurrent = index === currentMoveIndex;
 
-      if (move !== cubeMoves[index] && wrongCounter === 0) {
-        wrongCounter++;
-        startWrongIndex = index;
-        if (move.replace(/'/g, '') === cubeMoves[index].replace(/'/g, '')) {
-          // return new ColoredMove(move, index, MoveColor.YELLOW);  // The letters match, but the direction is wrong: yellow.
-        }
-      }
-
-      if (wrongCounter > 0) {
-        if (wrongCounter > 10) {
-          setShouldBeSolved(true);
-        }
-
-        wrongCounter++;
-        return new ColoredMove(move, index, MoveColor.RED);
-      }
-
-      return new ColoredMove(move, index);
+      return new ColoredMove(item.move, index, color, isCurrent);
     });
 
-    const currentMoveIndex = coloredMoves
-      ? coloredMoves.findIndex((el) => el.color === MoveColor.WHITE)
-      : 0;
-    const coloredScramble = coloredMoves?.map(
-      (el, index) => new ColoredMove(el.move, index, el.color, index === currentMoveIndex)
-    );
+    setScrambleDisplay(coloredScramble);
 
-    wrongCounter > 1
-      ? setScrambleDisplay(getInverseMoves(cubeMoves, startWrongIndex))
-      : setScrambleDisplay(coloredScramble);
+    const isSolved = moves.every(m => m.status === MoveScrambleStatus.CORRECT);
 
-    if (isReadyTimerCondition(wrongCounter, scrambleMoves, cubeMoves, timerState)) {
-      settingsRef.current.inspection
-        ? setTimerState(TimerState.INSPECTION)
-        : setTimerState(TimerState.READY);
+    if (isSolved) {
+      setTimerState(settingsRef.current.inspection ? TimerState.INSPECTION : TimerState.READY);
       setShowScramble(false);
       await generateScramble();
     }

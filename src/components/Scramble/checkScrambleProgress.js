@@ -1,3 +1,14 @@
+import { Alg } from 'cubing/alg';
+import { cube3x3x3 } from 'cubing/puzzles';
+
+import { MoveScrambleStatus } from './util.js';
+
+const IndependentPairs = [
+  ['R', 'L'],
+  ['U', 'D'],
+  ['F', 'B'],
+];
+
 function invertMove(move) {
   if (move.endsWith('2')) return move;
   if (move.endsWith('\'')) return move.slice(0, -1);
@@ -7,18 +18,14 @@ function invertMove(move) {
 function areIndependent(move1, move2) {
   const face1 = move1[0];
   const face2 = move2[0];
-  const pairs = [
-    ['R', 'L'],
-    ['U', 'D'],
-    ['F', 'B'],
-  ];
-  return pairs.some(pair => pair.includes(face1) && pair.includes(face2));
+  return IndependentPairs.some(pair => pair.includes(face1) && pair.includes(face2));
 }
 
-export function check(scramble, cubeMoves) {
+export function checkScrambleProgress(scramble, cubeMoves) {
+  // Initialize slots
   const slots = scramble.map(move => ({
     expected: move,
-    output: { move: move, status: '⏳', comment: 'expected but not yet performed' },
+    output: { move: move, status: MoveScrambleStatus.WAITING, comment: 'expected but not yet performed' },
     state: 'pending' // 'pending' | 'partial' | 'done'
   }));
 
@@ -31,7 +38,7 @@ export function check(scramble, cubeMoves) {
     if (failure) {
       extraErrors.push({
         move: uMove,
-        status: '❌',
+        status: MoveScrambleStatus.INCORRECT,
         comment: 'unexpected move (after previous error)',
       });
       rollback.push(invertMove(uMove));
@@ -41,37 +48,36 @@ export function check(scramble, cubeMoves) {
     let matchedIndex = -1;
     let matchType = null; // 'exact', 'partial', 'completion'
 
-    // Поиск подходящего слота
+    // Search for a matching slot
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i];
 
-      // 1. Пропускаем выполненные
+      // 1. Skip completed slots
       if (slot.state === 'done') continue;
 
-      // 2. Обработка Partial слота (уже начат, например R из R2)
+      // 2. Handle Partial slot (already started, e.g., R from R2)
       if (slot.state === 'partial') {
-        // Пытаемся завершить (пришел второй R)
+        // Try to complete (second R arrived)
         if (slot.expected.endsWith('2') && uMove[0] === slot.expected[0]) {
           matchedIndex = i;
           matchType = 'completion';
           break;
         }
 
-        // ВАЖНОЕ ИСПРАВЛЕНИЕ:
-        // Если ход не завершает этот partial слот, проверяем независимость.
-        // Если uMove независим от slot.expected (R и L), мы можем искать дальше.
-        // Если зависим (R и F), мы блокируемся.
+        // If the move does not complete this partial slot, check independence.
+        // If uMove is independent of slot.expected (e.g., R and L), we can search further.
+        // If dependent (e.g., R and F), we are blocked.
         if (!areIndependent(uMove, slot.expected)) {
-          break; // Зависимый ход блокирует дальнейший поиск
+          break; // Dependent move blocks further search
         }
-        // Если независим — идем к следующему слоту (continue)
+        // If independent — go to the next slot (continue)
         continue;
       }
 
-      // 3. Обработка Pending слота (еще не начат)
+      // 3. Handle Pending slot (not yet started)
       if (slot.state === 'pending') {
         const isExact = uMove === slot.expected;
-        // Partial совпадение: ждем X2, пришел X или X' (но не X2)
+        // Partial match: waiting for X2, got X or X' (but not X2)
         const isPartial = slot.expected.endsWith('2') && uMove[0] === slot.expected[0] && !uMove.endsWith('2');
 
         if (isExact || isPartial) {
@@ -80,21 +86,21 @@ export function check(scramble, cubeMoves) {
           break;
         }
 
-        // Если не совпало, проверяем можно ли пропустить этот слот (независимость)
+        // If no match, check if we can skip this slot (independence)
         if (!areIndependent(uMove, slot.expected)) {
-          break; // Зависимый ход блокирует
+          break; // Dependent move blocks
         }
       }
     }
 
-    // Применение результата
+    // Apply result
     if (matchedIndex !== -1) {
       const slot = slots[matchedIndex];
 
       if (matchType === 'completion') {
         slot.output = {
           move: slot.expected,
-          status: '✅',
+          status: MoveScrambleStatus.CORRECT,
           comment: 'matches expected (completed)'
         };
         slot.state = 'done';
@@ -102,7 +108,7 @@ export function check(scramble, cubeMoves) {
       else if (matchType === 'exact') {
         slot.output = {
           move: uMove,
-          status: '✅',
+          status: MoveScrambleStatus.CORRECT,
           comment: matchedIndex === getFirstPendingIndex(slots) ? 'matches expected' : 'independent swap allowed'
         };
         slot.state = 'done';
@@ -110,7 +116,7 @@ export function check(scramble, cubeMoves) {
       else if (matchType === 'partial') {
         slot.output = {
           move: uMove,
-          status: '⚠️',
+          status: MoveScrambleStatus.PARTIAL,
           comment: 'partial move, independent allowed'
         };
         slot.state = 'partial';
@@ -119,7 +125,7 @@ export function check(scramble, cubeMoves) {
       failure = true;
       extraErrors.push({
         move: uMove,
-        status: '❌',
+        status: MoveScrambleStatus.INCORRECT,
         comment: 'unexpected move',
       });
       rollback.push(invertMove(uMove));
@@ -130,7 +136,11 @@ export function check(scramble, cubeMoves) {
 
   return {
     moves: finalMoves,
-    rollbackMoves: rollback.reverse(),
+    rollbackMoves: Alg.fromString(rollback.reverse().join(' '))
+      .experimentalSimplify({ cancel: true, puzzleLoader: cube3x3x3 })
+      .toString()
+      .split(' ')
+      .filter(move => move !== '')
   };
 }
 

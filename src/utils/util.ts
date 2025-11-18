@@ -232,7 +232,8 @@ const prepareMoves = (moves: any[]) => {
   return new Alg(lastMoveString)
     .experimentalSimplify({ cancel: true, puzzleLoader: cube3x3x3 })
     .toString()
-    .split(' ');
+    .split(' ')
+    .filter(move => move !== '');
 };
 
 export {
