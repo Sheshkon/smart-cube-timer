@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  TouchSensor,
+} from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { Cuboid } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { SolveReconstructionChart } from 'src/components/Chart/SolveChart.jsx';
 import Cube from 'src/components/Cube/Cube.jsx';
 import CubeControls from 'src/components/CubeControls/CubeControls.jsx';
 import Scramble from 'src/components/Scramble/Scramble.jsx';
@@ -11,7 +21,9 @@ import TimesTable from 'src/components/TimesTable/TimesTable';
 import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 import { sessionService } from 'src/db/sessionService.js';
 import { useCube } from 'src/hooks/useCube.js';
+import useLocalStorage from 'src/hooks/useLocalStorage.js';
 import { useSettings } from 'src/hooks/useSettings.js';
+import SortableItem from 'src/SortableItem.jsx';
 
 function App() {
   const { practiceModeEnabled } = useCube();
@@ -19,10 +31,9 @@ function App() {
   const [sessions, setSessions] = useState([]);
   const [storedTimes, setStoredTimes] = useState([]);
   const [stats, setStats] = useState({});
-  const handleSaveTime = async (solve) => {
-    console.log('solve', solve);
-    const storedTime = await sessionService.addSolveToSession(settings.selectedSessionId, solve);
 
+  const handleSaveTime = async (solve) => {
+    const storedTime = await sessionService.addSolveToSession(settings.selectedSessionId, solve);
     const bestTime = await sessionService.getBestSolveBySession(settings.selectedSessionId);
 
     if (bestTime.id === storedTime.id) {
@@ -78,8 +89,7 @@ function App() {
   }, [settings.selectedSessionId]);
 
   useEffect(() => {
-    sessionService.getAllSessions()
-      .then(setSessions);
+    sessionService.getAllSessions().then(setSessions);
 
     if (!('Notification' in window)) {
       console.warn('Notifications not supported in this browser');
@@ -91,43 +101,112 @@ function App() {
     });
   }, []);
 
+  const [blocks, setBlocks] = useLocalStorage('blocksOrder', [
+    { id: 'base' },
+    { id: 'stats' },
+    { id: 'chart' },
+    { id: 'times' },
+  ]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { delay: 200, tolerance: 5 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 5 },
+    })
+  );
+
+  function shouldShow(block) {
+    switch (block.id) {
+      case 'base':
+        return true;
+      case 'stats':
+        return !practiceModeEnabled;
+      case 'chart':
+        return (
+          settings['solutionChart'] &&
+          stats?.current?.reconstruction?.steps != null &&
+          !practiceModeEnabled
+        );
+      case 'times':
+        return !practiceModeEnabled;
+      default:
+        return false;
+    }
+  }
+
+  const visibleBlocks = blocks.filter(shouldShow);
+
+  console.log('visibleBlocks:', visibleBlocks);
+
   return (
-      <main className='flex-grow container mx-auto px-4 py-4 lg:px-64'>
-        <div className='flex flex-col space-y-4 md:space-y-6'>
-          <div className='bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center justify-center relative overflow-hidden'>
-            <Cuboid
-              className='absolute -right-16 -top-16 opacity-5 transform rotate-12'
-              size={200}
-            />
-            <CubeControls />
-            <div className='flex flex-col md:flex-row items-center'>
-              <Cube className='flex justify-center items-center' containerId='main' />
-              <div className='w-full flex flex-col items-center'>
-                <Timer onSaveTime={handleSaveTime} className='mb-6' />
-                <Scramble className='w-full max-w-md p-4' />
-              </div>
-            </div>
-          </div>
-          <>
-            {!practiceModeEnabled && (
-              <div className='grid grid-cols-1 gap-4 md:gap-6'>
-                <StatsDisplay times={storedTimes} stats={stats} setStats={setStats} />
-                <TimesTable
-                  stats={stats}
-                  onImport={handleImport}
-                  sessions={sessions}
-                  setSessions={setSessions}
-                  onDeleteTimes={handleDeleteTimes}
-                  times={storedTimes}
-                  onDeleteTime={handleDeleteTime}
-                  onDeleteSession={handleDeleteSession}
-                  onAddSession={handleAddSession}
-                />
-              </div>
-            )}
-          </>
-        </div>
-      </main>
+    <main className='flex-grow container mx-auto px-4 py-4 lg:px-64'>
+      <div className='flex flex-col space-y-4 md:space-y-6'>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={({ active, over }) => {
+            if (over && active.id !== over.id) {
+              setBlocks((prev) => {
+                const oldIndex = prev.findIndex((b) => b.id === active.id);
+                const newIndex = prev.findIndex((b) => b.id === over.id);
+                return arrayMove(prev, oldIndex, newIndex);
+              });
+            }
+          }}
+        >
+          <SortableContext
+            items={visibleBlocks.map((b) => b.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {visibleBlocks.map((block) => (
+              <SortableItem key={block.id} id={block.id}>
+                {block.id === 'base' && (
+                  <div className='bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center justify-center relative overflow-hidden'>
+                    <Cuboid
+                      className='absolute -right-16 -top-16 opacity-5 transform rotate-12'
+                      size={200}
+                    />
+                    <CubeControls />
+                    <div className='flex flex-col md:flex-row items-center'>
+                      <Cube className='flex justify-center items-center' />
+                      <div className='w-full flex flex-col items-center'>
+                        <Timer onSaveTime={handleSaveTime} className='mb-6' />
+                        <Scramble className='w-full max-w-md p-4' />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {block.id === 'stats' && (
+                  <StatsDisplay times={storedTimes} stats={stats} setStats={setStats} />
+                )}
+                {block.id === 'chart' && (
+                  <SolveReconstructionChart
+                    className='flex-col'
+                    reconstruction={stats?.current?.reconstruction}
+                  />
+                )}
+                {block.id === 'times' && (
+                  <TimesTable
+                    stats={stats}
+                    onImport={handleImport}
+                    sessions={sessions}
+                    setSessions={setSessions}
+                    onDeleteTimes={handleDeleteTimes}
+                    times={storedTimes}
+                    onDeleteTime={handleDeleteTime}
+                    onDeleteSession={handleDeleteSession}
+                    onAddSession={handleAddSession}
+                  />
+                )}
+              </SortableItem>
+            ))}
+          </SortableContext>
+        </DndContext>
+      </div>
+    </main>
   );
 }
 
