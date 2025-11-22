@@ -2,22 +2,17 @@ import React from 'react';
 
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import ContactSupportIcon from '@mui/icons-material/ContactSupportOutlined';
-import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
-import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 import TerminalIcon from '@mui/icons-material/Terminal';
 import { BluetoothSearching } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import SettingsControl from 'src/components/SettingsControl.jsx';
 import { useConsole } from 'src/contexts/ConsoleContext.jsx';
-import { useGoogleAuth } from 'src/contexts/GoogleAuthContext.jsx';
-import { useSettings } from 'src/hooks/useSettings';
 
 const projectBaseUrl = import.meta.env.BASE_URL;
 
 const Header = ({ className = '' }) => {
-  const { settings, updateSetting } = useSettings();
   const { showConsole, setShowConsole } = useConsole();
-  const { user } = useGoogleAuth();
 
   return (
     <>
@@ -35,30 +30,24 @@ const Header = ({ className = '' }) => {
             </div>
           </div>
 
-          {/*<UserProfile user={user} />*/}
-
-          <Link to={`${projectBaseUrl}library/`}
-                className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
-          >
-            <AutoStoriesOutlinedIcon/>
-          </Link>
-
-          <a
-            className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
-            href='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
-            target='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
-            rel='noopener noreferrer'
-          >
-            <ContactSupportIcon size={38} />
-          </a>
-          <div className='flex items-center space-x-2 pr-4'>
-            <button
-              onClick={() => updateSetting('theme', settings.theme === 'light' ? 'dark' : 'light')}
-              className='p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
-              title={settings.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          <div className='flex gap-2 mr-4'>
+            <Link
+              to={`${projectBaseUrl}library/`}
+              className='rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
             >
-              {settings.theme === 'dark' ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
-            </button>
+              <AutoStoriesOutlinedIcon />
+            </Link>
+
+            <a
+              className='rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
+              href='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
+              target='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
+              rel='noopener noreferrer'
+            >
+              <ContactSupportIcon size={38} />
+            </a>
+            <SettingsControl className=' rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors' />
+
             <button
               className='rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
               onClick={() => setShowConsole(!showConsole)}

@@ -2,9 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import clsx from 'clsx';
 import { TwistyPlayer } from 'cubing/twisty';
-import { Dumbbell, Info, Settings } from 'lucide-react';
+import { Dumbbell, Info } from 'lucide-react';
 import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
-import { SettingsModal } from 'src/components/Modals/SettingsModal.jsx';
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings.js';
 import { cubeQuaternion } from 'src/utils/util.ts';
@@ -40,10 +39,8 @@ const Cube = ({ className = '' }) => {
   const animationRef = useRef(-1);
 
   const [infoModalOpen, setInfoModalOpen] = useState(false);
-  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
   const handleInfoModalOpen = () => setInfoModalOpen(!infoModalOpen);
-  const handleSettingsModalOpen = () => setSettingsModalOpen(!settingsModalOpen);
   const handlePracticeMode = () => setPracticeModeEnabled(!practiceModeEnabled);
 
   const animateCubeOrientation = async () => {
@@ -103,7 +100,7 @@ const Cube = ({ className = '' }) => {
     <div className={className}>
       <div className='cube-container flex justify-center items-center'>
         <div
-          className={`relative ${settings.showCubeAnimation ? '' : 'hidden'}`}
+          className={settings.showCubeAnimation ? 'flex justify-center' : 'hidden'}
           id='cube'
           ref={cubeRef}
         >
@@ -127,21 +124,14 @@ const Cube = ({ className = '' }) => {
 
             <div className='absolute flex flex-col right-[0.9rem] top-[0.1rem]'>
               {connection && (
-              <button
-                onClick={handleInfoModalOpen}
-                className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
-                title='Cube info'
-              >
-                <Info size={18} />
-              </button>
+                <button
+                  onClick={handleInfoModalOpen}
+                  className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+                  title='Cube info'
+                >
+                  <Info size={18} />
+                </button>
               )}
-              <button
-                onClick={handleSettingsModalOpen}
-                className='p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
-                title='Settings'
-              >
-                <Settings size={18} />
-              </button>
               <CubeInfoModal
                 info={{
                   ...hardwareInfo,
@@ -152,7 +142,6 @@ const Cube = ({ className = '' }) => {
                 isOpen={infoModalOpen}
                 onClose={handleInfoModalOpen}
               />
-              <SettingsModal isOpen={settingsModalOpen} onClose={handleSettingsModalOpen} />
             </div>
           </div>
         </div>
