@@ -8,6 +8,7 @@ import {
   PointerSensor,
   TouchSensor,
 } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { Cuboid } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -15,6 +16,7 @@ import { SolveReconstructionChart } from 'src/components/Chart/SolveChart.jsx';
 import Cube from 'src/components/Cube/Cube.jsx';
 import CubeControls from 'src/components/CubeControls/CubeControls.jsx';
 import Scramble from 'src/components/Scramble/Scramble.jsx';
+import SortableItem from 'src/components/SortableItem/SortableItem.jsx';
 import StatsDisplay from 'src/components/StatsDisplay/StatsDisplay';
 import Timer from 'src/components/Timer/Timer';
 import TimesTable from 'src/components/TimesTable/TimesTable';
@@ -23,7 +25,6 @@ import { sessionService } from 'src/db/sessionService.js';
 import { useCube } from 'src/hooks/useCube.js';
 import useLocalStorage from 'src/hooks/useLocalStorage.js';
 import { useSettings } from 'src/hooks/useSettings.js';
-import SortableItem from 'src/SortableItem.jsx';
 
 function App() {
   const { practiceModeEnabled } = useCube();
@@ -146,6 +147,7 @@ function App() {
     <main className='flex-grow container mx-auto px-4 py-4 lg:px-64'>
       <div className='flex flex-col space-y-4 md:space-y-6'>
         <DndContext
+          modifiers={[restrictToVerticalAxis]}
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={({ active, over }) => {
