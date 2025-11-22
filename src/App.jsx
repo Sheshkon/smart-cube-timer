@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import {
   DndContext,
@@ -125,7 +125,7 @@ function App() {
         return !practiceModeEnabled;
       case 'chart':
         return (
-          settings['solutionChart'] &&
+          settings.solutionChart &&
           stats?.current?.reconstruction?.steps != null &&
           !practiceModeEnabled
         );
@@ -136,9 +136,11 @@ function App() {
     }
   }
 
-  const visibleBlocks = blocks.filter(shouldShow);
-
-  console.log('visibleBlocks:', visibleBlocks);
+  const visibleBlocks = useMemo(() => {
+    const filtered = blocks.filter(shouldShow);
+    console.log('visibleBlocks:', filtered);
+    return filtered;
+  }, [blocks, practiceModeEnabled, settings.solutionChart, stats?.current?.reconstruction?.steps]);
 
   return (
     <main className='flex-grow container mx-auto px-4 py-4 lg:px-64'>
@@ -163,7 +165,7 @@ function App() {
             {visibleBlocks.map((block) => (
               <SortableItem key={block.id} id={block.id}>
                 {block.id === 'base' && (
-                  <div className='bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center justify-center relative overflow-hidden'>
+                  <div className='bg-white dark:bg-gray-800 rounded-b-lg shadow-md p-6 flex flex-col items-center justify-center relative overflow-hidden'>
                     <Cuboid
                       className='absolute -right-16 -top-16 opacity-5 transform rotate-12'
                       size={200}
@@ -173,7 +175,7 @@ function App() {
                       <Cube className='flex justify-center items-center' />
                       <div className='w-full flex flex-col items-center'>
                         <Timer onSaveTime={handleSaveTime} className='mb-6' />
-                        <Scramble className='w-full max-w-md p-4' />
+                        <Scramble className='w-full max-w-md' />
                       </div>
                     </div>
                   </div>

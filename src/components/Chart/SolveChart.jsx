@@ -47,9 +47,9 @@ export const SolveReconstructionChart = ({ reconstruction, className }) => {
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-b-lg shadow-md p-4 ${className}`}>
       <h3 className='text-2xl font-medium text-gray-900 dark:text-white'>Solve Step Analysis</h3>
-      <div className='bg-gray-50 dark:bg-gray-900 rounded-lg mt-3'>
+      <div className='bg-gray-50 dark:bg-gray-900 rounded-b-lg mt-3'>
         <BarChart {...chartSetting} />
       </div>
     </div>

@@ -140,7 +140,7 @@ const TimesTable = ({
           <SolveInfo solveData={solveData} onClose={() => setShowSolveInfo(false)} />
         </FullScreenModal>
       ) : (
-        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}>
+        <div className={`bg-white dark:bg-gray-800 rounded-b-lg shadow-md p-4 ${className}`}>
           <ExportImport classWrapper={'pb-4'} onImport={onImport} />
           <div className='flex mb-4'>
             <h3 className='text-2xl font-medium text-gray-900 dark:text-white'>Session</h3>

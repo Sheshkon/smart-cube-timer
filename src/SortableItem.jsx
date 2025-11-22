@@ -9,9 +9,10 @@ export default function SortableItem({ id, children }) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    // marginBottom: '1rem',
     opacity: isDragging ? 0.65 : 1,
     background: 'transparent',
+    borderRadius: '6px',
+    overflow: 'hidden',
   };
 
   return (
@@ -19,15 +20,7 @@ export default function SortableItem({ id, children }) {
       <div
         {...attributes}
         {...listeners}
-        style={{
-          cursor: 'grab',
-          touchAction: 'none', // critical: only on the handle
-          userSelect: 'none',
-          padding: '1px',
-          // marginBottom: '8px',
-          borderRadius: '6px',
-          // background: 'var(--handle-bg, #f3f4f6)',
-        }}
+        className="sortable-handle bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
       >
         ≡
       </div>

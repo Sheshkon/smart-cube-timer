@@ -13,7 +13,7 @@ const defaultSettings = {
   selectedSessionId: DEFAULT_SESSION_ID,
   solutionChart: true,
   inspection: false,
-  solvesPerPage: 15,
+  solvesPerPage: 5,
   practiceMode: {
     category: 'ROUX_CMLL'
   },

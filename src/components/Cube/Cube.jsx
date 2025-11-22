@@ -101,14 +101,14 @@ const Cube = ({ className = '' }) => {
 
   return (
     <div className={className}>
-      <div className='cube-container'>
+      <div className='cube-container flex justify-center items-center'>
         <div
           className={`relative ${settings.showCubeAnimation ? '' : 'hidden'}`}
           id='cube'
           ref={cubeRef}
         >
-          {connection && (
-            <div>
+          <div className='z-10'>
+            {connection && (
               <button
                 onClick={handlePracticeMode}
                 className={clsx(
@@ -123,36 +123,38 @@ const Cube = ({ className = '' }) => {
               >
                 <Dumbbell size={18} />
               </button>
-              <div className='absolute flex flex-col right-[0.9rem] top-[0.1rem]'>
-                <button
-                  onClick={handleInfoModalOpen}
-                  className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
-                  title='Cube info'
-                >
-                  <Info size={18} />
-                </button>
-                <button
-                  onClick={handleSettingsModalOpen}
-                  className='p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
-                  title='Settings'
-                >
-                  <Settings size={18} />
-                </button>
+            )}
 
-                <CubeInfoModal
-                  info={{
-                    ...hardwareInfo,
-                    batteryLevel,
-                    deviceMAC: connection?.deviceMAC,
-                    deviceName: connection?.deviceName,
-                  }}
-                  isOpen={infoModalOpen}
-                  onClose={handleInfoModalOpen}
-                />
-                <SettingsModal isOpen={settingsModalOpen} onClose={handleSettingsModalOpen} />
-              </div>
+            <div className='absolute flex flex-col right-[0.9rem] top-[0.1rem]'>
+              {connection && (
+              <button
+                onClick={handleInfoModalOpen}
+                className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+                title='Cube info'
+              >
+                <Info size={18} />
+              </button>
+              )}
+              <button
+                onClick={handleSettingsModalOpen}
+                className='p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+                title='Settings'
+              >
+                <Settings size={18} />
+              </button>
+              <CubeInfoModal
+                info={{
+                  ...hardwareInfo,
+                  batteryLevel,
+                  deviceMAC: connection?.deviceMAC,
+                  deviceName: connection?.deviceName,
+                }}
+                isOpen={infoModalOpen}
+                onClose={handleInfoModalOpen}
+              />
+              <SettingsModal isOpen={settingsModalOpen} onClose={handleSettingsModalOpen} />
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

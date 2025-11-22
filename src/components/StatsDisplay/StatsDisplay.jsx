@@ -46,7 +46,7 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
   ];
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-b-lg shadow-md p-4 ${className}`}>
       <div className='flex items-center justify-between mb-4'>
         <div className='text-2xl font-medium text-gray-900 dark:text-white'>Statistics</div>
         <button
