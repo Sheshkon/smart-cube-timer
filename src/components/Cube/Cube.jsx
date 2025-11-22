@@ -1,20 +1,32 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import clsx from 'clsx';
+import { TwistyPlayer } from 'cubing/twisty';
 import { Dumbbell, Info, Settings } from 'lucide-react';
 import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
 import { SettingsModal } from 'src/components/Modals/SettingsModal.jsx';
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings.js';
-import { useTwistyPlayer } from 'src/hooks/useTwistyPlayer';
 import { cubeQuaternion } from 'src/utils/util.ts';
 import 'src/style.css';
 
+const twistyConfig = {
+  puzzle: '3x3x3',
+  visualization: 'PG3D',
+  alg: '',
+  experimentalSetupAnchor: 'start',
+  background: 'none',
+  controlPanel: 'none',
+  hintFacelets: 'none',
+  experimentalDragInput: 'none',
+  cameraLatitude: 0,
+  cameraLongitude: 0,
+  cameraLatitudeLimit: 0,
+  tempoScale: 5,
+};
+
 const Cube = ({ className = '' }) => {
   const { settings } = useSettings();
-
-  const { containerRef, playerRef: localPlayerRef } = useTwistyPlayer();
-
   const {
     twistyPlayerRef,
     hardwareInfo,
@@ -24,7 +36,9 @@ const Cube = ({ className = '' }) => {
     setPracticeModeEnabled,
   } = useCube();
 
+  const cubeRef = useRef(null);
   const animationRef = useRef(-1);
+
   const [infoModalOpen, setInfoModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
@@ -32,51 +46,57 @@ const Cube = ({ className = '' }) => {
   const handleSettingsModalOpen = () => setSettingsModalOpen(!settingsModalOpen);
   const handlePracticeMode = () => setPracticeModeEnabled(!practiceModeEnabled);
 
-  useEffect(() => {
-    if (localPlayerRef.current) {
-      twistyPlayerRef.current = localPlayerRef.current;
-    }
-  }, [localPlayerRef, twistyPlayerRef]);
-
   const animateCubeOrientation = async () => {
     try {
-      const player = localPlayerRef.current;
+      const player = twistyPlayerRef.current;
       if (!player) {
         animationRef.current = requestAnimationFrame(animateCubeOrientation);
         return;
       }
 
-      const vantageList = await player.experimentalCurrentVantages();
-      if (!vantageList || vantageList.size === 0) {
-        animationRef.current = requestAnimationFrame(animateCubeOrientation);
-        return;
+      const vantageSet = await player.experimentalCurrentVantages();
+      const vantages = [...vantageSet];
+
+      if (vantages.length > 0) {
+        vantages.slice(1).forEach((v) => {
+          v.disconnect();
+          v.remove();
+        });
       }
 
-      const twistyVantage = [...vantageList][0];
+      const [twistyVantage] = vantages;
       if (!twistyVantage?.scene) {
         animationRef.current = requestAnimationFrame(animateCubeOrientation);
         return;
       }
-      const twistyScene = await twistyVantage.scene.scene();
-      if (!twistyScene?.quaternion) {
-        animationRef.current = requestAnimationFrame(animateCubeOrientation);
-        return;
-      }
 
-      twistyScene.quaternion.slerp(cubeQuaternion, 0.25);
-      twistyVantage.render();
+      const twistyScene = await twistyVantage.scene.scene();
+      if (twistyScene?.quaternion) {
+        twistyScene.quaternion.slerp(cubeQuaternion, 0.25);
+        twistyVantage.render();
+      }
 
       animationRef.current = requestAnimationFrame(animateCubeOrientation);
     } catch (error) {
-      // console.error('Animation error', error); // Можно скрыть лишние логи
+      console.error('Error in animation loop:', error);
       animationRef.current = requestAnimationFrame(animateCubeOrientation);
     }
   };
 
-  // Запуск анимации
   useEffect(() => {
+    if (!cubeRef.current || twistyPlayerRef.current) return;
+
+    twistyPlayerRef.current = new TwistyPlayer(twistyConfig);
+    cubeRef.current.appendChild(twistyPlayerRef.current);
     animationRef.current = requestAnimationFrame(animateCubeOrientation);
-    return () => cancelAnimationFrame(animationRef.current);
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (cubeRef.current && twistyPlayerRef.current) {
+        cubeRef.current.removeChild(twistyPlayerRef.current);
+      }
+      twistyPlayerRef.current = null;
+    };
   }, []);
 
   return (
@@ -85,7 +105,7 @@ const Cube = ({ className = '' }) => {
         <div
           className={`relative ${settings.showCubeAnimation ? '' : 'hidden'}`}
           id='cube'
-          ref={containerRef}
+          ref={cubeRef}
         >
           {connection && (
             <div>
@@ -104,10 +124,18 @@ const Cube = ({ className = '' }) => {
                 <Dumbbell size={18} />
               </button>
               <div className='absolute flex flex-col right-[0.9rem] top-[0.1rem]'>
-                <button onClick={handleInfoModalOpen} className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'>
+                <button
+                  onClick={handleInfoModalOpen}
+                  className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+                  title='Cube info'
+                >
                   <Info size={18} />
                 </button>
-                <button onClick={handleSettingsModalOpen} className='p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'>
+                <button
+                  onClick={handleSettingsModalOpen}
+                  className='p-1.5 rounded-full mt-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+                  title='Settings'
+                >
                   <Settings size={18} />
                 </button>
 
