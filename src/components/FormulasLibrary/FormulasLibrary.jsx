@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 
 import { FiArrowLeft } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-
-const projectBaseUrl = import.meta.env.BASE_URL;
-
 import {
   getAllBySheetIdAndCategoryAndGroup,
   getCategories, getGroups,
 } from 'src/components/Scramble/practiceScramble.js';
+const projectBaseUrl = import.meta.env.BASE_URL;
+
 
 function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oyH0' }) {
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -47,16 +46,24 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
   const handleGroupChange = (e) => setSelectedGroup(e.target.value);
 
   return (
-    <div className='p-5'>
+    <div className='px-5'>
+      <div className='flex justify-between pb-2'>
+        <h1 className='pt-6 text-2xl font-bold text-gray-800 dark:text-white'>Formulas</h1>
       <button
         onClick={() => navigate(projectBaseUrl, { replace: false })}
-        className="flex items-center gap-2 mb-6 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+        className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
       >
         <FiArrowLeft /> To Timer
       </button>
-      <div className='pb-2'>
+      </div>
+      <div className='pb-2 pl-2'>
         <label htmlFor='category-select'><b>Category: </b></label>
-        <select id='category-select' value={selectedCategory} onChange={handleCategoryChange}>
+        <select
+          id='category-select'
+          value={selectedCategory}
+          onChange={handleCategoryChange}
+          className="w-[140px] ml-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+        >
           {categories.map((category) => (
             <option key={category} value={category}>
               {category?.replaceAll('_', ' ')}
@@ -65,9 +72,14 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
         </select>
       </div>
 
-      <div className='pb-5'>
+      <div className='pb-5 pl-2'>
         <label htmlFor='group-select'><b>Group: </b></label>
-        <select id='group-select' value={selectedGroup} onChange={handleGroupChange}>
+        <select
+          id='group-select'
+          value={selectedGroup}
+          onChange={handleGroupChange}
+          className="w-[140px] ml-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+        >
           {groups.map((group) => (
             <option key={group} value={group}>
               {group?.replaceAll('_', ' ')}
