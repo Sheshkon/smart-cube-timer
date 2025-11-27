@@ -295,7 +295,10 @@ const ExtendedStats = ({ onClose, navigate }) => {
 
   if (!selectedSessionId && sessions.length === 0 && !isLoading) {
     return (
-      <div className="extended-stats p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <div
+        className="extended-stats p-6 shadow-lg"
+        style={{ backgroundColor: settings.backgroundColor}}
+      >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Extended Statistics</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">✕</button>
@@ -307,12 +310,15 @@ const ExtendedStats = ({ onClose, navigate }) => {
   }
 
   return (
-    <div className="extended-stats px-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-y-auto">
-      <div className="flex justify-between items-center mb-6 sticky top-0 bg-white dark:bg-gray-800 py-4 z-10">
+    <div
+      className="extended-stats px-6 shadow-lg overflow-y-auto"
+      style={{ backgroundColor: settings.backgroundColor}}
+    >
+      <div className="flex justify-between items-center mb-6 sticky top-0 py-4 z-10">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Extended Statistics</h2>
         <button
           onClick={() => navigate ? navigate(projectBaseUrl) : onClose()}
-          className="flex items-center gap-2 mb-6 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+          className="flex items-center gap-2 mb-6 text-gray-800 dark:text-white hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
         >
           <FiArrowLeft /> To Timer
         </button>

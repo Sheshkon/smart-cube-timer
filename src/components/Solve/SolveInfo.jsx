@@ -3,12 +3,17 @@ import React, { useEffect, useRef } from 'react';
 import { TwistyPlayer } from 'cubing/twisty';
 import { FiAlertTriangle, FiArrowLeft, FiCalendar, FiClock, FiCode, FiLayers } from 'react-icons/fi';
 import { IoSpeedometer } from 'react-icons/io5';
+import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime } from 'src/utils/time.js';
+
 
 const projectBaseUrl = import.meta.env.BASE_URL;
 
 const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, onClose }) => {
   const twistyPlayerRef = useRef(null);
+
+  const { settings } = useSettings();
+
 
   useEffect(() => {
     if (solveData?.solution && twistyPlayerRef.current) {
@@ -71,7 +76,10 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
   );
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 md:p-6">
+    <div
+      className="p-4 md:p-6"
+      style={{ backgroundColor: settings.backgroundColor}}
+    >
       <div className="mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
@@ -79,7 +87,7 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
           </h2>
           <button
             onClick={() => navigate ? navigate(projectBaseUrl) : onClose()}
-            className="flex items-center gap-2 mb-6 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+            className="flex items-center gap-2 mb-6 text-gray-800 dark:text-white hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
           >
             <FiArrowLeft /> To Timer
           </button>
@@ -99,7 +107,10 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null, 
             <p className="text-red-500 dark:text-red-400">{error}</p>
           </div>
         ) : solveData ? (
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden">
+          <div
+            className="bg-white/50 dark:bg-gray-900/50 rounded-lg shadow-md overflow-hidden"
+
+          >
             <div className="p-6 md:p-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
