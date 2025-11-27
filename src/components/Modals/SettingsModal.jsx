@@ -122,7 +122,7 @@ export const SettingsModal = ({ isOpen, onClose }) => {
               </b>
               <CirclePicker
                 className='pt-4'
-                colors={['#ffa600', '#000000', '#ef4444', '#3b82f6', '#22c55e', '#ffffff']}
+                colors={['#000000','#d66202', '#8c0025', '#270091', '#086103', '#ffffff']}
                 onChange={(updatedColor) => updateSetting('backgroundColor', updatedColor.hex)}
               />
             </div>
