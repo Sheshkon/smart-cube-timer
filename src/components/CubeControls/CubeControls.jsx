@@ -1,6 +1,7 @@
+import { useEffect, useRef } from 'react';
+
 import { experimentalSolve3x3x3IgnoringCenters } from 'cubing/search';
 import { connectGanCube } from 'gan-web-bluetooth';
-import { useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { TimerState } from 'src/components/Timer/util.js';
 import { useCube } from 'src/hooks/useCube';
@@ -229,22 +230,23 @@ const cubeControls = () => {
         </button>
       </div>
       {connection && settings.showCubeAnimation && (
-      <div className='flex flex-row'>
-        <button
-          className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
-          onClick={() => (basisRef.current = null)}
-        >
-          Reset Gyro
-        </button>
-        {timerState === TimerState.IDLE && (
+        <div className='flex flex-row'>
           <button
-            onClick={handleResetCubeState}
             className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+            onClick={() => (basisRef.current = null)}
           >
-            Reset State
+            Reset Gyro
           </button>
-        )}
-      </div>)}
+          {timerState === TimerState.IDLE && (
+            <button
+              onClick={handleResetCubeState}
+              className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+            >
+              Reset State
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

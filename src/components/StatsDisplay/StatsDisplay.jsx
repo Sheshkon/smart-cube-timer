@@ -46,7 +46,7 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
   ];
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-b-lg shadow-md p-4 ${className}`}>
+    <div className={`bg-white/50 dark:bg-gray-800/50 rounded-b-lg shadow-md p-4 ${className}`}>
       <div className='flex items-center justify-between mb-4'>
         <div className='text-2xl font-medium text-gray-900 dark:text-white'>Statistics</div>
         <button
@@ -68,7 +68,7 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
         {statItems().map((item, index) => (
           <div
             key={index}
-            className='bg-gray-50 dark:bg-gray-900 p-3 rounded-md flex flex-col items-center justify-center'
+            className='bg-gray-50/70 dark:bg-gray-900/70 p-3 rounded-md flex flex-col items-center justify-center'
           >
             <div className='flex items-center text-gray-600 dark:text-gray-400 mb-1'>
               {item.icon}

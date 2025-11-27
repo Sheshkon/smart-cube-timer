@@ -3,10 +3,9 @@ import React, { useState, useEffect } from 'react';
 
 import FirstPageOutlinedIcon from '@mui/icons-material/FirstPageOutlined';
 import LastPageOutlinedIcon from '@mui/icons-material/LastPageOutlined';
+import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import NavigateBeforeOutlinedIcon from '@mui/icons-material/NavigateBeforeOutlined';
 import NavigateNextOutlinedIcon from '@mui/icons-material/NavigateNextOutlined';
-import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
-
 import { ExternalLink, Plus, Share2, Trash2 } from 'lucide-react';
 import ExportImport from 'src/components/ExportImport/ExportImport.jsx';
 import AddModal from 'src/components/Modals/AddModal.jsx';
@@ -140,7 +139,7 @@ const TimesTable = ({
           <SolveInfo solveData={solveData} onClose={() => setShowSolveInfo(false)} />
         </FullScreenModal>
       ) : (
-        <div className={`bg-white dark:bg-gray-800 rounded-b-lg shadow-md p-4 ${className}`}>
+        <div className={`bg-white/50 dark:bg-gray-800/50 rounded-b-lg shadow-md p-4 ${className}`}>
           <ExportImport classWrapper={'pb-4'} onImport={onImport} />
           <div className='flex mb-4'>
             <h3 className='text-2xl font-medium text-gray-900 dark:text-white'>Session</h3>
@@ -221,7 +220,7 @@ const TimesTable = ({
             <div className='overflow-x-auto'>
               <table className='w-full text-sm'>
                 <thead>
-                  <tr className='bg-gray-50 dark:bg-gray-900 text-left'>
+                  <tr className='bg-gray-50/50 dark:bg-gray-900/50 text-left'>
                     <th className='px-4 py-2 rounded-tl-md dark:text-white'>#</th>
                     <th className='px-4 py-2 dark:text-white'>Time</th>
                     <th className='px-4 py-2 dark:text-white'>When</th>
@@ -240,7 +239,7 @@ const TimesTable = ({
                         key={item.id}
                         className={`
                           border-t border-gray-100 dark:border-gray-700
-                          ${(indexOfFirstItemOnPage + indexOnPage) % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900/50'}
+                          ${(indexOfFirstItemOnPage + indexOnPage) % 2 === 0 ? 'bg-white/50 dark:bg-gray-800/70' : 'bg-gray-50/30 dark:bg-gray-900/70'}
                           hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors
                         `}
                       >
