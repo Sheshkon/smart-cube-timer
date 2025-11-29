@@ -24,7 +24,9 @@ import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 import { sessionService } from 'src/db/sessionService.js';
 import { useCube } from 'src/hooks/useCube.js';
 import useLocalStorage from 'src/hooks/useLocalStorage.js';
+import usePwaExitConfirmation from 'src/hooks/usePwaExitConfirmation.jsx';
 import { useSettings } from 'src/hooks/useSettings.js';
+
 
 function App() {
   const { practiceModeEnabled } = useCube();
@@ -142,6 +144,8 @@ function App() {
     console.log('visibleBlocks:', filtered);
     return filtered;
   }, [blocks, practiceModeEnabled, settings.solutionChart, stats?.current?.reconstruction?.steps]);
+
+  usePwaExitConfirmation();
 
   return (
     <main
