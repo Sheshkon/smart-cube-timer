@@ -1,27 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { BarChart, LineChart, PieChart, ScatterChart } from '@mui/x-charts';
-import { FiArrowLeft } from 'react-icons/fi';
 import db from 'src/db/db.js';
 import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime } from 'src/utils/time.js';
-
-const projectBaseUrl = import.meta.env.BASE_URL;
-
 function countMoves(moveString) {
   if (!moveString || typeof moveString !== 'string') return 0;
   const moves = moveString.trim().split(/\s+/);
   return moves.filter(move => move !== '').length;
 }
 
-const ExtendedStats = ({ onClose, navigate }) => {
+const ExtendedStats = () => {
   const { settings } = useSettings();
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [sessions, setSessions] = useState([]);
-  const [processedSolves, setProcessedSolves] = useState([]); // Solves with TPS, move counts, and processed steps
-  const [stats, setStats] = useState({}); // Basic time stats
-  const [tpsStats, setTpsStats] = useState({}); // TPS specific stats
+  const [processedSolves, setProcessedSolves] = useState([]);
+  const [stats, setStats] = useState({});
+  const [tpsStats, setTpsStats] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
   const [timeDistributionData, setTimeDistributionData] = useState(null);
@@ -301,7 +297,6 @@ const ExtendedStats = ({ onClose, navigate }) => {
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Extended Statistics</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">✕</button>
         </div>
         <div className="text-center py-10"><p className="text-gray-600 dark:text-gray-400">No sessions available.</p>
         </div>
@@ -316,12 +311,6 @@ const ExtendedStats = ({ onClose, navigate }) => {
     >
       <div className="flex justify-between items-center mb-6 sticky top-0 py-4 z-10">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Extended Statistics</h2>
-        <button
-          onClick={() => navigate ? navigate(projectBaseUrl) : onClose()}
-          className="flex items-center gap-2 mb-6 text-gray-800 dark:text-white hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
-        >
-          <FiArrowLeft /> To Timer
-        </button>
       </div>
 
       <div className="mb-6">

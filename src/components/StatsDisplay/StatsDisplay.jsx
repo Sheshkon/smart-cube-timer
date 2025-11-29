@@ -12,17 +12,17 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
 
   useEffect(() => {
     let isActive = true;
-    calculateStats(times).then((stats) => {
+    calculateStats(times).then((computedStats) => {
       if (isActive) {
-        setStats(stats);
+        setStats(computedStats);
       }
     });
     return () => {
       isActive = false;
     };
-  }, [times]);
+  }, [times, setStats]);
 
-  const statItems = () => [
+  const statItems = [
     {
       label: 'Current',
       value: stats.current?.time,
@@ -59,13 +59,13 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
       </div>
 
       {showExtendedStats && (
-        <FullScreenModal>
-          <ExtendedStats onClose={() => setShowExtendedStats(false)} />
+        <FullScreenModal onClose={() => setShowExtendedStats(false)}>
+          <ExtendedStats />
         </FullScreenModal>
       )}
 
       <div className='grid grid-cols-2 md:grid-cols-4 gap-3'>
-        {statItems().map((item, index) => (
+        {statItems.map((item, index) => (
           <div
             key={index}
             className='bg-gray-50/70 dark:bg-gray-900/70 p-3 rounded-md flex flex-col items-center justify-center'
@@ -84,19 +84,19 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
               >
                 {item.value}
               </div>
+
               {item.label === 'Current' && stats?.currentStats?.formattedTimeDiff && (
-                <>
-                  <div
-                    className={
-                      stats.currentStats.formattedTimeDiff.sign === 1
-                        ? 'text-red-600 dark:text-red-400 text-xs flex justify-center'
-                        : 'text-green-600 dark:text-green-400 text-xs flex justify-center'
-                    }
-                  >
-                    <p>{`(${stats.currentStats.formattedTimeDiff.sign === 1 ? '+' : '-'}${stats.currentStats.formattedTimeDiff.formattedTime})`}</p>
-                  </div>
-                </>
+                <div
+                  className={
+                    stats.currentStats.formattedTimeDiff.sign === 1
+                      ? 'text-red-600 dark:text-red-400 text-xs flex justify-center'
+                      : 'text-green-600 dark:text-green-400 text-xs flex justify-center'
+                  }
+                >
+                  <p>{`(${stats.currentStats.formattedTimeDiff.sign === 1 ? '+' : '-'}${stats.currentStats.formattedTimeDiff.formattedTime})`}</p>
+                </div>
               )}
+
               {item.label === 'Current' && item.value && (
                 <>
                   <div className='flex justify-center ml-1 text-xs text-gray-500 dark:text-gray-400'>

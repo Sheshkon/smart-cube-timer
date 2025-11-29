@@ -11,7 +11,7 @@ import { useSettings } from 'src/hooks/useSettings.js';
 
 const SESSIONS_TEMPLATE_NAME = 'smart_cube_timer_solves';
 
-const ExportImport = ({ classWrapper, onImport }) => {
+export const ExportImport = ({ classWrapper, onImport }) => {
   const { settingsRef } = useSettings();
   const { driveState, user } = useGoogleAuth();
   const [status, setStatus] = useState('');
@@ -283,4 +283,3 @@ const ExportImport = ({ classWrapper, onImport }) => {
   );
 };
 
-export default ExportImport;
