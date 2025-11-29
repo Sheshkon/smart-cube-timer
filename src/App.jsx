@@ -113,10 +113,10 @@ function App() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { delay: 200, tolerance: 5 },
+      activationConstraint: { delay: 50, tolerance: 5 },
     }),
     useSensor(TouchSensor, {
-      activationConstraint: { delay: 200, tolerance: 5 },
+      activationConstraint: { delay: 50, tolerance: 5 },
     })
   );
 
