@@ -3,7 +3,7 @@ import React from 'react';
 export default function iosNotSupportedNotification() {
   return (
     <div>
-      <h2 className='font-semibold mb-2'>Bluetooth LE on iOS</h2>
+      <h2 className='font-semibold mb-2 selectable-text'>Bluetooth LE on iOS</h2>
       <p>
         Safari and Chrome on iOS do not support Web Bluetooth. To use Bluetooth LE features,
         please install the <strong>Bluefy</strong> browser:

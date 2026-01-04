@@ -3,7 +3,7 @@ import React from 'react';
 export default function UnsupportedNotification() {
   return (
     <div>
-      <h2 className='font-semibold mb-2'>Enable Web Bluetooth Advertisements</h2>
+      <h2 className='font-semibold mb-2 selectable-text'>Enable Web Bluetooth Advertisements</h2>
       <p>
         Your browser does not support <code>watchAdvertisements()</code>. To enable it:
       </p>

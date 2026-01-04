@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function AndroidNotification() {
   return (
-    <div>
+    <div className='selectable-text'>
       <h2 className='font-semibold mb-2'>Bluetooth LE on Android</h2>
       <p>
         Android supports Web Bluetooth in <strong>Chrome</strong> and <strong>Edge</strong>. Just open this site in your
