@@ -43,7 +43,7 @@ export const SettingsModal = ({ isOpen, onClose }) => {
             </div>
             <div className='flex justify-between items-center mb-3'>
               <b>
-                <label htmlFor='gyroToggle'>Use Image Moves Notation</label>
+                <label htmlFor='imageNotation'>Use Image Moves Notation</label>
               </b>
               <input
                 id='imageNotation'

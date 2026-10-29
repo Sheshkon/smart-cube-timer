@@ -20,6 +20,9 @@ const defaultSettings = {
   showCubeAnimation: true,
   backgroundColor: 'none',
   notifyEveryNSolves: -1,
+  appMode: 'session',
+  miniGameId: 'racing',
+  miniGameSensitivity: 1,
 };
 
 export const SettingsProvider = ({ children }) => {

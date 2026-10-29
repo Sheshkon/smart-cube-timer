@@ -164,9 +164,10 @@ const Timer = ({ onSaveTime }) => {
         handleSolvedState();
         break;
       case TimerState.IDLE:
+        stopTimer();
         break;
     }
-  }, [timerState, getTimerValueFromTimestamp, startTimer, handleSolvedState]);
+  }, [timerState, getTimerValueFromTimestamp, startTimer, handleSolvedState, stopTimer]);
 
   useEffect(() => {
     if (!connection) clearTimerAndSolvingData();

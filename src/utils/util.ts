@@ -30,6 +30,8 @@ const HOME_ORIENTATION: THREE.Quaternion = new THREE.Quaternion().setFromEuler(
 const cubeQuaternion: THREE.Quaternion = new THREE.Quaternion().setFromEuler(
   new THREE.Euler((30 * Math.PI) / 180, (-30 * Math.PI) / 180, 0),
 );
+/** Gyro pose relative to the last Reset Gyro / Start calibration (no display tilt). */
+const cubePoseQuaternion: THREE.Quaternion = new THREE.Quaternion();
 
 const REID_TO_FACELETS_MAP: [number, number, number][] = [
   [1, 2, 0],
@@ -240,6 +242,7 @@ export {
   patternToFacelets,
   faceletsToPattern,
   cubeQuaternion,
+  cubePoseQuaternion,
   SOLVED_STATE,
   HOME_ORIENTATION,
   prepareMoves,

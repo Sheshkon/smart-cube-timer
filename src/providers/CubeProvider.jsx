@@ -27,6 +27,7 @@ export const CubeProvider = ({ children }) => {
   const deviceNameRef = useRef(deviceName);
   const deviceMacRef = useRef(deviceMac);
   const practiceModeEnabledRef = useRef(practiceModeEnabled);
+  const gyroBasisRef = useRef(null);
 
   const [scrambleDisplay, setScrambleDisplay] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -41,9 +42,7 @@ export const CubeProvider = ({ children }) => {
     timerStateRef.current = timerState;
   }, [timerState]);
 
-  useEffect(() => {
-    practiceModeEnabledRef.current = practiceModeEnabled;
-  }, [timerState]);
+  practiceModeEnabledRef.current = practiceModeEnabled;
 
   return (
     <CubeContext.Provider
@@ -70,6 +69,7 @@ export const CubeProvider = ({ children }) => {
         deviceMacRef,
         deviceNameRef,
         practiceModeEnabledRef,
+        gyroBasisRef,
 
         setPracticeModeEnabled,
         setConnection,

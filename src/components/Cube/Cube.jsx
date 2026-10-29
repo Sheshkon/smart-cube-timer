@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import clsx from 'clsx';
 import { TwistyPlayer } from 'cubing/twisty';
-import { Dumbbell, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
+import { AppMode } from 'src/constants/appModes';
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings.js';
 import { cubeQuaternion } from 'src/utils/util.ts';
@@ -25,14 +25,12 @@ const twistyConfig = {
 };
 
 const Cube = ({ className = '' }) => {
-  const { settings } = useSettings();
+  const { settings, settingsRef } = useSettings();
   const {
     twistyPlayerRef,
     hardwareInfo,
     connection,
     batteryLevel,
-    practiceModeEnabled,
-    setPracticeModeEnabled,
   } = useCube();
 
   const cubeRef = useRef(null);
@@ -41,7 +39,6 @@ const Cube = ({ className = '' }) => {
   const [infoModalOpen, setInfoModalOpen] = useState(false);
 
   const handleInfoModalOpen = () => setInfoModalOpen(!infoModalOpen);
-  const handlePracticeMode = () => setPracticeModeEnabled(!practiceModeEnabled);
 
   const animateCubeOrientation = async () => {
     try {
@@ -69,7 +66,8 @@ const Cube = ({ className = '' }) => {
 
       const twistyScene = await twistyVantage.scene.scene();
       if (twistyScene?.quaternion) {
-        twistyScene.quaternion.slerp(cubeQuaternion, 0.25);
+        const slerp = settingsRef.current.appMode === AppMode.MINI_GAMES ? 0.38 : 0.25;
+        twistyScene.quaternion.slerp(cubeQuaternion, slerp);
         twistyVantage.render();
       }
 
@@ -105,23 +103,6 @@ const Cube = ({ className = '' }) => {
           ref={cubeRef}
         >
           <div className='z-10'>
-            {connection && (
-              <button
-                onClick={handlePracticeMode}
-                className={clsx(
-                  'absolute flex right-[3.30rem] top-[-0.40rem] p-1.5 rounded-full mt-2 transition-colors',
-                  {
-                    'bg-green-600 text-white hover:bg-green-700': practiceModeEnabled,
-                    'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600':
-                      !practiceModeEnabled,
-                  }
-                )}
-                title='Practice'
-              >
-                <Dumbbell size={18} />
-              </button>
-            )}
-
             <div className='absolute flex flex-col right-[0.9rem] top-[0.1rem]'>
               {connection && (
                 <button

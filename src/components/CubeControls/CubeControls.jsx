@@ -3,10 +3,13 @@ import { useEffect, useRef } from 'react';
 import { experimentalSolve3x3x3IgnoringCenters } from 'cubing/search';
 import { connectGanCube } from 'gan-web-bluetooth';
 import { toast } from 'react-toastify';
+import AppModeSwitcher from 'src/components/AppModeSwitcher/AppModeSwitcher.jsx';
 import { TimerState } from 'src/components/Timer/util.js';
+import { AppMode } from 'src/constants/appModes';
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
 import {
+  cubePoseQuaternion,
   cubeQuaternion,
   faceletsToPattern,
   HOME_ORIENTATION,
@@ -37,11 +40,10 @@ const cubeControls = () => {
     setShowScramble,
     setPracticeModeEnabled,
     practiceModeEnabledRef,
+    gyroBasisRef,
   } = useCube();
 
   const { settingsRef, settings, updateSetting } = useSettings();
-
-  const basisRef = useRef(null);
 
   const batteryPollIntervalRef = useRef(null);
 
@@ -66,6 +68,9 @@ const cubeControls = () => {
           batteryPollIntervalRef.current = null;
         }
         const cn = await connectGanCube(customMacAddressProvider);
+        const training = settingsRef.current.appMode === AppMode.TRAINING;
+        practiceModeEnabledRef.current = training;
+        setPracticeModeEnabled(training);
         setConnection(cn);
         cn?.events$?.subscribe(handleCubeEvent);
 
@@ -98,8 +103,10 @@ const cubeControls = () => {
 
     setConnection(null);
     connectionRef.current = null;
+    practiceModeEnabledRef.current = false;
     setPracticeModeEnabled(false);
     setLastMoves([]);
+    if (gyroBasisRef) gyroBasisRef.current = null;
   }
 
   const handleResetCubeState = () => {
@@ -113,7 +120,7 @@ const cubeControls = () => {
     switch (event.type) {
       case CubeEventType.GYRO:
         if (settingsRef.current.useGyroscope) {
-          await handleGyroEvent(event);
+          handleGyroEvent(event);
         }
         break;
       case CubeEventType.MOVE:
@@ -133,15 +140,16 @@ const cubeControls = () => {
     }
   };
 
-  async function handleGyroEvent(event) {
-    if (event.type === CubeEventType.GYRO) {
-      let { x: qx, y: qy, z: qz, w: qw } = event.quaternion;
-      let quat = new THREE.Quaternion(qx, qz, -qy, qw).normalize();
-      if (!basisRef.current) {
-        basisRef.current = quat.clone().conjugate();
-      }
-      cubeQuaternion.copy(quat.premultiply(basisRef.current).premultiply(HOME_ORIENTATION));
+  function handleGyroEvent(event) {
+    if (event.type !== CubeEventType.GYRO) return;
+    const { x: qx, y: qy, z: qz, w: qw } = event.quaternion;
+    const raw = new THREE.Quaternion(qx, qz, -qy, qw).normalize();
+    if (!gyroBasisRef.current) {
+      gyroBasisRef.current = raw.clone().conjugate();
     }
+    const relative = raw.premultiply(gyroBasisRef.current);
+    cubePoseQuaternion.copy(relative);
+    cubeQuaternion.copy(relative.clone().premultiply(HOME_ORIENTATION));
   }
 
   async function handleMoveEvent(event) {
@@ -207,6 +215,8 @@ const cubeControls = () => {
       setLastMoves(lastMoves.slice(-256));
     }
 
+    if (settingsRef.current.appMode === AppMode.MINI_GAMES) return;
+
     if (
       timerStateRef.current === TimerState.READY ||
       timerStateRef.current === TimerState.INSPECTION
@@ -221,10 +231,11 @@ const cubeControls = () => {
       solutionMovesRef.current = [];
       setTimerState(TimerState.IDLE);
     }
-  }, [lastMoves]);
+  }, [lastMoves, setLastMoves, setShouldBeSolved, setShowScramble, setTimerState, timerStateRef]);
 
   return (
-    <div className='controls flex flex-col md:flex-row items-center justify-center gap-2 py-2'>
+    <div className='controls flex flex-col items-center justify-center gap-2 py-2'>
+      {connection && <AppModeSwitcher />}
       <div className='flex flex-row'>
         <button
           className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
@@ -239,15 +250,17 @@ const cubeControls = () => {
           {settings.showCubeAnimation ? 'Hide' : 'Show'} Cube
         </button>
       </div>
-      {connection && settings.showCubeAnimation && (
+      {connection && (settings.showCubeAnimation || settings.appMode === AppMode.MINI_GAMES) && (
         <div className='flex flex-row'>
           <button
             className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
-            onClick={() => (basisRef.current = null)}
+            onClick={() => {
+              gyroBasisRef.current = null;
+            }}
           >
             Reset Gyro
           </button>
-          {timerState === TimerState.IDLE && (
+          {settings.showCubeAnimation && timerState === TimerState.IDLE && (
             <button
               onClick={handleResetCubeState}
               className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'

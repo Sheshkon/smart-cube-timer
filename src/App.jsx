@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   DndContext,
@@ -15,11 +15,13 @@ import { toast } from 'react-toastify';
 import { SolveReconstructionChart } from 'src/components/Chart/SolveChart.jsx';
 import Cube from 'src/components/Cube/Cube.jsx';
 import CubeControls from 'src/components/CubeControls/CubeControls.jsx';
+import MiniGamePanel from 'src/components/MiniGames/MiniGamePanel.jsx';
 import Scramble from 'src/components/Scramble/Scramble.jsx';
 import SortableItem from 'src/components/SortableItem/SortableItem.jsx';
 import StatsDisplay from 'src/components/StatsDisplay/StatsDisplay';
 import Timer from 'src/components/Timer/Timer';
 import TimesTable from 'src/components/TimesTable/TimesTable';
+import { AppMode } from 'src/constants/appModes';
 import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 import { sessionService } from 'src/db/sessionService.js';
 import { useCube } from 'src/hooks/useCube.js';
@@ -29,8 +31,28 @@ import { useSettings } from 'src/hooks/useSettings.js';
 
 
 function App() {
-  const { practiceModeEnabled } = useCube();
+  const { practiceModeEnabled, setPracticeModeEnabled, practiceModeEnabledRef, connection } = useCube();
   const { settings, settingsRef, updateSetting } = useSettings();
+  const isMiniGamesMode =
+    Boolean(connection) && settings.appMode === AppMode.MINI_GAMES;
+  const hadConnectionRef = useRef(false);
+
+  useEffect(() => {
+    if (connection) {
+      hadConnectionRef.current = true;
+      const training = settings.appMode === AppMode.TRAINING;
+      practiceModeEnabledRef.current = training;
+      setPracticeModeEnabled(training);
+      return;
+    }
+
+    practiceModeEnabledRef.current = false;
+    setPracticeModeEnabled(false);
+    if (hadConnectionRef.current) {
+      updateSetting('appMode', AppMode.SESSION);
+      hadConnectionRef.current = false;
+    }
+  }, [settings.appMode, setPracticeModeEnabled, practiceModeEnabledRef, connection, updateSetting]);
   const [sessions, setSessions] = useState([]);
   const [storedTimes, setStoredTimes] = useState([]);
   const [stats, setStats] = useState({});
@@ -131,15 +153,16 @@ function App() {
       case 'base':
         return true;
       case 'stats':
-        return !practiceModeEnabled;
+        return !practiceModeEnabled && !isMiniGamesMode;
       case 'chart':
         return (
           settings.solutionChart &&
           stats?.current?.reconstruction?.steps != null &&
-          !practiceModeEnabled
+          !practiceModeEnabled &&
+          !isMiniGamesMode
         );
       case 'times':
-        return !practiceModeEnabled;
+        return !practiceModeEnabled && !isMiniGamesMode;
       default:
         return false;
     }
@@ -149,7 +172,7 @@ function App() {
     const filtered = blocks.filter(shouldShow);
     console.log('visibleBlocks:', filtered);
     return filtered;
-  }, [blocks, practiceModeEnabled, settings.solutionChart, stats?.current?.reconstruction?.steps]);
+  }, [blocks, practiceModeEnabled, isMiniGamesMode, settings.solutionChart, stats?.current?.reconstruction?.steps]);
 
   usePwaExitConfirmation();
 
@@ -189,8 +212,14 @@ function App() {
                     <div className='flex flex-col md:flex-row items-center'>
                       <Cube className='flex justify-center items-center' />
                       <div className='w-full flex flex-col items-center'>
-                        <Timer onSaveTime={handleSaveTime} className='mb-6' />
-                        <Scramble className='w-full max-w-md' />
+                        {isMiniGamesMode ? (
+                          <MiniGamePanel />
+                        ) : (
+                          <>
+                            <Timer onSaveTime={handleSaveTime} className='mb-6' />
+                            <Scramble className='w-full max-w-md' />
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
