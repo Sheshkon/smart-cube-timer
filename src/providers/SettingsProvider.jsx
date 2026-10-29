@@ -18,6 +18,7 @@ const defaultSettings = {
     category: 'ROUX_CMLL'
   },
   showCubeAnimation: true,
+  showScrambleArrows: true,
   backgroundColor: 'none',
   notifyEveryNSolves: -1,
   appMode: 'session',

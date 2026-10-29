@@ -28,6 +28,7 @@ export const CubeProvider = ({ children }) => {
   const deviceMacRef = useRef(deviceMac);
   const practiceModeEnabledRef = useRef(practiceModeEnabled);
   const gyroBasisRef = useRef(null);
+  const shouldBeSolvedRef = useRef(shouldBeSolved);
 
   const [scrambleDisplay, setScrambleDisplay] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -41,6 +42,10 @@ export const CubeProvider = ({ children }) => {
   useEffect(() => {
     timerStateRef.current = timerState;
   }, [timerState]);
+
+  // useEffect(() => {
+  //   shouldBeSolvedRef.current = shouldBeSolved;
+  // }, [shouldBeSolved]);
 
   practiceModeEnabledRef.current = practiceModeEnabled;
 
@@ -70,6 +75,7 @@ export const CubeProvider = ({ children }) => {
         deviceNameRef,
         practiceModeEnabledRef,
         gyroBasisRef,
+        shouldBeSolvedRef,
 
         setPracticeModeEnabled,
         setConnection,

@@ -37,6 +37,7 @@ const cubeControls = () => {
     setBatteryLevel,
     connectionRef,
     setShouldBeSolved,
+    shouldBeSolvedRef,
     setShowScramble,
     setPracticeModeEnabled,
     practiceModeEnabledRef,
@@ -101,8 +102,8 @@ const cubeControls = () => {
 
     if (connection) await connection.disconnect().catch(() => console.log('no connection'));
 
-    setConnection(null);
-    connectionRef.current = null;
+    setConnection(false);
+    connectionRef.current = false;
     practiceModeEnabledRef.current = false;
     setPracticeModeEnabled(false);
     setLastMoves([]);
@@ -113,6 +114,7 @@ const cubeControls = () => {
     connection?.sendCubeCommand(CubeCommand.RESET);
     setLastMoves([]);
     setShouldBeSolved(false);
+    shouldBeSolvedRef.current = false;
     twistyPlayerRef.current.alg = '';
   };
 
@@ -187,6 +189,7 @@ const cubeControls = () => {
     if (event.type === CubeEventType.FACELETS && !cubeInitialized) {
       if (event.facelets !== SOLVED_STATE) {
         setShouldBeSolved(true);
+        shouldBeSolvedRef.current = true;
         const kpattern = faceletsToPattern(event.facelets);
         const solution = await experimentalSolve3x3x3IgnoringCenters(kpattern);
         twistyPlayerRef.current.alg = solution.invert();
@@ -227,6 +230,7 @@ const cubeControls = () => {
     if (timerStateRef.current === TimerState.DNS) {
       setShowScramble(true);
       setShouldBeSolved(true);
+      shouldBeSolvedRef.current = false;
       setLastMoves([]);
       solutionMovesRef.current = [];
       setTimerState(TimerState.IDLE);

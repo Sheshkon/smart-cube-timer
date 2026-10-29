@@ -55,6 +55,18 @@ export const SettingsModal = ({ isOpen, onClose }) => {
             </div>
             <div className='flex justify-between items-center mb-3'>
               <b>
+                <label htmlFor='showScrambleArrows'>Scramble arrows on cube</label>
+              </b>
+              <input
+                id='showScrambleArrows'
+                type='checkbox'
+                className='toggle'
+                checked={settings.showScrambleArrows !== false}
+                onChange={(e) => updateSetting('showScrambleArrows', e.target.checked)}
+              />
+            </div>
+            <div className='flex justify-between items-center mb-3'>
+              <b>
                 <label htmlFor='inspection'>Use inspection</label>
               </b>
               <input

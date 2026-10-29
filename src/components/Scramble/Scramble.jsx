@@ -51,6 +51,7 @@ const Scramble = ({ className = '' }) => {
     lastScrambleRef,
     shouldBeSolved,
     setShouldBeSolved,
+    shouldBeSolvedRef,
     practiceModeEnabled,
     lastSolveTime,
   } = useCube();
@@ -91,6 +92,7 @@ const Scramble = ({ className = '' }) => {
     } else {
       setHistoryPracticeRecords([]);
       newScramble = await randomScrambleForEvent('333');
+      // newScramble = Alg.fromString('R F L R B D');
     }
 
     const newScrambleDisplay = newScramble
@@ -121,6 +123,7 @@ const Scramble = ({ className = '' }) => {
 
       if (rollbackMoves.length > 10) {
         setShouldBeSolved(true);
+        shouldBeSolvedRef.current = true;
       }
       return;
     }
