@@ -205,7 +205,7 @@ function App() {
                 {block.id === 'base' && (
                   <div className='bg-white/50 dark:bg-gray-800/50 rounded-b-lg shadow-md p-6 flex flex-col items-center justify-center relative overflow-hidden'>
                     <Cuboid
-                      className='absolute -right-16 -top-16 opacity-5 transform rotate-12'
+                      className='pointer-events-none absolute -right-16 -top-16 opacity-5 transform rotate-12'
                       size={200}
                     />
                     <CubeControls />

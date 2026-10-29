@@ -20,8 +20,11 @@ const AppModeSwitcher = ({ className = '' }) => {
 
   const mode = settings.appMode || AppMode.SESSION;
 
+  const modeSwitchLocked = timerState === TimerState.RUNNING;
+
   const setMode = (nextMode) => {
     if (nextMode === mode) return;
+    if (timerStateRef.current === TimerState.RUNNING) return;
 
     const training = nextMode === AppMode.TRAINING;
     practiceModeEnabledRef.current = training;
@@ -41,7 +44,7 @@ const AppModeSwitcher = ({ className = '' }) => {
   return (
     <div
       className={clsx(
-        'flex flex-wrap justify-center gap-1 p-1 rounded-full bg-gray-100 dark:bg-gray-800',
+        'relative z-10 flex flex-wrap justify-center gap-1 p-1 rounded-full bg-gray-100 dark:bg-gray-800 touch-manipulation',
         className
       )}
       role='tablist'
@@ -53,13 +56,14 @@ const AppModeSwitcher = ({ className = '' }) => {
           type='button'
           role='tab'
           aria-selected={mode === option.id}
-          disabled={option.id !== AppMode.MINI_GAMES && timerState === TimerState.RUNNING}
+          disabled={modeSwitchLocked && option.id !== mode}
           className={clsx(
-            'px-3 py-1.5 rounded-full text-sm font-medium transition-colors disabled:opacity-40',
+            'px-3 py-1.5 rounded-full text-sm font-medium transition-colors touch-manipulation disabled:opacity-40',
             mode === option.id
               ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
               : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
           )}
+          onPointerDown={(e) => e.stopPropagation()}
           onClick={() => setMode(option.id)}
         >
           {option.label}
