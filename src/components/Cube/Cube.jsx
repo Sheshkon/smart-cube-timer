@@ -53,10 +53,9 @@ const Cube = ({ className = '' }) => {
   const handleInfoModalOpen = () => setInfoModalOpen(!infoModalOpen);
 
   function isShowArrowsForSessionMode() {
-    console.log(shouldBeSolvedRef.current);
     return connectionRef.current !== false &&
       shouldBeSolvedRef.current !== true &&
-      settingsRef.current.showScrambleArrows !== false &&
+      settingsRef.current.showScrambleArrows === true &&
       settingsRef.current.showCubeAnimation &&
       settingsRef.current.appMode !== AppMode.MINI_GAMES &&
       timerStateRef.current === TimerState.IDLE;

@@ -43,9 +43,9 @@ export const CubeProvider = ({ children }) => {
     timerStateRef.current = timerState;
   }, [timerState]);
 
-  // useEffect(() => {
-  //   shouldBeSolvedRef.current = shouldBeSolved;
-  // }, [shouldBeSolved]);
+  useEffect(() => {
+    shouldBeSolvedRef.current = shouldBeSolved;
+  }, [shouldBeSolved]);
 
   practiceModeEnabledRef.current = practiceModeEnabled;
 
