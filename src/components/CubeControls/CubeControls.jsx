@@ -49,6 +49,13 @@ const cubeControls = () => {
     return toast.error('Cube disconnected', { theme: settingsRef.current.theme });
   }
 
+  function isUserCancelledDeviceChooser(error) {
+    return (
+      error?.name === 'NotFoundError' &&
+      String(error?.message ?? '').includes('User cancelled the requestDevice() chooser')
+    );
+  }
+
   const handleConnect = async () => {
     try {
       if (connection) {
@@ -76,6 +83,9 @@ const cubeControls = () => {
       }
     } catch (e) {
       await disconnect();
+      if (isUserCancelledDeviceChooser(e)) {
+        return;
+      }
       cubeDisconnectedNotification();
       console.error(e);
     }
