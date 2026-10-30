@@ -38,7 +38,7 @@ const MiniGamePanel = () => {
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
-  const selectedId = settings.miniGameId || MiniGameId.RACING;
+  const selectedId = settings.miniGameId || MiniGameId.SPACESHIP;
   const selectedGame = useMemo(
     () => MINI_GAMES_CATALOG.find((g) => g.id === selectedId) ?? MINI_GAMES_CATALOG[0],
     [selectedId]

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import clsx from 'clsx';
 import { Alg } from 'cubing/alg';
 import { randomScrambleForEvent } from 'cubing/scramble';
+import { normalizeCubeMove } from 'src/components/Cube/cubeHintArrows.js';
 import Inspection from 'src/components/Inspection/Inspection.jsx';
 import AdditionalScrambleOptions from 'src/components/Scramble/HintSolution.jsx';
 import {
@@ -17,7 +18,7 @@ import { prepareMoves } from 'src/utils/util.ts';
 
 import { ColoredMove, MoveColor, MoveScrambleStatus } from './/util.js';
 import 'src/style.css';
-import { checkScrambleProgress } from './checkScrambleProgress.js';
+import { checkScrambleProgress, getSolutionHintState } from './checkScrambleProgress.js';
 
 const GOOGLE_SHEET_ID = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oyH0';
 
@@ -54,14 +55,58 @@ const Scramble = ({ className = '' }) => {
     shouldBeSolvedRef,
     practiceModeEnabled,
     lastSolveTime,
+    practiceHintArrowRef,
+    practiceSetupMoveOffsetRef,
+    practiceSetupCompleteRef,
+    practiceModeEnabledRef,
   } = useCube();
 
   const { settings, settingsRef, updateSetting } = useSettings();
   const [categories, setCategories] = useState([]);
   const [historyPracticeRecords, setHistoryPracticeRecords] = useState([]);
   const [visibleHint, setVisibleHint] = useState(false);
+  const [practiceSetupComplete, setPracticeSetupComplete] = useState(false);
+  const lastPracticeSolveTimeRef = useRef(null);
 
   const toggleVisibleHint = () => setVisibleHint(!visibleHint);
+
+  const getActivePracticeRecord = () =>
+    historyPracticeRecords[historyPracticeRecords.length - 1] ?? null;
+
+  const syncPracticeHintArrows = () => {
+    const setupComplete = practiceSetupCompleteRef.current || practiceSetupComplete;
+
+    if (!practiceModeEnabledRef.current || !setupComplete || !visibleHint) {
+      practiceHintArrowRef.current = { active: false, move: null };
+      return;
+    }
+
+    const recommendedSolution = getActivePracticeRecord()?.recommendedSolution;
+    const solutionRaw = lastMoves
+      .slice(practiceSetupMoveOffsetRef.current)
+      .map((entry) => normalizeCubeMove(entry.move))
+      .filter(Boolean);
+    const solutionMoves = prepareMoves(solutionRaw);
+    const { move, hasExtraMoves } = getSolutionHintState(recommendedSolution, solutionMoves);
+
+    if (hasExtraMoves) {
+      practiceHintArrowRef.current = { active: false, move: null };
+      return;
+    }
+
+    practiceHintArrowRef.current = {
+      active: Boolean(move),
+      move,
+    };
+  };
+
+  const resetPracticeSolutionPhase = () => {
+    practiceSetupCompleteRef.current = false;
+    setPracticeSetupComplete(false);
+    setVisibleHint(false);
+    practiceSetupMoveOffsetRef.current = 0;
+    practiceHintArrowRef.current = { active: false, move: null };
+  };
 
   const addPracticeRecord = (newRecord) => {
     setHistoryPracticeRecords((prev) =>
@@ -71,10 +116,10 @@ const Scramble = ({ className = '' }) => {
 
   const setTimeForHistory = (time) =>
     setHistoryPracticeRecords((prev) => {
-      if (prev.length < 2) return prev;
+      if (!prev.length) return prev;
       const updated = [...prev];
-      const secondLastIndex = updated.length - 2;
-      updated[secondLastIndex] = { ...updated[secondLastIndex], time };
+      const lastIndex = updated.length - 1;
+      updated[lastIndex] = { ...updated[lastIndex], time };
       return updated;
     });
 
@@ -92,7 +137,6 @@ const Scramble = ({ className = '' }) => {
     } else {
       setHistoryPracticeRecords([]);
       newScramble = await randomScrambleForEvent('333');
-      // newScramble = Alg.fromString('R F L R B D');
     }
 
     const newScrambleDisplay = newScramble
@@ -103,10 +147,16 @@ const Scramble = ({ className = '' }) => {
     lastScrambleRef.current = scramble;
     setScramble(newScramble);
     setScrambleDisplay(newScrambleDisplay);
+    resetPracticeSolutionPhase();
   };
 
   const checkScramble = async (cubeMoves) => {
     if (timerState !== TimerState.IDLE) return;
+
+    if (practiceModeEnabledRef.current && practiceSetupCompleteRef.current) {
+      syncPracticeHintArrows();
+      return;
+    }
 
     const scrambleMoves = scramble?.toString().split(' ');
 
@@ -133,10 +183,6 @@ const Scramble = ({ className = '' }) => {
     const coloredScramble = moves.map((item, index) => {
       let color = MoveColor.WHITE;
 
-      // if (item.status === MoveScrambleStatus.PARTIAL) {
-      //   color = MoveColor.YELLOW;
-      // }
-
       if (item.status === MoveScrambleStatus.CORRECT) {
         color = MoveColor.GRAY;
       }
@@ -154,6 +200,16 @@ const Scramble = ({ className = '' }) => {
     const isSolved = moves.every(m => m.status === MoveScrambleStatus.CORRECT);
 
     if (isSolved) {
+      if (practiceModeEnabledRef.current) {
+        practiceSetupMoveOffsetRef.current = lastMoves.length;
+        practiceSetupCompleteRef.current = true;
+        setPracticeSetupComplete(true);
+        syncPracticeHintArrows();
+        setTimerState(settingsRef.current.inspection ? TimerState.INSPECTION : TimerState.READY);
+        setShowScramble(false);
+        return;
+      }
+
       setTimerState(settingsRef.current.inspection ? TimerState.INSPECTION : TimerState.READY);
       setShowScramble(false);
       await generateScramble();
@@ -161,14 +217,32 @@ const Scramble = ({ className = '' }) => {
   };
 
   useEffect(() => {
+    const cubeMoves = prepareMoves(lastMoves.map((move) => move.move));
+
     if (timerState === TimerState.IDLE) {
-      checkScramble(prepareMoves(lastMoves.map((move) => move.move))).then();
+      checkScramble(cubeMoves).then();
+      return;
     }
-  }, [lastMoves, timerState]);
+
+    if (practiceModeEnabledRef.current && practiceSetupCompleteRef.current) {
+      syncPracticeHintArrows();
+    }
+  }, [lastMoves, timerState, practiceSetupComplete, practiceModeEnabled, visibleHint]);
 
   useEffect(() => {
     generateScramble().then(() => console.log(settings.practiceMode));
   }, [settings.practiceMode, settings.practiceMode.category, practiceModeEnabled]);
+
+  useEffect(() => {
+    if (practiceModeEnabled) {
+      return;
+    }
+
+    practiceSetupCompleteRef.current = false;
+    setPracticeSetupComplete(false);
+    practiceSetupMoveOffsetRef.current = 0;
+    practiceHintArrowRef.current = { active: false, move: null };
+  }, [practiceModeEnabled]);
 
   useEffect(() => {
     connection ? setShowScramble(true) : setShowScramble(false);
@@ -187,7 +261,22 @@ const Scramble = ({ className = '' }) => {
   }, [timerState]);
 
   useEffect(() => {
+    if (!lastSolveTime || !practiceModeEnabledRef.current) return;
+
     setTimeForHistory(lastSolveTime);
+
+    if (!practiceSetupCompleteRef.current) {
+      return;
+    }
+
+    if (lastPracticeSolveTimeRef.current === lastSolveTime) {
+      return;
+    }
+
+    lastPracticeSolveTimeRef.current = lastSolveTime;
+    setVisibleHint(false);
+    resetPracticeSolutionPhase();
+    generateScramble();
   }, [lastSolveTime]);
 
   return (
@@ -287,10 +376,10 @@ const Scramble = ({ className = '' }) => {
             className='pt-2'
             records={historyPracticeRecords}
             visible={visibleHint}
-            showPrev={timerState !== TimerState.IDLE}
+            setupComplete={practiceSetupComplete}
             toggleHintVisible={toggleVisibleHint}
             reload={() => {
-              setVisibleHint(false);
+              resetPracticeSolutionPhase();
               generateScramble();
             }}
           />

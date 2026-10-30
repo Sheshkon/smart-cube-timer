@@ -1,5 +1,7 @@
 import { Alg } from 'cubing/alg';
 import { cube3x3x3 } from 'cubing/puzzles';
+import { parseAlgMoves, normalizeCubeMove } from 'src/components/Cube/cubeHintArrows.js';
+import { parseCubeMove } from 'src/components/MiniGames/useFaceMoveInput.js';
 
 import { MoveScrambleStatus } from './util.js';
 
@@ -21,19 +23,105 @@ function areIndependent(move1, move2) {
   return IndependentPairs.some(pair => pair.includes(face1) && pair.includes(face2));
 }
 
+function movesEquivalent(a, b) {
+  const left = normalizeCubeMove(a);
+  const right = normalizeCubeMove(b);
+
+  if (!left || !right) {
+    return left === right;
+  }
+
+  if (left === right) {
+    return true;
+  }
+
+  const parsedLeft = parseCubeMove(left);
+  const parsedRight = parseCubeMove(right);
+
+  if (!parsedLeft || !parsedRight) {
+    return false;
+  }
+
+  return (
+    parsedLeft.face === parsedRight.face &&
+    parsedLeft.prime === parsedRight.prime &&
+    parsedLeft.repeats === parsedRight.repeats
+  );
+}
+
+/** U2 and U2' (and any X2/X2') are the same half turn on a 3×3. */
+function halfTurnLayerMatch(expectedMove, cMove) {
+  const expected = parseCubeMove(normalizeCubeMove(expectedMove));
+  const cube = parseCubeMove(normalizeCubeMove(cMove));
+
+  if (!expected || !cube || expected.repeats !== 2 || cube.repeats !== 2) {
+    return false;
+  }
+
+  return expected.face === cube.face;
+}
+
+function isQuarterOnHalfTurnFace(expectedMove, cMove) {
+  const expected = parseCubeMove(normalizeCubeMove(expectedMove));
+  const cube = parseCubeMove(normalizeCubeMove(cMove));
+
+  if (!expected || expected.repeats !== 2 || !cube || cube.repeats !== 1) {
+    return false;
+  }
+
+  return expected.face === cube.face;
+}
+
+function completesHalfTurnSecondQuarter(expectedMove, cMove, firstQuarterMove) {
+  if (movesEquivalent(cMove, expectedMove) || halfTurnLayerMatch(expectedMove, cMove)) {
+    return true;
+  }
+
+  const expected = parseCubeMove(normalizeCubeMove(expectedMove));
+  const cube = parseCubeMove(normalizeCubeMove(cMove));
+  const first = parseCubeMove(normalizeCubeMove(firstQuarterMove));
+
+  if (!expected || expected.repeats !== 2 || !cube || !first) {
+    return false;
+  }
+
+  if (cube.repeats !== 1 || cube.face !== expected.face) {
+    return false;
+  }
+
+  return cube.prime === first.prime;
+}
+
+/** First quarter turn of a half-turn move (U2 → U, R2' → R', …). */
+function quarterMoveForHalfTurn(expectedMove) {
+  const parsed = parseCubeMove(normalizeCubeMove(expectedMove));
+
+  if (!parsed || parsed.repeats !== 2) {
+    return null;
+  }
+
+  return parsed.prime ? `${parsed.face}'` : parsed.face;
+}
+
 export function checkScrambleProgress(scramble, cubeMoves) {
-  // Initialize slots
-  const slots = scramble.map(move => ({
+  const normalizedScramble = scramble.map((move) => normalizeCubeMove(move)).filter(Boolean);
+
+  const slots = normalizedScramble.map((move) => ({
     expected: move,
-    output: { move: move, status: MoveScrambleStatus.WAITING, comment: 'expected but not yet performed' },
-    state: 'pending' // 'pending' | 'partial' | 'done'
+    output: { move, status: MoveScrambleStatus.WAITING, comment: 'expected but not yet performed' },
+    state: 'pending',
   }));
 
   const rollback = [];
   const extraErrors = [];
   let failure = false;
 
-  for (const cMove of cubeMoves) {
+  for (const rawMove of cubeMoves) {
+    const cMove = normalizeCubeMove(rawMove);
+
+    if (!cMove) {
+      continue;
+    }
 
     if (failure) {
       extraErrors.push({
@@ -57,8 +145,7 @@ export function checkScrambleProgress(scramble, cubeMoves) {
 
       // 2. Handle Partial slot (already started, e.g., R from R2)
       if (slot.state === 'partial') {
-        // Try to complete (second R arrived)
-        if (slot.expected.endsWith('2') && cMove[0] === slot.expected[0]) {
+        if (completesHalfTurnSecondQuarter(slot.expected, cMove, slot.output.move)) {
           matchedIndex = i;
           matchType = 'completion';
           break;
@@ -76,9 +163,9 @@ export function checkScrambleProgress(scramble, cubeMoves) {
 
       // 3. Handle Pending slot (not yet started)
       if (slot.state === 'pending') {
-        const isExact = cMove === slot.expected;
-        // Partial match: waiting for X2, got X or X' (but not X2)
-        const isPartial = slot.expected.endsWith('2') && cMove[0] === slot.expected[0] && !cMove.endsWith('2');
+        const isExact =
+          movesEquivalent(cMove, slot.expected) || halfTurnLayerMatch(slot.expected, cMove);
+        const isPartial = isQuarterOnHalfTurnFace(slot.expected, cMove);
 
         if (isExact || isPartial) {
           matchedIndex = i;
@@ -146,4 +233,58 @@ export function checkScrambleProgress(scramble, cubeMoves) {
 
 function getFirstPendingIndex(slots) {
   return slots.findIndex(s => s.state !== 'done');
+}
+
+/** @returns {{ move: string | null, hasExtraMoves: boolean }} */
+export function getSolutionHintState(alg, cubeMoves) {
+  if (!alg || typeof alg !== 'string') {
+    return { move: null, hasExtraMoves: false };
+  }
+
+  const expected = parseAlgMoves(alg);
+
+  if (!expected.length) {
+    return { move: null, hasExtraMoves: false };
+  }
+
+  if (!cubeMoves?.length) {
+    const first = expected[0];
+    const quarter = quarterMoveForHalfTurn(first);
+
+    return { move: quarter ?? first, hasExtraMoves: false };
+  }
+
+  const { moves: progress } = checkScrambleProgress(expected, cubeMoves);
+  const hasExtraMoves = progress.some((m) => m.status === MoveScrambleStatus.INCORRECT);
+
+  if (hasExtraMoves) {
+    return { move: null, hasExtraMoves: true };
+  }
+
+  const slotProgress = progress.slice(0, expected.length);
+  const currentIndex = slotProgress.findIndex((m) => m.status !== MoveScrambleStatus.CORRECT);
+
+  if (currentIndex === -1) {
+    return { move: null, hasExtraMoves: false };
+  }
+
+  const progressEntry = slotProgress[currentIndex];
+  const expectedMove = expected[currentIndex];
+
+  if (progressEntry?.status === MoveScrambleStatus.PARTIAL && quarterMoveForHalfTurn(expectedMove)) {
+    return { move: progressEntry.move, hasExtraMoves: false };
+  }
+
+  const quarterHalf = quarterMoveForHalfTurn(expectedMove);
+
+  if (quarterHalf && progressEntry?.status === MoveScrambleStatus.WAITING) {
+    return { move: quarterHalf, hasExtraMoves: false };
+  }
+
+  return { move: expectedMove, hasExtraMoves: false };
+}
+
+/** Current expected move in a solution alg from moves performed since setup. */
+export function getCurrentSolutionHintMove(alg, cubeMoves) {
+  return getSolutionHintState(alg, cubeMoves).move;
 }

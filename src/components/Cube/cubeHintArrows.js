@@ -4,7 +4,7 @@ import {
   cubeHalfInRootSpace,
   unscaledHalfFromPositions,
   visualCubeHalf,
-} from 'src/components/Cube/scrambleHintArrowMath.js';
+} from 'src/components/Cube/cubeHintArrowMath.js';
 import { parseCubeMove } from 'src/components/MiniGames/useFaceMoveInput.js';
 import * as THREE from 'three';
 
@@ -43,7 +43,7 @@ const HINT_STYLE = {
 };
 
 function isHintObject(object) {
-  return object?.name === 'scrambleHintArrows' || object?.userData?.scrambleHintArrow;
+  return object?.name === 'cubeHintArrows' || object?.userData?.cubeHintArrow;
 }
 
 function findPuzzleRoot(scene, hintGroup) {
@@ -91,7 +91,7 @@ function disposeObject(object) {
     const materials = Array.isArray(child.material) ? child.material : [child.material];
 
     materials.forEach((material) => {
-      if (material?.userData?.scrambleHintOwned) {
+      if (material?.userData?.cubeHintOwned) {
         material.dispose();
       }
     });
@@ -108,7 +108,7 @@ function makeMaterial(color, opacity = 1) {
     depthWrite: false,
   });
 
-  material.userData.scrambleHintOwned = true;
+  material.userData.cubeHintOwned = true;
 
   return material;
 }
@@ -130,26 +130,12 @@ function makeCurvedArrowGeometry({
   const headHalfWidth = width * 0.5;
   const headStart = 1 - headLengthRatio;
 
-  // Смещаем стрелку немного наружу от линии орбиты.
   const radialOffset = Math.max(orbitRadius * 0.025, width * 0.1);
-
-  // Толщина объёмной стрелки.
   const halfThickness = width * 0.025;
 
   const segmentCount = Math.max(8, Math.floor(segments));
-
   const shaftSegments = Math.max(2, Math.round(segmentCount * headStart));
-
   const tipSegments = Math.max(2, segmentCount - shaftSegments);
-
-  // Каждое поперечное сечение содержит 4 вершины.
-  //
-  // X — касательное направление орбиты.
-  // Y — радиальное направление.
-  // Z — ширина стрелки, перпендикулярная орбите.
-  //
-  // В отличие от ShapeGeometry, вершины
-  // располагаются на цилиндрической поверхности.
 
   const addSection = (t, halfWidth) => {
     const distance = (t - 0.5) * length;
@@ -161,26 +147,20 @@ function makeCurvedArrowGeometry({
       vertices.push(radius * Math.sin(angle), orbitRadius - radius * Math.cos(angle), z);
     };
 
-    // Внешняя сторона ленты.
     addVertex(halfThickness, -halfWidth);
     addVertex(halfThickness, halfWidth);
-
-    // Внутренняя сторона ленты.
     addVertex(-halfThickness, -halfWidth);
     addVertex(-halfThickness, halfWidth);
   };
 
-  // 1. Хвост и стержень стрелки.
   for (let i = 0; i <= shaftSegments; i += 1) {
     const t = (i / shaftSegments) * headStart;
 
     addSection(t, shaftHalfWidth);
   }
 
-  // 2. Основание наконечника.
   addSection(headStart, headHalfWidth);
 
-  // 3. Наконечник тоже повторяет дугу орбиты.
   for (let i = 1; i <= tipSegments; i += 1) {
     const t = i / tipSegments;
 
@@ -193,26 +173,16 @@ function makeCurvedArrowGeometry({
 
   const sectionCount = vertices.length / 12;
 
-  // Соединяем поперечные сечения,
-  // создавая объёмную изогнутую поверхность.
   for (let i = 0; i < sectionCount - 1; i += 1) {
     const a = i * 4;
     const b = (i + 1) * 4;
 
-    // Внешняя поверхность.
     addQuad(a, b, b + 1, a + 1);
-
-    // Внутренняя поверхность.
     addQuad(a + 2, a + 3, b + 3, b + 2);
-
-    // Нижняя боковая поверхность.
     addQuad(a, a + 2, b + 2, b);
-
-    // Верхняя боковая поверхность.
     addQuad(a + 1, b + 1, b + 3, a + 3);
   }
 
-  // Закрываем торец хвоста.
   addQuad(0, 1, 3, 2);
 
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
@@ -236,11 +206,11 @@ function addArrowLayer(arrowGroup, color, opacity, width, length, orbitRadius, d
   });
 
   geometry.translate(0, 0, depth);
-  geometry.userData.scrambleHintLocalPositions = geometry.getAttribute('position').array.slice();
+  geometry.userData.cubeHintLocalPositions = geometry.getAttribute('position').array.slice();
 
   const mesh = new THREE.Mesh(geometry, makeMaterial(color, opacity));
 
-  mesh.userData.scrambleHintArrow = true;
+  mesh.userData.cubeHintArrow = true;
   mesh.renderOrder = 12;
   mesh.frustumCulled = false;
 
@@ -249,7 +219,15 @@ function addArrowLayer(arrowGroup, color, opacity, width, length, orbitRadius, d
   return mesh;
 }
 
-function addOrbitingArrows(group, face, prime, repeats, cubeHalf, referenceAxes) {
+function addOrbitingArrows(
+  group,
+  face,
+  prime,
+  repeats,
+  cubeHalf,
+  referenceAxes,
+  centerOffset = HINT_STYLE.orbit.centerOffset
+) {
   const axis = axisFromPuzzle(group.parent?.axesInfo, face);
 
   if (!axis) return;
@@ -275,9 +253,8 @@ function addOrbitingArrows(group, face, prime, repeats, cubeHalf, referenceAxes)
 
   const orbitRadius = cubeHalf * orbit.radius;
 
-  const orbitCenter = normal.clone().multiplyScalar(cubeHalf * orbit.centerOffset);
+  const orbitCenter = normal.clone().multiplyScalar(cubeHalf * centerOffset);
 
-  // Create the circular orbit around the selected face.
   const orbitPoints = Array.from({ length: 96 }, (_, index) => {
     const angle = (index / 96) * Math.PI * 2;
 
@@ -300,7 +277,7 @@ function addOrbitingArrows(group, face, prime, repeats, cubeHalf, referenceAxes)
     makeMaterial(colors.orbit, orbit.opacity)
   );
 
-  track.userData.scrambleHintArrow = true;
+  track.userData.cubeHintArrow = true;
   track.renderOrder = 11;
   track.frustumCulled = false;
 
@@ -320,7 +297,7 @@ function addOrbitingArrows(group, face, prime, repeats, cubeHalf, referenceAxes)
   for (let index = 0; index < arrow.count; index += 1) {
     const arrowGroup = new THREE.Group();
 
-    arrowGroup.userData.scrambleHintArrow = true;
+    arrowGroup.userData.cubeHintArrow = true;
     arrowGroup.renderOrder = 12;
 
     const meshes = [
@@ -349,13 +326,11 @@ function addOrbitingArrows(group, face, prime, repeats, cubeHalf, referenceAxes)
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
 
-      // Центр стрелки на орбите.
       position
         .copy(orbitCenter)
         .addScaledVector(u, cos * orbitRadius)
         .addScaledVector(v, sin * orbitRadius);
 
-      // Направление движения по орбите.
       tangent
         .copy(u)
         .multiplyScalar(-sin)
@@ -363,15 +338,12 @@ function addOrbitingArrows(group, face, prime, repeats, cubeHalf, referenceAxes)
         .multiplyScalar(moveDirection)
         .normalize();
 
-      // Направление к центру окружности.
       inward.copy(u).multiplyScalar(-cos).addScaledVector(v, -sin).normalize();
 
-      // Преобразуем локальные вершины
-      // объёмной стрелки в координаты сцены.
       meshes.forEach((mesh) => {
         const geometry = mesh.geometry;
 
-        const localPositions = geometry.userData.scrambleHintLocalPositions;
+        const localPositions = geometry.userData.cubeHintLocalPositions;
 
         const positions = geometry.getAttribute('position');
 
@@ -401,7 +373,7 @@ function addOrbitingArrows(group, face, prime, repeats, cubeHalf, referenceAxes)
   }
 }
 
-function buildArrows(group, face, prime, repeats, cubeHalf) {
+function buildArrows(group, face, prime, repeats, cubeHalf, isWide = false) {
   while (group.children.length) {
     const child = group.children[0];
 
@@ -411,29 +383,97 @@ function buildArrows(group, face, prime, repeats, cubeHalf) {
 
   const axesInfo = group.parent?.axesInfo;
 
-  addOrbitingArrows(group, face, prime, repeats, cubeHalf, {
+  const referenceAxes = {
     F: axisFromPuzzle(axesInfo, 'F'),
     U: axisFromPuzzle(axesInfo, 'U'),
     R: axisFromPuzzle(axesInfo, 'R'),
-  });
+  };
+
+  // Wide moves rotate the outer and the middle layer in the same direction.
+  addOrbitingArrows(group, face, prime, repeats, cubeHalf, referenceAxes);
+
+  if (isWide) {
+    addOrbitingArrows(group, face, prime, repeats, cubeHalf, referenceAxes, 0);
+  }
 }
 
-export function getCurrentScrambleMove(scrambleDisplay) {
-  if (!Array.isArray(scrambleDisplay) || !scrambleDisplay.length) {
+/** Normalizes smart-cube / sheet notation to "U", "U'", "U2", … */
+export function normalizeCubeMove(move) {
+  if (!move || typeof move !== 'string') {
+    return '';
+  }
+
+  const token = move
+    .trim()
+    .replace(/[()]/g, '')
+    .replace(/[\u2018\u2019\u2032`´]/g, '\'');
+
+  if (!token) {
+    return '';
+  }
+
+  // Lowercase r/u/f/d denotes a wide turn, not a single-face turn.
+  if (/^[rufd][2']?$/.test(token)) {
+    return token;
+  }
+
+  return token[0].toUpperCase() + token.slice(1);
+}
+
+function parseHintMove(move) {
+  const token = normalizeCubeMove(move);
+
+  // Accept both r / r' / r2 and the equivalent Rw / Rw' / Rw2 notation.
+  const wide = /^([rufd])([2']?)$/.exec(token) ?? /^([RUFD])w([2']?)$/.exec(token);
+
+  const parsed = parseCubeMove(wide ? `${wide[1].toUpperCase()}${wide[2]}` : token);
+
+  return parsed ? { ...parsed, isWide: Boolean(wide) } : null;
+}
+
+/** @param {string} alg */
+export function parseAlgMoves(alg) {
+  if (!alg || typeof alg !== 'string') {
+    return [];
+  }
+
+  return alg
+    .trim()
+    .split(/\s+/)
+    .map((token) => normalizeCubeMove(token))
+    .filter(Boolean);
+}
+
+/** @param {string} alg @param {number} index
+ * @param index
+ */
+export function getMoveAtAlgIndex(alg, index) {
+  const moves = parseAlgMoves(alg);
+
+  return moves[index] ?? null;
+}
+
+/** ColoredMove[] from scramble UI or similar */
+export function getCurrentMoveFromDisplay(moveDisplay) {
+  if (!Array.isArray(moveDisplay) || !moveDisplay.length) {
     return null;
   }
 
   return (
-    scrambleDisplay.find((move) => move.isCurrent)?.move ??
-    scrambleDisplay.find((move) => move.color !== 'gray')?.move ??
+    moveDisplay.find((move) => move.isCurrent)?.move ??
+    moveDisplay.find((move) => move.color !== 'gray')?.move ??
     null
   );
 }
 
-export function createScrambleHintArrows() {
+export function getCurrentScrambleMove(scrambleDisplay) {
+  return getCurrentMoveFromDisplay(scrambleDisplay);
+}
+
+export function createCubeHintArrows() {
   const group = new THREE.Group();
 
-  group.name = 'scrambleHintArrows';
+  group.name = 'cubeHintArrows';
   group.visible = false;
   group.renderOrder = 10;
 
@@ -479,7 +519,7 @@ export function createScrambleHintArrows() {
       return;
     }
 
-    const parsed = parseCubeMove(move);
+    const parsed = parseHintMove(move);
 
     if (
       !parsed ||
@@ -494,16 +534,18 @@ export function createScrambleHintArrows() {
       parsed.face,
       Number(parsed.prime),
       parsed.repeats,
+      Number(parsed.isWide),
       cubeHalf.toFixed(3),
       theme,
     ].join('|');
 
     if (key !== lastKey) {
       const color = theme === 'dark' ? 0xffffff : 0x000000;
+
       HINT_STYLE.colors.arrow = color;
       HINT_STYLE.colors.orbit = color;
 
-      buildArrows(group, parsed.face, parsed.prime, parsed.repeats, cubeHalf);
+      buildArrows(group, parsed.face, parsed.prime, parsed.repeats, cubeHalf, parsed.isWide);
 
       lastKey = key;
     }

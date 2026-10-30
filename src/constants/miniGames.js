@@ -22,12 +22,12 @@ export const MINI_GAMES_CATALOG = [
     supportsSensitivity: false,
     requiresGyro: false,
     description:
-      'D′ / D and U / U′ strafe and stay. R bursts forward, then the ship drifts back. B / B′ or F / F′ fire.',
+      'D′ / D and U / U′ strafe and stay. R / L′ bursts forward, then the ship drifts back. B / B′ or F / F′ fire.',
     hint: 'Left: D′ or U. Right: D or U′. R — forward. Fire: F / F′ or B / B′.',
   },
   {
     id: MiniGameId.RACING,
-    title: 'Cube Rally',
+    title: 'Rally',
     control: MiniGameControl.GYRO,
     supportsSensitivity: true,
     requiresGyro: false,

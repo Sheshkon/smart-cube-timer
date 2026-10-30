@@ -3,9 +3,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TwistyPlayer } from 'cubing/twisty';
 import { Info } from 'lucide-react';
 import {
-  createScrambleHintArrows,
+  createCubeHintArrows,
   getCurrentScrambleMove,
-} from 'src/components/Cube/scrambleHintArrows.js';
+} from 'src/components/Cube/cubeHintArrows.js';
 import { CubeInfoModal } from 'src/components/Modals/CubeInfoModal.jsx';
 import { TimerState } from 'src/components/Timer/util.js';
 import { AppMode } from 'src/constants/appModes';
@@ -40,6 +40,7 @@ const Cube = ({ className = '' }) => {
     scrambleDisplay,
     timerStateRef,
     shouldBeSolvedRef,
+    practiceHintArrowRef,
   } = useCube();
 
   const cubeRef = useRef(null);
@@ -91,13 +92,24 @@ const Cube = ({ className = '' }) => {
         twistyScene.quaternion.slerp(cubeQuaternion, slerp);
 
         if (!hintArrowsRef.current) {
-          hintArrowsRef.current = createScrambleHintArrows();
+          hintArrowsRef.current = createCubeHintArrows();
         }
         hintArrowsRef.current.attach(twistyScene);
 
-        const currentMove = getCurrentScrambleMove(scrambleDisplayRef.current);
+        const practiceHint = practiceHintArrowRef.current;
+        const currentMove =
+          practiceHint?.active && practiceHint.move
+            ? practiceHint.move
+            : getCurrentScrambleMove(scrambleDisplayRef.current);
+
+        const showPracticeHintArrows =
+          Boolean(practiceHint?.active && practiceHint.move) &&
+          connectionRef.current !== false &&
+          settingsRef.current.showCubeAnimation &&
+          timerStateRef.current !== TimerState.DNS;
 
         const showArrows =
+          showPracticeHintArrows ||
           (Boolean(currentMove) && isShowArrowsForSessionMode());
         hintArrowsRef.current.update({ move: currentMove, visible: showArrows, theme: settingsRef.current.theme });
 

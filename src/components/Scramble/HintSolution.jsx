@@ -10,7 +10,7 @@ const HintSolution = ({
   visible,
   toggleHintVisible,
   reload,
-  showPrev,
+  setupComplete = false,
 }) => {
   const hasSolutions = records?.[records?.length - 1]?.solutions?.length > 0;
   const [historyVisible, setHistoryVisible] = useState(false);
@@ -22,6 +22,8 @@ const HintSolution = ({
     setSelectedRecord(record === selectedRecord ? null : record);
   };
 
+  const activeRecord = records?.[records?.length - 1];
+
   return (
     <div className={`${className} w-full max-w-md`}>
       {hasSolutions && (
@@ -32,12 +34,15 @@ const HintSolution = ({
           >
             <AutorenewOutlinedIcon />
           </button>
-          <button
-            className='p-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
-            onClick={toggleHintVisible}
-          >
-            <AutoStoriesOutlinedIcon />
-          </button>
+          {setupComplete && (
+            <button
+              className='p-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+              onClick={toggleHintVisible}
+              title='Toggle solution hint'
+            >
+              <AutoStoriesOutlinedIcon />
+            </button>
+          )}
           <button
             className='p-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
             onClick={toggleHistory}
@@ -47,14 +52,14 @@ const HintSolution = ({
         </div>
       )}
 
-      {visible && hasSolutions && (
+      {visible && setupComplete && hasSolutions && (
         <div className='bg-white dark:bg-gray-800 rounded-lg shadow-md p-4'>
           <h2>
-            <b>{records?.[records?.length - (showPrev ? 2 : 1)]?.name}</b>
+            <b>{activeRecord?.name}</b>
           </h2>
-          {records?.[records?.length - (showPrev ? 2 : 1)]?.solutions.map((solution, index) => (
+          {activeRecord?.solutions.map((solution, index) => (
             <h1 className='pl-2 text-sm' key={index + solution}>
-              {solution === records?.[records?.length - (showPrev ? 2 : 1)].recommendedSolution ? (
+              {solution === activeRecord.recommendedSolution ? (
                 <strong>{solution}</strong>
               ) : (
                 solution
@@ -73,7 +78,7 @@ const HintSolution = ({
             {records
               .slice()
               .reverse()
-              .slice(showPrev ? 2 : 1, records.length)
+              .slice(1)
               .map((record, index) => (
                 <div key={record.name + index} className='pl-2'>
                   <h1
@@ -88,8 +93,8 @@ const HintSolution = ({
                   {selectedRecord === record && (
                     <div className='pl-3 text-sm'>
                       <h1><b>Setup: </b> {record.scramble}</h1>
-                      {record.solutions.map((solution, index) => (
-                        <div key={solution + index + record.name}>
+                      {record.solutions.map((solution, solutionIndex) => (
+                        <div key={solution + solutionIndex + record.name}>
                           {solution === record.recommendedSolution ? (
                             <strong>{solution}</strong>
                           ) : (

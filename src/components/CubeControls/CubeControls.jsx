@@ -221,8 +221,9 @@ const cubeControls = () => {
     if (settingsRef.current.appMode === AppMode.MINI_GAMES) return;
 
     if (
-      timerStateRef.current === TimerState.READY ||
-      timerStateRef.current === TimerState.INSPECTION
+      lastMoves.length > 0 &&
+      (timerStateRef.current === TimerState.READY ||
+        timerStateRef.current === TimerState.INSPECTION)
     ) {
       setTimerState(TimerState.RUNNING);
     }

@@ -2,9 +2,11 @@ import { useEffect, useRef } from 'react';
 
 export function parseCubeMove(move) {
   if (!move || typeof move !== 'string') return null;
-  const face = move[0].toUpperCase();
-  const prime = move.includes('\'');
-  const repeats = move.includes('2') ? 2 : 1;
+  const normalized = move.trim().replace(/[\u2018\u2019\u2032`´]/g, '\'');
+  const face = normalized[0]?.toUpperCase();
+  if (!face) return null;
+  const prime = normalized.includes('\'');
+  const repeats = normalized.includes('2') ? 2 : 1;
   return { face, prime, repeats };
 }
 

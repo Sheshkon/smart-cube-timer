@@ -29,6 +29,9 @@ export const CubeProvider = ({ children }) => {
   const practiceModeEnabledRef = useRef(practiceModeEnabled);
   const gyroBasisRef = useRef(null);
   const shouldBeSolvedRef = useRef(shouldBeSolved);
+  const practiceHintArrowRef = useRef({ active: false, move: null });
+  const practiceSetupMoveOffsetRef = useRef(0);
+  const practiceSetupCompleteRef = useRef(false);
 
   const [scrambleDisplay, setScrambleDisplay] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -76,6 +79,9 @@ export const CubeProvider = ({ children }) => {
         practiceModeEnabledRef,
         gyroBasisRef,
         shouldBeSolvedRef,
+        practiceHintArrowRef,
+        practiceSetupMoveOffsetRef,
+        practiceSetupCompleteRef,
 
         setPracticeModeEnabled,
         setConnection,
