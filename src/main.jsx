@@ -19,6 +19,7 @@ import ShareSolveViewPage from 'src/components/Share/ShareSolveViewPage.jsx';
 import { ConsoleProvider } from 'src/contexts/ConsoleContext.jsx';
 import { AuthProvider } from 'src/contexts/GoogleAuthContext.jsx';
 import { useSettings } from 'src/hooks/useSettings.js';
+import { AppUpdateProvider } from 'src/providers/AppUpdateProvider.jsx';
 import { CubeProvider } from 'src/providers/CubeProvider.jsx';
 import { SettingsProvider } from 'src/providers/SettingsProvider.jsx';
 import { ThemeProviderWrapper } from 'src/providers/ThemeProvider.jsx';
@@ -71,11 +72,13 @@ createRoot(document.getElementById('root')).render(
         <ConsoleProvider>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
             <AuthProvider>
-              <Router>
-                <AppLayout />
-              </Router>
-              <AppToasts />
-              <RefreshPrompt />
+              <AppUpdateProvider>
+                <Router>
+                  <AppLayout />
+                </Router>
+                <AppToasts />
+                <RefreshPrompt />
+              </AppUpdateProvider>
             </AuthProvider>
           </GoogleOAuthProvider>
         </ConsoleProvider>

@@ -1,7 +1,17 @@
 import React, { useRef, useState } from 'react';
 
 import 'dexie-export-import';
-import { Database, FileDown, FileUp, Loader2, RotateCcw, Settings, Trash2 } from 'lucide-react';
+import {
+  Database,
+  Download,
+  FileDown,
+  FileUp,
+  Loader2,
+  RefreshCw,
+  RotateCcw,
+  Settings,
+  Trash2,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import AppSelect from 'src/components/AppSelect/AppSelect.jsx';
@@ -18,6 +28,7 @@ import {
   resolveBackgroundTheme,
   spectrumFromAccent,
 } from 'src/constants/backgroundThemes';
+import { useAppUpdate } from 'src/hooks/useAppUpdate.js';
 import { useCube } from 'src/hooks/useCube.js';
 import { useSettings } from 'src/hooks/useSettings';
 
@@ -158,6 +169,7 @@ async function clearOfflineCache() {
 
 const SettingsPage = () => {
   const { settings, settingsRef, updateSetting, resetSettings, importSettings } = useSettings();
+  const { needRefresh, isChecking, isUpdating, checkForUpdates, applyUpdate } = useAppUpdate();
   const { timerState } = useCube();
   const navigate = useNavigate();
   const settingsFileRef = useRef(null);
@@ -246,6 +258,31 @@ const SettingsPage = () => {
     resetSettings();
     setConfirmAction(null);
     toast.success('Settings restored to defaults', toastTheme);
+  };
+
+  const handleCheckUpdates = async () => {
+    try {
+      const result = await checkForUpdates();
+      if (result === 'available') {
+        toast.info('A new version is ready', toastTheme);
+        return;
+      }
+      if (result === 'current') {
+        toast.success("You're up to date", toastTheme);
+        return;
+      }
+      toast.info('Updates are available once the app is installed', toastTheme);
+    } catch (error) {
+      toast.error(`Could not check for updates: ${error.message}`, toastTheme);
+    }
+  };
+
+  const handleApplyUpdate = async () => {
+    try {
+      await applyUpdate();
+    } catch (error) {
+      toast.error(`Could not update: ${error.message}`, toastTheme);
+    }
   };
 
   const handleClearCache = async () => {
@@ -468,6 +505,42 @@ const SettingsPage = () => {
               <span>
                 <span className='block font-semibold'>Reset to defaults</span>
                 <span className='block text-sm opacity-70'>Restore default settings</span>
+              </span>
+            </button>
+            <button
+              type='button'
+              className='app-btn rounded-xl px-3 py-3 text-left flex items-start gap-3'
+              onClick={handleCheckUpdates}
+              disabled={isChecking}
+            >
+              {isChecking ? (
+                <Loader2 size={18} className='mt-0.5 shrink-0 animate-spin' />
+              ) : (
+                <RefreshCw size={18} className='mt-0.5 shrink-0' />
+              )}
+              <span>
+                <span className='block font-semibold'>Check for updates</span>
+                <span className='block text-sm opacity-70'>
+                  {needRefresh ? 'Update available' : 'Look for a newer version'}
+                </span>
+              </span>
+            </button>
+            <button
+              type='button'
+              className='app-btn rounded-xl px-3 py-3 text-left flex items-start gap-3 disabled:opacity-50'
+              onClick={handleApplyUpdate}
+              disabled={!needRefresh || isUpdating}
+            >
+              {isUpdating ? (
+                <Loader2 size={18} className='mt-0.5 shrink-0 animate-spin' />
+              ) : (
+                <Download size={18} className='mt-0.5 shrink-0' />
+              )}
+              <span>
+                <span className='block font-semibold'>Update</span>
+                <span className='block text-sm opacity-70'>
+                  {needRefresh ? 'Reload into the new version' : 'No update yet'}
+                </span>
               </span>
             </button>
             <button

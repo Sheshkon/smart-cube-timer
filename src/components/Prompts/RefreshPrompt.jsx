@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react';
 
 import { FiDownload, FiRefreshCw, FiX } from 'react-icons/fi';
-import { useRegisterSW } from 'virtual:pwa-register/react';
+import { useAppUpdate } from 'src/hooks/useAppUpdate.js';
 
 export default function RefreshPrompt() {
   const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW({
-    onRegisteredSW(swUrl) {
-      console.log(`Service Worker at: ${swUrl}`);
-    },
-    onRegisterError(error) {
-      console.error('SW registration error', error);
-    },
-  });
+    offlineReady,
+    setOfflineReady,
+    needRefresh,
+    setNeedRefresh,
+    applyUpdate,
+  } = useAppUpdate();
 
   const [installPromptEvent, setInstallPromptEvent] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
@@ -62,7 +57,7 @@ export default function RefreshPrompt() {
   };
 
   const handleUpdate = () => {
-    updateServiceWorker(true);
+    applyUpdate();
   };
 
   if (!offlineReady && !needRefresh && !isInstallable) return null;
