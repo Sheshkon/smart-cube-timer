@@ -14,6 +14,7 @@ import FormulasLibrary from 'src/components/FormulasLibrary/FormulasLibrary.jsx'
 import Header from 'src/components/Header/Header.jsx';
 import InfoPanel from 'src/components/InfoPanel/InfoPanel.jsx';
 import RefreshPrompt from 'src/components/Prompts/RefreshPrompt.jsx';
+import SettingsPage from 'src/components/Settings/SettingsPage.jsx';
 import ShareSolveViewPage from 'src/components/Share/ShareSolveViewPage.jsx';
 import { ConsoleProvider } from 'src/contexts/ConsoleContext.jsx';
 import { AuthProvider } from 'src/contexts/GoogleAuthContext.jsx';
@@ -38,7 +39,9 @@ const projectBaseUrl = import.meta.env.BASE_URL;
 function AppLayout() {
   const { pathname } = useLocation();
   const isFullScreenPage =
-    pathname.includes('/library') || pathname.includes('/share/');
+    pathname.includes('/library') ||
+    pathname.includes('/share/') ||
+    pathname.includes('/settings');
 
   return (
     <div className='min-h-screen app-page flex flex-col'>
@@ -54,6 +57,7 @@ function AppLayout() {
           element={<ShareSolveViewPage />}
         />
         <Route path={`/${projectBaseUrl}library/`} element={<FormulasLibrary />} />
+        <Route path={`/${projectBaseUrl}settings/`} element={<SettingsPage />} />
       </Routes>
       {!isFullScreenPage && <Footer />}
     </div>

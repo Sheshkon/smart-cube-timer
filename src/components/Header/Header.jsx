@@ -3,14 +3,16 @@ import React, { useState } from 'react';
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import ContactSupportIcon from '@mui/icons-material/ContactSupportOutlined';
 import TerminalIcon from '@mui/icons-material/Terminal';
-import { BluetoothSearching, History } from 'lucide-react';
+import { BluetoothSearching, History, Settings } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import CubeHistoryModal from 'src/components/Modals/CubeHistoryModal.jsx';
-import SettingsControl from 'src/components/SettingsControl.jsx';
 import { useConsole } from 'src/contexts/ConsoleContext.jsx';
 
 const projectBaseUrl = import.meta.env.BASE_URL;
+const iconButtonClass =
+  'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-0 leading-none hover:opacity-80 transition-colors';
+const muiIconSx = { fontSize: 24, display: 'block' };
 
 const Header = ({ className = '' }) => {
   const { showConsole, setShowConsole } = useConsole();
@@ -32,38 +34,44 @@ const Header = ({ className = '' }) => {
             </div>
           </div>
 
-          <div className='flex gap-2 mr-4'>
+          <div className='flex items-center gap-1 mr-4'>
             <button
               type='button'
-              className='rounded-full p-1 hover:opacity-80 transition-colors'
+              className={iconButtonClass}
               onClick={() => setHistoryOpen(true)}
               title='Cube history'
             >
               <History size={24} />
             </button>
 
-            <Link
-              to={`${projectBaseUrl}library/`}
-              className='rounded-full p-1 hover:opacity-80 transition-colors'
-            >
-              <AutoStoriesOutlinedIcon />
+            <Link to={`${projectBaseUrl}library/`} className={iconButtonClass} title='Library'>
+              <AutoStoriesOutlinedIcon sx={muiIconSx} />
             </Link>
 
             <a
-              className='rounded-full p-1 hover:opacity-80 transition-colors'
+              className={iconButtonClass}
               href='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
-              target='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
+              target='_blank'
               rel='noopener noreferrer'
+              title='Help'
             >
-              <ContactSupportIcon size={38} />
+              <ContactSupportIcon sx={muiIconSx} />
             </a>
-            <SettingsControl className='rounded-full p-1 hover:opacity-80 transition-colors' />
+            <Link
+              to={`${projectBaseUrl}settings/`}
+              className={iconButtonClass}
+              title='Settings'
+            >
+              <Settings size={24} />
+            </Link>
 
             <button
-              className='rounded-full p-1 hover:opacity-80 transition-colors'
+              type='button'
+              className={iconButtonClass}
               onClick={() => setShowConsole(!showConsole)}
+              title='Console'
             >
-              <TerminalIcon />
+              <TerminalIcon sx={muiIconSx} />
             </button>
           </div>
         </div>

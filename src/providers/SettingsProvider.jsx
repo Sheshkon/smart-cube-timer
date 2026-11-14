@@ -18,6 +18,7 @@ const defaultSettings = {
   fontSize: 16,
   selectedSessionId: DEFAULT_SESSION_ID,
   inspection: false,
+  hideTimeDuringSolve: false,
   solvesPerPage: 5,
   practiceMode: {
     category: 'ROUX_CMLL',
@@ -34,8 +35,28 @@ const defaultSettings = {
   miniGameSensitivity: 1,
 };
 
+const cloneDefaultSettings = () => ({
+  ...defaultSettings,
+  practiceMode: { ...defaultSettings.practiceMode },
+});
+
+export const mergeSettings = (raw) => {
+  const parsed = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
+
+  return {
+    ...cloneDefaultSettings(),
+    ...parsed,
+    backgroundColor: resolveBackgroundTheme(parsed.backgroundColor).id,
+    accentColor: parsed.accentColor || DEFAULT_ACCENT_COLOR,
+    practiceMode: {
+      ...defaultSettings.practiceMode,
+      ...(parsed.practiceMode || {}),
+    },
+  };
+};
+
 export const SettingsProvider = ({ children }) => {
-  const [settings, setSettings] = useState(defaultSettings);
+  const [settings, setSettings] = useState(cloneDefaultSettings);
 
   const settingsRef = useRef(settings);
 
@@ -47,17 +68,7 @@ export const SettingsProvider = ({ children }) => {
     const savedSettings = localStorage.getItem('appSettings');
     if (savedSettings) {
       try {
-        const parsedSettings = JSON.parse(savedSettings);
-        setSettings(() => ({
-          ...defaultSettings,
-          ...parsedSettings,
-          backgroundColor: resolveBackgroundTheme(parsedSettings.backgroundColor).id,
-          accentColor: parsedSettings.accentColor || DEFAULT_ACCENT_COLOR,
-          practiceMode: {
-            ...defaultSettings.practiceMode,
-            ...(parsedSettings.practiceMode || {}),
-          },
-        }));
+        setSettings(mergeSettings(JSON.parse(savedSettings)));
       } catch (e) {
         console.error('Failed to parse saved settings', e);
       }
@@ -112,12 +123,16 @@ export const SettingsProvider = ({ children }) => {
 
 
   const resetSettings = () => {
-    setSettings(defaultSettings);
+    setSettings(cloneDefaultSettings());
+  };
+
+  const importSettings = (raw) => {
+    setSettings(mergeSettings(raw));
   };
 
   return (
     <SettingsContext.Provider
-      value={{ settings, settingsRef, updateSetting, resetSettings }}
+      value={{ settings, settingsRef, updateSetting, resetSettings, importSettings }}
     >
       {children}
     </SettingsContext.Provider>

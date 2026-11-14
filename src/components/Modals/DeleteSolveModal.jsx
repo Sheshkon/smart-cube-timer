@@ -1,7 +1,7 @@
+import { Trash2, X } from 'lucide-react';
 import useModalKeyboard from 'src/hooks/useModalKeyboard.js';
 
 const DeleteSolveModal = ({ isOpen, onClose, onDeleteSolve }) => {
-
   const closeModal = () => {
     onClose();
   };
@@ -17,35 +17,57 @@ const DeleteSolveModal = ({ isOpen, onClose, onDeleteSolve }) => {
     onCancel: closeModal,
   });
 
+  if (!isOpen) {
+    return null;
+  }
+
   return (
-    <div>
-      {isOpen && (
-        <dialog open className="modal">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg">Delete Solve</h3>
-            <p className="py-4">Are you sure you want to delete solve?</p>
-            <div className="modal-action">
-              <button
-                type="button"
-                className="p-2 rounded bg-red-700 dark:bg-red-700 text-gray-100 dark:text-gray-300  transition-colors"
-                onClick={handleDeleteSolve}
-                title="Enter"
-              >
-                Delete Solve
-              </button>
-              <button
-                type="button"
-                className="p-1.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
-                onClick={closeModal}
-                title="Esc"
-              >
-                Cancel
-              </button>
-            </div>
+    <dialog open className='modal'>
+      <div className='modal-box app-card rounded-2xl p-0 max-w-md overflow-hidden'>
+        <div className='flex items-center justify-between gap-3 px-5 pt-5 pb-3'>
+          <h3 className='text-xl font-bold inline-flex items-center gap-2'>
+            <Trash2 size={20} />
+            Delete solve
+          </h3>
+          <button
+            type='button'
+            onClick={closeModal}
+            className='app-btn p-2 rounded-full transition-colors'
+            title='Esc'
+            aria-label='Close'
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className='px-5 pb-5'>
+          <p className='text-sm opacity-70 mb-4'>
+            This will permanently delete this solve from the session.
+          </p>
+          <div className='flex justify-end gap-2'>
+            <button
+              type='button'
+              className='app-btn rounded-full px-3 py-1.5 text-sm transition-colors'
+              onClick={closeModal}
+              title='Esc'
+            >
+              Cancel
+            </button>
+            <button
+              type='button'
+              className='app-btn-accent rounded-full px-3 py-1.5 text-sm transition-colors'
+              onClick={handleDeleteSolve}
+              title='Enter'
+            >
+              Delete
+            </button>
           </div>
-        </dialog>
-      )}
-    </div>
+        </div>
+      </div>
+      <form method='dialog' className='modal-backdrop'>
+        <button type='button' onClick={closeModal}>Close</button>
+      </form>
+    </dialog>
   );
 };
 

@@ -27,7 +27,7 @@ const Timer = ({ onSaveTime }) => {
     setLastSolveTime,
   } = useCube();
 
-  const { settingsRef } = useSettings();
+  const { settings, settingsRef } = useSettings();
 
   const localTimerRef = useRef(null);
   const [showTimer, setShowTimer] = useState(false);
@@ -176,11 +176,14 @@ const Timer = ({ onSaveTime }) => {
     }
   }, [connection, clearTimerAndSolvingData, setShowScramble]);
 
+  const hideRunningTime =
+    settings.hideTimeDuringSolve && timerState === TimerState.RUNNING;
+
   return (
     <>
       {showTimer && (
         <div id='timer' className='font-mono font-semibold text-lg text-gray-900 dark:text-white p-3'>
-          {timeValue}
+          {hideRunningTime ? '...' : timeValue}
         </div>
       )}
     </>

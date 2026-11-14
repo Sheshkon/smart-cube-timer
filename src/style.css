@@ -117,6 +117,164 @@ html, body, #root {
     border-color: var(--app-card-line);
 }
 
+.app-input {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 0.95rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background-color: var(--handle-bg);
+    color: var(--handle-text);
+    font-size: 0.9375rem;
+    line-height: 1;
+    box-shadow: 0 0 0 1px transparent;
+}
+
+.app-input::placeholder {
+    color: var(--handle-text);
+    opacity: 0.5;
+}
+
+.app-input:focus,
+.app-input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--app-accent);
+}
+
+.app-select {
+    position: relative;
+    display: inline-flex;
+    min-width: 0;
+    vertical-align: middle;
+}
+
+.app-select-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 8rem;
+    max-width: 14rem;
+    height: 2rem;
+    padding: 0 0.65rem 0 0.85rem;
+    border: 0;
+    border-radius: 9999px;
+    background-color: var(--handle-bg);
+    color: var(--handle-text);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 0 0 1px transparent;
+}
+
+.app-select.w-full .app-select-trigger,
+.app-select-trigger.w-full {
+    max-width: none;
+}
+
+.app-select-trigger:hover:not(:disabled) {
+    filter: brightness(1.06);
+}
+
+.app-select-trigger:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--app-accent);
+}
+
+.app-select-trigger:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.app-select-trigger[aria-expanded='true'] {
+    box-shadow: 0 0 0 2px var(--app-accent);
+}
+
+.app-select-value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.app-select-chevron {
+    flex: none;
+    opacity: 0.7;
+    transition: transform 120ms ease;
+}
+
+.app-select-chevron-open {
+    transform: rotate(180deg);
+}
+
+.app-select-menu {
+    position: fixed;
+    inset: unset;
+    margin: 0;
+    border: 0;
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.35rem;
+    overflow-y: auto;
+    border-radius: 0.9rem;
+    background-color: var(--app-card-bg);
+    color: var(--app-card-text);
+    box-shadow:
+      0 12px 28px rgb(28 25 23 / 0.16),
+      0 0 0 1px var(--app-card-line);
+    animation: app-select-in 140ms ease-out;
+}
+
+.app-select-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 2rem;
+    padding: 0.4rem 0.7rem;
+    border: 0;
+    border-radius: 0.65rem;
+    background: transparent;
+    color: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+
+.app-select-option.is-active:not(.is-selected) {
+    background-color: var(--handle-bg);
+}
+
+.app-select-option.is-selected {
+    background-color: var(--app-accent);
+    color: var(--app-on-accent);
+}
+
+@keyframes app-select-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-select-chevron,
+    .app-select-menu {
+        transition: none;
+        animation: none;
+    }
+}
+
 .modal-box {
     background-color: var(--app-card-bg) !important;
     color: var(--app-card-text);

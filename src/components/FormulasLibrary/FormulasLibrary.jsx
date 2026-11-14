@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
+import AppSelect from 'src/components/AppSelect/AppSelect.jsx';
 import FullScreenModal from 'src/components/Modals/FullScreenModal.jsx';
 import {
   getAllBySheetIdAndCategoryAndGroup,
@@ -41,44 +42,34 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
       .then(() => updateGroups(selectedCategory));
   }, [selectedCategory]);
 
-  const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
-
-  const handleGroupChange = (e) => setSelectedGroup(e.target.value);
-
   const goToTimer = () => navigate(projectBaseUrl, { replace: false });
 
   return (
     <FullScreenModal title="Formulas" onClose={goToTimer} useHistory={false}>
-      <div className='pb-2 pl-2'>
-        <label htmlFor='category-select'><b>Category: </b></label>
-        <select
+      <div className='flex flex-wrap items-center gap-2 pb-2 pl-2'>
+        <label htmlFor='category-select'><b>Category</b></label>
+        <AppSelect
           id='category-select'
           value={selectedCategory}
-          onChange={handleCategoryChange}
-          className="w-[140px] ml-2 px-3 py-2 rounded-md"
-        >
-          {categories.map((category) => (
-            <option key={category} value={category}>
-              {category?.replaceAll('_', ' ')}
-            </option>
-          ))}
-        </select>
+          onChange={setSelectedCategory}
+          options={categories.map((category) => ({
+            value: category,
+            label: category?.replaceAll('_', ' '),
+          }))}
+        />
       </div>
 
-      <div className='pb-5 pl-2'>
-        <label htmlFor='group-select'><b>Group: </b></label>
-        <select
+      <div className='flex flex-wrap items-center gap-2 pb-5 pl-2'>
+        <label htmlFor='group-select'><b>Group</b></label>
+        <AppSelect
           id='group-select'
           value={selectedGroup}
-          onChange={handleGroupChange}
-          className="w-[140px] ml-2 px-3 py-2 rounded-md"
-        >
-          {groups.map((group) => (
-            <option key={group} value={group}>
-              {group?.replaceAll('_', ' ')}
-            </option>
-          ))}
-        </select>
+          onChange={setSelectedGroup}
+          options={groups.map((group) => ({
+            value: group,
+            label: group?.replaceAll('_', ' '),
+          }))}
+        />
       </div>
 
       <div className='scrambles-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>

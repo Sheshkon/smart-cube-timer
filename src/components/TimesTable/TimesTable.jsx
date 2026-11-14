@@ -3,12 +3,12 @@ import React, { useEffect, useState } from 'react';
 // Icons
 import FirstPageOutlinedIcon from '@mui/icons-material/FirstPageOutlined';
 import LastPageOutlinedIcon from '@mui/icons-material/LastPageOutlined';
-import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import NavigateBeforeOutlinedIcon from '@mui/icons-material/NavigateBeforeOutlined';
 import NavigateNextOutlinedIcon from '@mui/icons-material/NavigateNextOutlined';
 
 // Components
-import { ExternalLink, Plus, Share2, Trash2 } from 'lucide-react';
+import { ExternalLink, Pencil, Plus, Share2, Trash2 } from 'lucide-react';
+import AppSelect from 'src/components/AppSelect/AppSelect.jsx';
 import { ExportImport } from 'src/components/ExportImport/ExportImport.jsx';
 
 // Modals
@@ -177,48 +177,47 @@ const TimesTable = ({
             sessions={sessions}
           />
 
-          <select
+          <AppSelect
+            className='ml-2'
+            aria-label='Session'
             value={settings?.selectedSessionId}
-            className='select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none'
-            onChange={(e) => {
-              updateSetting('selectedSessionId', e.target.value);
+            onChange={(next) => {
+              updateSetting('selectedSessionId', next);
               setCurrentPage(1);
             }}
-          >
-            {sessions.map((session) => (
-              <option key={session.id} value={session.id}>
-                {session.name}
-              </option>
-            ))}
-          </select>
+            options={sessions.map((session) => ({
+              value: session.id,
+              label: session.name,
+            }))}
+          />
 
-          <div className='text-sm ml-2'>
+          <div className='flex items-center gap-0.5 ml-1'>
             <button
+              type='button'
               onClick={() => setIsRenameSessionModalOpen(true)}
-              className='p-1 rounded hover:text-blue-500'
+              className='rounded-full p-1.5 hover:opacity-80 transition-colors'
               title='Rename session'
+              aria-label='Rename session'
             >
-              <ModeEditOutlinedIcon />
+              <Pencil size={16} />
             </button>
-          </div>
-
-          <div className='text-sm'>
             <button
+              type='button'
               onClick={() => setIsAddSessionModelOpen(true)}
-              className='p-1 rounded hover:text-green-500 transition-colors'
+              className='rounded-full p-1.5 hover:opacity-80 transition-colors'
               title='Add session'
+              aria-label='Add session'
             >
-              <Plus />
+              <Plus size={16} />
             </button>
-          </div>
-
-          <div className='text-sm'>
             <button
+              type='button'
               onClick={() => setIsDeleteSessionModelOpen(true)}
-              className='p-1 rounded hover:text-red-500'
+              className='rounded-full p-1.5 hover:opacity-80 transition-colors'
               title='Delete all times'
+              aria-label='Delete all times'
             >
-              <Trash2 />
+              <Trash2 size={16} />
             </button>
           </div>
         </div>

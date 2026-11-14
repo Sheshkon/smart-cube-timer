@@ -79,7 +79,7 @@ const FullScreenModal = ({
       className="fixed inset-0 z-50 app-page w-screen h-dvh max-w-none m-0 p-0 border-0 overflow-hidden outline-none"
       aria-modal="true"
     >
-      <div className="w-full h-full overflow-y-auto overscroll-y-contain app-page">
+      <div className="relative z-0 w-full h-full overflow-y-auto overscroll-y-contain app-page">
         <div className="sticky top-0 z-50 w-full app-page">
           <div className="w-full max-w-[1800px] mx-auto px-5 pt-6 pb-4 flex items-center justify-between gap-3">
             <h1 className="text-2xl font-bold min-w-0 inline-flex items-center gap-2">

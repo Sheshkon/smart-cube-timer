@@ -16,6 +16,7 @@ function useCoarsePointer() {
   return coarsePointer;
 }
 
+import AppSelect from 'src/components/AppSelect/AppSelect.jsx';
 import db from 'src/db/db.js';
 import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
@@ -243,17 +244,17 @@ const ExtendedStats = () => {
           <label htmlFor="session-select" className="block text-sm font-medium mb-1 opacity-80">
             Session
           </label>
-          <select
+          <AppSelect
             id="session-select"
+            fullWidth
             value={selectedSessionId || ''}
-            onChange={(e) => setSelectedSessionId(Number(e.target.value))}
-            className="block w-full px-3 py-2 rounded-md"
+            onChange={(next) => setSelectedSessionId(Number(next))}
             disabled={isLoading || sessions.length === 0}
-          >
-            {sessions.map(session => (
-              <option key={session.id} value={session.id}>{session.name}</option>
-            ))}
-          </select>
+            options={sessions.map((session) => ({
+              value: session.id,
+              label: session.name,
+            }))}
+          />
         </div>
         <div>
           <div className="block text-sm font-medium mb-1 opacity-80">Solves</div>

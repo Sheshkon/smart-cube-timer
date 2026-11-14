@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { Alg } from 'cubing/alg';
 import { randomScrambleForEvent } from 'cubing/scramble';
 import { normalizeCubeMove } from 'src/components/Cube/cubeHintArrows.js';
+import AppSelect from 'src/components/AppSelect/AppSelect.jsx';
 import Inspection from 'src/components/Inspection/Inspection.jsx';
 import AdditionalScrambleOptions from 'src/components/Scramble/HintSolution.jsx';
 import {
@@ -343,54 +344,48 @@ const Scramble = ({ className = '' }) => {
 
               {practiceModeEnabled && (
                 <>
-                  <select
+                  <AppSelect
+                    aria-label='Practice category'
                     value={settings.practiceMode.category}
-                    className='select select-xs h-8 w-32 border-0 focus:outline-none'
-                    onChange={(e) => {
+                    onChange={(next) => {
                       updateSetting('practiceMode', {
                         ...settings.practiceMode,
-                        category: e.target.value,
+                        category: next,
                         group: 'All',
                         name: 'All',
                       });
                     }}
-                  >
-                    {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                  <select
+                    options={categories.map((category) => ({
+                      value: category,
+                      label: category,
+                    }))}
+                  />
+                  <AppSelect
+                    aria-label='Practice group'
                     value={groups.includes(settings.practiceMode.group) ? settings.practiceMode.group : 'All'}
-                    className='select select-xs h-8 w-32 border-0 focus:outline-none'
-                    onChange={(e) => {
+                    onChange={(next) => {
                       updateSetting('practiceMode', {
                         ...settings.practiceMode,
-                        group: e.target.value,
+                        group: next,
                         name: 'All',
                       });
                     }}
-                  >
-                    {groups.map((group) => (
-                      <option key={group} value={group}>
-                        {group?.replaceAll('_', ' ')}
-                      </option>
-                    ))}
-                  </select>
-                  <select
+                    options={groups.map((group) => ({
+                      value: group,
+                      label: group?.replaceAll('_', ' '),
+                    }))}
+                  />
+                  <AppSelect
+                    aria-label='Practice algorithm'
                     value={algorithms.includes(settings.practiceMode.name) ? settings.practiceMode.name : 'All'}
-                    className='select select-xs h-8 min-w-32 max-w-48 border-0 focus:outline-none'
-                    onChange={(e) => {
-                      updateSetting('practiceMode.name', e.target.value);
+                    onChange={(next) => {
+                      updateSetting('practiceMode.name', next);
                     }}
-                  >
-                    {algorithms.map((algorithm) => (
-                      <option key={algorithm} value={algorithm}>
-                        {algorithm === 'All' ? 'All' : algorithm}
-                      </option>
-                    ))}
-                  </select>
+                    options={algorithms.map((algorithm) => ({
+                      value: algorithm,
+                      label: algorithm,
+                    }))}
+                  />
                 </>
               )}
             </div>
