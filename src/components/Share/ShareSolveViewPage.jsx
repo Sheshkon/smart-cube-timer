@@ -46,7 +46,7 @@ const ShareSolveViewPage = () => {
 
   if (showSolveInfo) {
     return (
-      <FullScreenModal onClose={onClose}>
+      <FullScreenModal title="Solve Information" onClose={onClose} useHistory={false}>
         <SolveInfo
           solveData={solveData}
           loading={loading}

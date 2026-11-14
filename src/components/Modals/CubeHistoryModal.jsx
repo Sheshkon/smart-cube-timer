@@ -54,23 +54,25 @@ const CubeHistoryModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <FullScreenModal onClose={onClose}>
-      <div className='px-5 pb-8'>
-        <div className='flex flex-wrap items-center justify-between gap-3 pb-2 pt-6 pr-16'>
-          <h1 className='text-2xl font-bold inline-flex items-center gap-2'>
-            <History size={22} />
-            Cube history
-          </h1>
-          {sessions.length > 0 && (
-            <button
-              type='button'
-              className='app-btn rounded-full px-3 py-1.5 text-sm transition-colors'
-              onClick={() => setConfirmClear(true)}
-            >
-              Clear history
-            </button>
-          )}
-        </div>
+    <FullScreenModal
+      onClose={onClose}
+      title={(
+        <>
+          <History size={22} />
+          Cube history
+        </>
+      )}
+      headerRight={sessions.length > 0 ? (
+        <button
+          type='button'
+          className='app-btn rounded-full px-3 py-1.5 text-sm transition-colors'
+          onClick={() => setConfirmClear(true)}
+        >
+          Clear history
+        </button>
+      ) : null}
+    >
+      <div>
         <p className='text-sm opacity-70 mb-5'>
           Cubes you have connected over Bluetooth, with session start, end and duration.
         </p>

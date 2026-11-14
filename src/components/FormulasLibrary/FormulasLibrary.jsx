@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { FiArrowLeft } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import FullScreenModal from 'src/components/Modals/FullScreenModal.jsx';
 import {
   getAllBySheetIdAndCategoryAndGroup,
   getCategories, getGroups,
@@ -47,31 +47,8 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
 
   const goToTimer = () => navigate(projectBaseUrl, { replace: false });
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        navigate(projectBaseUrl, { replace: false });
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigate]);
-
   return (
-    <div className='px-5 pb-8'>
-      <div className='flex justify-between pb-2'>
-        <h1 className='pt-6 text-2xl font-bold'>Formulas</h1>
-      <button
-        type="button"
-        onClick={goToTimer}
-        className="app-btn-accent flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors"
-        title="Esc"
-      >
-        <FiArrowLeft /> To Timer
-      </button>
-      </div>
+    <FullScreenModal title="Formulas" onClose={goToTimer} useHistory={false}>
       <div className='pb-2 pl-2'>
         <label htmlFor='category-select'><b>Category: </b></label>
         <select
@@ -139,7 +116,7 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
           </div>
         ))}
       </div>
-    </div>
+    </FullScreenModal>
   );
 }
 

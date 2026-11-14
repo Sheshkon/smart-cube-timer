@@ -70,12 +70,8 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null }
   );
 
   return (
-    <div className='p-4 md:p-6 app-page'>
+    <div>
       <div className='mx-auto'>
-        <div className='flex justify-between items-center mb-6'>
-          <h2 className='text-2xl font-bold'>Solve Information</h2>
-        </div>
-
         {loading ? (
           <div className='flex justify-center items-center h-64'>
             <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500'></div>

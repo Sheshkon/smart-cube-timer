@@ -16,7 +16,6 @@ function useCoarsePointer() {
   return coarsePointer;
 }
 
-import { FiArrowLeft } from 'react-icons/fi';
 import db from 'src/db/db.js';
 import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
@@ -41,30 +40,7 @@ import {
   filterSolvesByRange,
 } from './statsUtils.js';
 
-function ToTimerButton({ onClose }) {
-  if (!onClose) {
-    return null;
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        if (window.history.state?.isModalOpen) {
-          window.history.back();
-          return;
-        }
-
-        onClose();
-      }}
-      className="app-btn-accent flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors"
-    >
-      <FiArrowLeft /> To Timer
-    </button>
-  );
-}
-
-const ExtendedStats = ({ onClose }) => {
+const ExtendedStats = () => {
   const { settings } = useSettings();
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [sessions, setSessions] = useState([]);
@@ -246,23 +222,13 @@ const ExtendedStats = ({ onClose }) => {
 
   if (isLoading && (!sessions.length || !selectedSessionId)) {
     return (
-      <div className="p-6">
-        <div className="flex justify-between items-center gap-4 mb-6">
-          <h2 className="text-2xl font-bold">Extended Statistics</h2>
-          <ToTimerButton onClose={onClose} />
-        </div>
-        <div className="text-center">Loading sessions...</div>
-      </div>
+      <div className="text-center">Loading sessions...</div>
     );
   }
 
   if (!selectedSessionId && sessions.length === 0 && !isLoading) {
     return (
-      <div className="extended-stats p-6 shadow-lg app-page">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Extended Statistics</h2>
-          <ToTimerButton onClose={onClose} />
-        </div>
+      <div className="extended-stats">
         <div className="text-center py-10">
           <p className="text-gray-600 dark:text-gray-400">No sessions available.</p>
         </div>
@@ -271,12 +237,7 @@ const ExtendedStats = ({ onClose }) => {
   }
 
   return (
-    <div className="extended-stats px-6 pb-8 shadow-lg app-page">
-      <div className="flex justify-between items-center gap-4 mb-6 sticky top-0 py-4 z-10 app-page">
-        <h2 className="text-2xl font-bold">Extended Statistics</h2>
-        <ToTimerButton onClose={onClose} />
-      </div>
-
+    <div className="extended-stats">
       <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
           <label htmlFor="session-select" className="block text-sm font-medium mb-1 opacity-80">

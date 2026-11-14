@@ -142,7 +142,7 @@ const TimesTable = ({
 
   if (showSolveInfo) {
     return (
-      <FullScreenModal onClose={() => setShowSolveInfo(false)}>
+      <FullScreenModal title="Solve Information" onClose={() => setShowSolveInfo(false)}>
         <SolveInfo solveData={solveData} />
       </FullScreenModal>
     );

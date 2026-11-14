@@ -60,10 +60,10 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
 
       {showExtendedStats && (
         <FullScreenModal
-          hideCloseButton
+          title="Extended Statistics"
           onClose={() => setShowExtendedStats(false)}
         >
-          <ExtendedStats onClose={() => setShowExtendedStats(false)} />
+          <ExtendedStats />
         </FullScreenModal>
       )}
 

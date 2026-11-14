@@ -2,10 +2,25 @@ import React, { useEffect, useRef } from 'react';
 
 import { X } from 'lucide-react';
 
-const FullScreenModal = ({ children, onClose, hideCloseButton = false }) => {
+const FullScreenModal = ({
+  children,
+  onClose,
+  title,
+  headerRight,
+  useHistory = true,
+}) => {
   const modalRef = useRef(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+
+  const close = () => {
+    if (useHistory) {
+      window.history.back();
+      return;
+    }
+
+    onCloseRef.current?.();
+  };
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -14,24 +29,37 @@ const FullScreenModal = ({ children, onClose, hideCloseButton = false }) => {
       modalRef.current.focus();
     }
 
-    const modalState = { isModalOpen: true };
-    window.history.pushState(modalState, '', '');
-
-    const handlePopState = (event) => {
-      if (onCloseRef.current) {
-        onCloseRef.current();
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-
     const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        window.history.back();
+      if (event.key !== 'Escape') {
+        return;
       }
+
+      event.preventDefault();
+      if (useHistory) {
+        window.history.back();
+        return;
+      }
+
+      onCloseRef.current?.();
     };
 
     window.addEventListener('keydown', handleKeyDown);
+
+    if (!useHistory) {
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+
+    const modalState = { isModalOpen: true };
+    window.history.pushState(modalState, '', '');
+
+    const handlePopState = () => {
+      onCloseRef.current?.();
+    };
+
+    window.addEventListener('popstate', handlePopState);
 
     return () => {
       document.body.style.overflow = '';
@@ -42,34 +70,36 @@ const FullScreenModal = ({ children, onClose, hideCloseButton = false }) => {
         window.history.back();
       }
     };
-  }, []);
-
-  const handleCloseButtonClick = () => {
-    window.history.back();
-  };
+  }, [useHistory]);
 
   return (
     <dialog
       ref={modalRef}
       open
-      className="fixed inset-0 z-50 app-page w-screen h-dvh max-w-none m-0 p-0 overflow-hidden outline-none"
+      className="fixed inset-0 z-50 app-page w-screen h-dvh max-w-none m-0 p-0 border-0 overflow-hidden outline-none"
       aria-modal="true"
     >
-      {!hideCloseButton && (
-        <div className="absolute top-4 right-6 z-50">
-          <button
-            type="button"
-            onClick={handleCloseButtonClick}
-            className="app-btn p-2 rounded-full transition-colors shadow-sm"
-            title="Esc"
-          >
-            <X size={24} />
-          </button>
-        </div>
-      )}
-
       <div className="w-full h-full overflow-y-auto overscroll-y-contain app-page">
-        <div className="w-full max-w-[1800px] mx-auto min-h-full">
+        <div className="sticky top-0 z-50 w-full app-page">
+          <div className="w-full max-w-[1800px] mx-auto px-5 pt-6 pb-4 flex items-center justify-between gap-3">
+            <h1 className="text-2xl font-bold min-w-0 inline-flex items-center gap-2">
+              {title}
+            </h1>
+            <div className="flex items-center gap-2 shrink-0">
+              {headerRight}
+              <button
+                type="button"
+                onClick={close}
+                className="app-btn p-2 rounded-full transition-colors shadow-sm"
+                title="Esc"
+                aria-label="Close"
+              >
+                <X size={24} />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="w-full max-w-[1800px] mx-auto min-h-full px-5 pb-8">
           {children}
         </div>
       </div>
