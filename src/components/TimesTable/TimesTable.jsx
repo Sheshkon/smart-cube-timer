@@ -24,6 +24,7 @@ import { formatSolveData } from 'src/components/StatsDisplay/util.js';
 
 // Logic/Hooks
 import { sessionService } from 'src/db/sessionService.js';
+import useModalKeyboard from 'src/hooks/useModalKeyboard.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 
 // Helper
@@ -105,6 +106,12 @@ const TimesTable = ({
     });
   };
 
+  useModalKeyboard({
+    isOpen: Boolean(popupContent),
+    onCancel: () => setPopupContent(null),
+    confirmOnEnter: false,
+  });
+
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -143,11 +150,11 @@ const TimesTable = ({
 
   // --- Render: Table View ---
   return (
-    <div className={`bg-white/50 dark:bg-gray-800/50 rounded-b-lg shadow-md p-4 ${className}`}>
+    <div className={`app-card rounded-b-lg shadow-md p-4 ${className}`}>
       <ExportImport classWrapper={'pb-4'} onImport={onImport} />
 
       <div className='flex mb-4'>
-        <h3 className='text-2xl font-medium text-gray-900 dark:text-white'>Session</h3>
+        <h3 className='text-2xl font-medium'>Session</h3>
         <div className='flex items-center'>
           <DeleteSessionModal
             isOpen={isDeleteSessionModelOpen}
@@ -295,14 +302,14 @@ const TimesTable = ({
               <button
                 onClick={() => handlePageChange(1)}
                 disabled={currentPage === 1}
-                className='border rounded p-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50'
+                className='app-btn border rounded p-1 disabled:opacity-50'
               >
                 <FirstPageOutlinedIcon fontSize='small' />
               </button>
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className='border rounded p-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50'
+                className='app-btn border rounded p-1 disabled:opacity-50'
               >
                 <NavigateBeforeOutlinedIcon fontSize='small' />
               </button>
@@ -313,9 +320,7 @@ const TimesTable = ({
                     key={page}
                     onClick={() => handlePageChange(page)}
                     className={`px-3 py-1 border rounded text-xs sm:text-sm ${
-                      currentPage === page
-                        ? 'bg-green-800 text-white dark:bg-green-600'
-                        : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                      currentPage === page ? 'app-btn-accent' : 'app-btn'
                     }`}
                   >
                     {page}
@@ -330,14 +335,14 @@ const TimesTable = ({
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className='border rounded p-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50'
+                className='app-btn border rounded p-1 disabled:opacity-50'
               >
                 <NavigateNextOutlinedIcon fontSize='small' />
               </button>
               <button
                 onClick={() => handlePageChange(totalPages)}
                 disabled={currentPage === totalPages}
-                className='border rounded p-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50'
+                className='app-btn border rounded p-1 disabled:opacity-50'
               >
                 <LastPageOutlinedIcon fontSize='small' />
               </button>
@@ -385,7 +390,7 @@ const TimesTable = ({
                 )}
               </div>
               <form method='dialog' className='modal-backdrop'>
-                <button onClick={() => setPopupContent(null)}>Close</button>
+                <button type='submit' onClick={() => setPopupContent(null)} title='Esc'>Close</button>
               </form>
             </dialog>
           )}

@@ -130,9 +130,7 @@ const MiniGamePanel = () => {
             key={game.id}
             type='button'
             className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
-              game.id === selectedGame.id
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              game.id === selectedGame.id ? 'app-btn-accent' : 'app-btn'
             }`}
             onClick={() => {
               updateSetting('miniGameId', game.id);
@@ -182,7 +180,7 @@ const MiniGamePanel = () => {
 
       <button
         type='button'
-        className='px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 text-sm font-medium'
+        className='app-btn-accent px-4 py-2 rounded-lg disabled:opacity-50 text-sm font-medium'
         disabled={!connection}
         onClick={handleStartToggle}
       >

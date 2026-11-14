@@ -5,7 +5,9 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import App from 'src/App.jsx';
+import 'react-toastify/dist/ReactToastify.css';
 import 'src/index.css';
+import 'src/style.css';
 import CustomConsole from 'src/components/Console/Console.jsx';
 import Footer from 'src/components/Footer/Footer.jsx';
 import FormulasLibrary from 'src/components/FormulasLibrary/FormulasLibrary.jsx';
@@ -15,9 +17,21 @@ import RefreshPrompt from 'src/components/Prompts/RefreshPrompt.jsx';
 import ShareSolveViewPage from 'src/components/Share/ShareSolveViewPage.jsx';
 import { ConsoleProvider } from 'src/contexts/ConsoleContext.jsx';
 import { AuthProvider } from 'src/contexts/GoogleAuthContext.jsx';
+import { useSettings } from 'src/hooks/useSettings.js';
 import { CubeProvider } from 'src/providers/CubeProvider.jsx';
 import { SettingsProvider } from 'src/providers/SettingsProvider.jsx';
 import { ThemeProviderWrapper } from 'src/providers/ThemeProvider.jsx';
+
+function AppToasts() {
+  const { settings } = useSettings();
+
+  return (
+    <ToastContainer
+      theme={settings.theme === 'dark' ? 'dark' : 'light'}
+      toastClassName='app-toast'
+    />
+  );
+}
 
 const projectBaseUrl = import.meta.env.BASE_URL;
 
@@ -28,7 +42,7 @@ createRoot(document.getElementById('root')).render(
         <ConsoleProvider>
           <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
             <AuthProvider>
-              <div className='min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col'>
+              <div className='min-h-screen app-page flex flex-col'>
                 <Router>
                   <Header />
                   <CustomConsole />
@@ -44,7 +58,7 @@ createRoot(document.getElementById('root')).render(
                   <Footer />
                 </Router>
               </div>
-              <ToastContainer />
+              <AppToasts />
               <RefreshPrompt />
             </AuthProvider>
           </GoogleOAuthProvider>

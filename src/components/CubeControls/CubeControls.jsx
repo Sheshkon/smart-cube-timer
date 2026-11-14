@@ -248,13 +248,13 @@ const cubeControls = () => {
       {connection && <AppModeSwitcher />}
       <div className='flex flex-row'>
         <button
-          className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+          className='app-btn relative z-10 p-1.5 rounded-full px-3 transition-colors'
           onClick={handleConnect}
         >
           {connection ? 'Disconnect' : 'Connect'}
         </button>
         <button
-          className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+          className='app-btn relative z-10 p-1.5 rounded-full px-3 transition-colors'
           onClick={() => updateSetting('showCubeAnimation', !settings.showCubeAnimation)}
         >
           {settings.showCubeAnimation ? 'Hide' : 'Show'} Cube
@@ -263,7 +263,7 @@ const cubeControls = () => {
       {connection && (settings.showCubeAnimation || settings.appMode === AppMode.MINI_GAMES) && (
         <div className='flex flex-row'>
           <button
-            className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+            className='app-btn relative z-10 p-1.5 rounded-full px-3 transition-colors'
             onClick={() => {
               gyroBasisRef.current = null;
             }}
@@ -273,7 +273,7 @@ const cubeControls = () => {
           {settings.showCubeAnimation && timerState === TimerState.IDLE && (
             <button
               onClick={handleResetCubeState}
-              className='relative z-10 p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+              className='app-btn relative z-10 p-1.5 rounded-full px-3 transition-colors'
             >
               Reset State
             </button>

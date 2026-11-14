@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import PropTypes from 'prop-types';
+import {
+  applyBackgroundTheme,
+  DEFAULT_ACCENT_COLOR,
+  DEFAULT_BACKGROUND_THEME_ID,
+  resolveBackgroundTheme,
+} from 'src/constants/backgroundThemes';
 import { SettingsContext } from 'src/contexts/SettingsContext';
 import { DEFAULT_SESSION_ID } from 'src/db/configDB.js';
 
@@ -21,7 +27,8 @@ const defaultSettings = {
   },
   showCubeAnimation: true,
   showScrambleArrows: true,
-  backgroundColor: 'none',
+  backgroundColor: DEFAULT_BACKGROUND_THEME_ID,
+  accentColor: DEFAULT_ACCENT_COLOR,
   notifyEveryNSolves: -1,
   appMode: 'session',
   miniGameId: 'racing',
@@ -45,6 +52,8 @@ export const SettingsProvider = ({ children }) => {
         setSettings(() => ({
           ...defaultSettings,
           ...parsedSettings,
+          backgroundColor: resolveBackgroundTheme(parsedSettings.backgroundColor).id,
+          accentColor: parsedSettings.accentColor || DEFAULT_ACCENT_COLOR,
           practiceMode: {
             ...defaultSettings.practiceMode,
             ...(parsedSettings.practiceMode || {}),
@@ -67,6 +76,7 @@ export const SettingsProvider = ({ children }) => {
     } else {
       document.documentElement.classList.remove('dark');
     }
+    applyBackgroundTheme(settings.backgroundColor, settings.theme, settings.accentColor);
     localStorage.setItem('appSettings', JSON.stringify(settings));
   }, [settings]);
 

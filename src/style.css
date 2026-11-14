@@ -29,16 +29,125 @@ html, body, #root {
     font-weight: 500;
     text-align: center;
     color: var(--handle-text);
+    background-color: var(--handle-bg);
 }
 
 :root {
     --handle-bg: #e5e7eb;   /* светло‑серый */
     --handle-text: #111827; /* почти чёрный */
+    --app-page-bg: #f3f4f6;
+    --app-page-text: #111827;
+    --app-card-bg: #ffffff;
+    --app-card-line: #e5e7eb;
+    --app-card-bar: 0px;
+    --app-card-rail: 0px;
+    --app-accent: #64748b;
+    --app-card-text: #111827;
+    --app-on-accent: #ffffff;
+    --toastify-color-light: var(--app-card-bg);
+    --toastify-color-dark: var(--app-card-bg);
+    --toastify-text-color-light: var(--app-card-text);
+    --toastify-text-color-dark: var(--app-card-text);
+    --toastify-color-info: var(--app-accent);
+    --toastify-icon-color-info: var(--app-accent);
+    --toastify-color-progress-light: var(--app-accent);
+    --toastify-color-progress-dark: var(--app-accent);
+    --toastify-color-progress-info: var(--app-accent);
+    --toastify-toast-shadow:
+      0 1px 2px rgb(28 25 23 / 0.06),
+      0 0 0 1px var(--app-card-line);
+    --toastify-toast-bd-radius: 0.5rem;
 }
 
 .dark {
     --handle-bg: #374151;   /* тёмно‑серый */
     --handle-text: #f9fafb; /* почти белый */
+    --app-page-bg: #111827;
+    --app-page-text: #f9fafb;
+    --app-card-bg: #1f2937;
+    --app-card-line: #374151;
+    --app-card-text: #f9fafb;
+}
+
+.app-page {
+    background-color: var(--app-page-bg);
+    color: var(--app-page-text);
+}
+
+.app-btn {
+    background-color: var(--handle-bg);
+    color: var(--handle-text);
+}
+
+.app-btn:hover:not(:disabled) {
+    filter: brightness(1.08);
+}
+
+.app-btn-accent {
+    background-color: var(--app-accent);
+    color: var(--app-on-accent);
+}
+
+.app-btn-accent:hover:not(:disabled) {
+    filter: brightness(1.08);
+}
+
+.app-inset {
+    background-color: var(--handle-bg);
+    color: var(--handle-text);
+}
+
+.app-page .select,
+.app-page select {
+    background-color: var(--handle-bg);
+    color: var(--handle-text);
+    border-color: var(--app-card-line);
+}
+
+.modal-box {
+    background-color: var(--app-card-bg) !important;
+    color: var(--app-card-text);
+}
+
+.app-card {
+    background-color: var(--app-card-bg);
+    color: var(--app-card-text);
+    box-shadow:
+      inset var(--app-card-rail, 0px) 0 0 var(--app-accent),
+      inset 0 var(--app-card-bar, 0px) 0 var(--app-accent),
+      0 1px 2px rgb(28 25 23 / 0.06),
+      0 0 0 1px var(--app-card-line);
+}
+
+.app-chrome {
+    background-color: var(--app-card-bg);
+    color: var(--app-card-text);
+    box-shadow:
+      0 1px 2px rgb(28 25 23 / 0.06),
+      0 0 0 1px var(--app-card-line);
+}
+
+footer.app-chrome {
+    box-shadow: none;
+}
+
+.app-toast {
+    color: var(--app-card-text) !important;
+    background: var(--app-card-bg) !important;
+    box-shadow:
+      inset 0 6px 0 var(--handle-bg),
+      inset var(--app-card-rail, 0px) 0 0 var(--app-accent),
+      var(--toastify-toast-shadow) !important;
+    padding-top: 18px !important;
+}
+
+.app-toast .Toastify__progress-bar {
+    background: var(--app-accent) !important;
+}
+
+.app-toast .Toastify__close-button {
+    color: var(--app-card-text);
+    opacity: 0.7;
 }
 
 html,
@@ -140,4 +249,62 @@ twisty-player {
 .rotated {
     display: inline-block; /* Required for transforms to work on inline elements */
     transform: rotate(-90deg); /* Rotate 30 degrees clockwise */
+}
+
+.accent-spectrum {
+    --accent-spectrum-thumb: #ffffff;
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 2rem;
+    margin: 0;
+    cursor: ew-resize;
+    background-color: transparent;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border-radius: 9999px;
+    outline: 1px solid rgb(0 0 0 / 0.1);
+}
+
+.dark .accent-spectrum {
+    outline-color: rgb(255 255 255 / 0.15);
+}
+
+.accent-spectrum:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+.accent-spectrum::-webkit-slider-runnable-track {
+    height: 2rem;
+    border-radius: 9999px;
+    background: transparent;
+}
+
+.accent-spectrum::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: 0.25rem;
+    border: 2px solid #ffffff;
+    border-radius: 9999px;
+    background: var(--accent-spectrum-thumb);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+}
+
+.accent-spectrum::-moz-range-track {
+    height: 2rem;
+    border-radius: 9999px;
+    background: transparent;
+}
+
+.accent-spectrum::-moz-range-thumb {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid #ffffff;
+    border-radius: 9999px;
+    background: var(--accent-spectrum-thumb);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
 }

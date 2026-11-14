@@ -1,17 +1,41 @@
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { BarChart, LineChart, PieChart, ScatterChart } from '@mui/x-charts';
+import { FiArrowLeft } from 'react-icons/fi';
 import db from 'src/db/db.js';
 import { sessionService } from 'src/db/sessionService.js';
 import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime } from 'src/utils/time.js';
+
+function ToTimerButton({ onClose }) {
+  if (!onClose) {
+    return null;
+  }
+
+  return (
+    <button
+      type='button'
+      onClick={() => {
+        if (window.history.state?.isModalOpen) {
+          window.history.back();
+          return;
+        }
+
+        onClose();
+      }}
+      className='app-btn-accent flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors'
+    >
+      <FiArrowLeft /> To Timer
+    </button>
+  );
+}
 function countMoves(moveString) {
   if (!moveString || typeof moveString !== 'string') return 0;
   const moves = moveString.trim().split(/\s+/);
   return moves.filter(move => move !== '').length;
 }
 
-const ExtendedStats = () => {
+const ExtendedStats = ({ onClose }) => {
   const { settings } = useSettings();
   const [selectedSessionId, setSelectedSessionId] = useState(null);
   const [sessions, setSessions] = useState([]);
@@ -286,17 +310,25 @@ const ExtendedStats = () => {
 
 
   if (isLoading && (!sessions.length || !selectedSessionId)) {
-    return <div className="p-6 text-center">Loading sessions...</div>;
+    return (
+      <div className="p-6">
+        <div className="flex justify-between items-center gap-4 mb-6">
+          <h2 className="text-2xl font-bold">Extended Statistics</h2>
+          <ToTimerButton onClose={onClose} />
+        </div>
+        <div className="text-center">Loading sessions...</div>
+      </div>
+    );
   }
 
   if (!selectedSessionId && sessions.length === 0 && !isLoading) {
     return (
       <div
-        className="extended-stats p-6 shadow-lg"
-        style={{ backgroundColor: settings.backgroundColor}}
+        className="extended-stats p-6 shadow-lg app-page"
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Extended Statistics</h2>
+          <h2 className="text-2xl font-bold">Extended Statistics</h2>
+          <ToTimerButton onClose={onClose} />
         </div>
         <div className="text-center py-10"><p className="text-gray-600 dark:text-gray-400">No sessions available.</p>
         </div>
@@ -306,11 +338,11 @@ const ExtendedStats = () => {
 
   return (
     <div
-      className="extended-stats px-6 shadow-lg overflow-y-auto"
-      style={{ backgroundColor: settings.backgroundColor}}
+      className="extended-stats px-6 shadow-lg overflow-y-auto app-page"
     >
-      <div className="flex justify-between items-center mb-6 sticky top-0 py-4 z-10">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Extended Statistics</h2>
+      <div className="flex justify-between items-center gap-4 mb-6 sticky top-0 py-4 z-10 app-page">
+        <h2 className="text-2xl font-bold">Extended Statistics</h2>
+        <ToTimerButton onClose={onClose} />
       </div>
 
       <div className="mb-6">
@@ -320,7 +352,7 @@ const ExtendedStats = () => {
           id="session-select"
           value={selectedSessionId || ''}
           onChange={(e) => setSelectedSessionId(Number(e.target.value))}
-          className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+          className="block w-full px-3 py-2 rounded-md"
           disabled={isLoading || sessions.length === 0}
         >
           {sessions.map(session => (
@@ -351,7 +383,7 @@ const ExtendedStats = () => {
 
           {/* Session Summary */}
           <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Session Summary</h3>
+            <h3 className="text-xl font-semibold mb-4">Session Summary</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               <StatBox title="Total Solves" value={stats.count || 0} />
               <StatBox title="Best Time" value={stats.best ? formatTime(stats.best.timestamp) : '-'} />
@@ -367,7 +399,7 @@ const ExtendedStats = () => {
 
           {/* Visualizations */}
           <div className="">
-            <h3 className="text-xl font-semibold mb-6 text-gray-800 dark:text-white">Visualizations</h3>
+            <h3 className="text-xl font-semibold mb-6">Visualizations</h3>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-6">
 
@@ -428,11 +460,11 @@ const ExtendedStats = () => {
               {/* Reconstruction Step Analysis */}
               {stepAnalysis && stepAnalysis.length > 0 && (
                 <div className="">
-                  <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Reconstruction Step
+                  <h3 className="text-xl font-semibold mb-4">Reconstruction Step
                     Analysis</h3>
-                  <div className="overflow-x-auto bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow">
+                  <div className="overflow-x-auto app-inset p-4 rounded-lg">
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                      <thead className="bg-gray-100 dark:bg-gray-600">
+                      <thead className="opacity-90">
                       <tr>
                         <th
                           className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Step
@@ -451,11 +483,11 @@ const ExtendedStats = () => {
                         </th>
                       </tr>
                       </thead>
-                      <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                      <tbody className="divide-y divide-black/10 dark:divide-white/10">
                       {stepAnalysis.map(step => (
                         <tr key={step.name}>
                           <td
-                            className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{step.name}</td>
+                            className="px-4 py-2 whitespace-nowrap text-sm font-medium">{step.name}</td>
                           {/*<td*/}
                           {/*  className="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{step.frequency}</td>*/}
                           <td
@@ -512,7 +544,7 @@ const ExtendedStats = () => {
                 </div>
               )}
               <div className="mb-8">
-                <h3 className="text-xl font-semibold mb-6 text-gray-800 dark:text-white">More info</h3>
+                <h3 className="text-xl font-semibold mb-6">More info</h3>
                 {methodDistributionData ? (
                   <ChartCard title="Method Usage">
                     <PieChart
@@ -598,9 +630,9 @@ const ExtendedStats = () => {
 
 const StatCard = ({ title, value, times, available }) => (
   <div
-    className={`p-4 rounded-lg shadow ${available ? 'bg-gray-100 dark:bg-gray-700' : 'bg-gray-200 dark:bg-gray-600 opacity-70'}`}>
-    <h3 className="font-medium text-gray-700 dark:text-gray-200">{title}</h3>
-    <p className="text-3xl font-mono font-bold my-2 text-gray-900 dark:text-white">
+    className={`app-card p-4 rounded-lg ${available ? '' : 'opacity-70'}`}>
+    <h3 className="font-medium">{title}</h3>
+    <p className="text-3xl font-mono font-bold my-2">
       {available ? (typeof value === 'number' ? value.toFixed(2) : (value || '-')) : '-'}
     </p>
     {available && times && times.length > 0 && (
@@ -615,21 +647,21 @@ const StatCard = ({ title, value, times, available }) => (
 );
 
 const StatBox = ({ title, value }) => (
-  <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg shadow">
-    <h4 className="text-sm font-medium text-gray-600 dark:text-gray-300">{title}</h4>
-    <p className="text-xl font-mono text-gray-900 dark:text-white">{value}</p>
+  <div className="app-card p-3 rounded-lg">
+    <h4 className="text-sm font-medium opacity-80">{title}</h4>
+    <p className="text-xl font-mono">{value}</p>
   </div>
 );
 
 const ChartCard = ({ title, children }) => (
-  <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow">
-    <h4 className="text-lg font-medium mb-3 text-center text-gray-700 dark:text-gray-200">{title}</h4>
+  <div className="app-card p-4 rounded-lg">
+    <h4 className="text-lg font-medium mb-3 text-center">{title}</h4>
     {children}
   </div>
 );
 
 const ChartPlaceholder = ({ message }) => (
-  <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow flex items-center justify-center h-[300px]">
+  <div className="app-card p-4 rounded-lg flex items-center justify-center h-[300px]">
     <p className="text-gray-500 dark:text-gray-400 text-center">{message}</p>
   </div>
 );

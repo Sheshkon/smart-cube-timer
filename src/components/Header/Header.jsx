@@ -16,7 +16,7 @@ const Header = ({ className = '' }) => {
 
   return (
     <>
-      <header className={`bg-white dark:bg-gray-800 shadow-sm ${className}`}>
+      <header className={`app-chrome rounded-b-2xl overflow-hidden shadow-sm ${className}`}>
         <div className='container mx-auto flex justify-between items-center'>
           <div className='sticky top-0 z-10 w-full p-4 flex justify-between items-center shadow-sm'>
             <div className='w-full max-w-[1800px] mx-auto px-4 flex justify-between items-center'>
@@ -33,23 +33,23 @@ const Header = ({ className = '' }) => {
           <div className='flex gap-2 mr-4'>
             <Link
               to={`${projectBaseUrl}library/`}
-              className='rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
+              className='rounded-full p-1 hover:opacity-80 transition-colors'
             >
               <AutoStoriesOutlinedIcon />
             </Link>
 
             <a
-              className='rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
+              className='rounded-full p-1 hover:opacity-80 transition-colors'
               href='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
               target='https://github.com/Sheshkon/smart-cube-timer/blob/main/README.md'
               rel='noopener noreferrer'
             >
               <ContactSupportIcon size={38} />
             </a>
-            <SettingsControl className=' rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors' />
+            <SettingsControl className='rounded-full p-1 hover:opacity-80 transition-colors' />
 
             <button
-              className='rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors'
+              className='rounded-full p-1 hover:opacity-80 transition-colors'
               onClick={() => setShowConsole(!showConsole)}
             >
               <TerminalIcon />

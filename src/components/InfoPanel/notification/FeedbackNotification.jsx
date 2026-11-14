@@ -12,7 +12,8 @@ export default function FeedbackNotification() {
         Please contact us at{' '}
         <a
           href="mailto:sheshko_alexei@vk.com"
-          className="text-blue-600 underline"
+          className="underline"
+          style={{ color: 'var(--app-accent)' }}
         >
           email
         </a>

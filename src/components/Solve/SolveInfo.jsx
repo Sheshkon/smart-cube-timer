@@ -3,15 +3,12 @@ import React, { useEffect, useRef } from 'react';
 import { TwistyPlayer } from 'cubing/twisty';
 import { FiAlertTriangle, FiCalendar, FiClock, FiCode, FiLayers } from 'react-icons/fi';
 import { IoSpeedometer } from 'react-icons/io5';
-import { useSettings } from 'src/hooks/useSettings.js';
 import { formatTime } from 'src/utils/time.js';
 
 
 
 const SolveInfo = ({ solveData, loading = false, error = null, navigate = null }) => {
   const twistyPlayerRef = useRef(null);
-
-  const { settings } = useSettings();
 
   useEffect(() => {
     if (solveData?.solution && twistyPlayerRef.current) {
@@ -33,12 +30,12 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null }
 
   const renderReconstructionSteps = () => (
     <div className='mt-6 space-y-4'>
-      <h3 className='text-xl font-semibold text-gray-900 dark:text-white'>
+      <h3 className='text-xl font-semibold'>
         Reconstruction Steps ({solveData.reconstruction.method})
       </h3>
 
-      <div className='bg-gray-100 dark:bg-gray-800 rounded-lg p-4 shadow-sm'>
-        <h4 className='font-medium text-gray-700 dark:text-gray-300 mb-2'>
+      <div className='app-inset rounded-lg p-4'>
+        <h4 className='font-medium mb-2'>
           Solution Visualization
         </h4>
         <div
@@ -48,9 +45,9 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null }
       </div>
 
       {Object.entries(solveData.reconstruction.steps).map(([stepName, stepData]) => (
-        <div key={stepName} className='bg-gray-100 dark:bg-gray-800 rounded-lg p-4 shadow-sm'>
+        <div key={stepName} className='app-inset rounded-lg p-4'>
           <div className='flex justify-between items-center mb-2'>
-            <h4 className='font-medium text-gray-700 dark:text-gray-300 capitalize'>
+            <h4 className='font-medium capitalize'>
               {stepName.replace(/_/g, ' ')}
             </h4>
             {stepData.found && (
@@ -59,7 +56,7 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null }
               </span>
             )}
           </div>
-          <div className='font-mono bg-white dark:bg-gray-900 p-3 rounded shadow-sm'>
+          <div className='font-mono app-card p-3 rounded'>
             {stepData.plain}
           </div>
           {stepData.startTime && (
@@ -73,10 +70,10 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null }
   );
 
   return (
-    <div className='p-4 md:p-6' style={{ backgroundColor: settings.backgroundColor }}>
+    <div className='p-4 md:p-6 app-page'>
       <div className='mx-auto'>
         <div className='flex justify-between items-center mb-6'>
-          <h2 className='text-2xl font-bold text-gray-800 dark:text-white'>Solve Information</h2>
+          <h2 className='text-2xl font-bold'>Solve Information</h2>
         </div>
 
         {loading ? (
@@ -92,7 +89,7 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null }
             <p className='text-red-500 dark:text-red-400'>{error}</p>
           </div>
         ) : solveData ? (
-          <div className='bg-white/50 dark:bg-gray-900/50 rounded-lg shadow-md overflow-hidden'>
+          <div className='app-card rounded-lg shadow-md overflow-hidden'>
             <div className='p-6 md:p-8'>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                 <div className='space-y-4'>
@@ -133,10 +130,10 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null }
 
               {solveData.solution && (
                 <div className='mt-6'>
-                  <h3 className='text-lg font-semibold mb-2 text-gray-900 dark:text-white'>
+                  <h3 className='text-lg font-semibold mb-2'>
                     Full Solution
                   </h3>
-                  <div className='font-mono bg-gray-100 dark:bg-gray-800 p-4 rounded-lg whitespace-pre-wrap break-all shadow-sm'>
+                  <div className='font-mono app-inset p-4 rounded-lg whitespace-pre-wrap break-all'>
                     {solveData.solution}
                   </div>
                 </div>
@@ -152,13 +149,13 @@ const SolveInfo = ({ solveData, loading = false, error = null, navigate = null }
 };
 
 const InfoCard = ({ icon, title, value, mono = false }) => (
-  <div className="flex items-start p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-sm">
-    <div className="p-2 bg-white dark:bg-gray-900 rounded-full mr-3 shadow-sm">
+  <div className="flex items-start p-4 app-inset rounded-lg">
+    <div className="p-2 app-card rounded-full mr-3">
       {icon}
     </div>
     <div className="flex-1">
-      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
-      <p className={`mt-1 ${mono ? 'font-mono' : ''} text-gray-800 dark:text-white`}>
+      <h3 className="text-sm font-medium opacity-70">{title}</h3>
+      <p className={`mt-1 ${mono ? 'font-mono' : ''}`}>
       {value || 'N/A'}
       </p>
     </div>

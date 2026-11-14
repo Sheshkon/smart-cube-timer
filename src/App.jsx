@@ -179,7 +179,6 @@ function App() {
   return (
     <main
       className='flex-grow container mx-auto px-4 py-4 lg:px-64'
-      style={{ backgroundColor: settings.backgroundColor}}
     >
       <div className='flex flex-col space-y-4 md:space-y-6'>
         <DndContext
@@ -203,7 +202,7 @@ function App() {
             {visibleBlocks.map((block) => (
               <SortableItem key={block.id} id={block.id}>
                 {block.id === 'base' && (
-                  <div className='bg-white/50 dark:bg-gray-800/50 rounded-b-lg shadow-md p-6 flex flex-col items-center justify-center relative overflow-hidden'>
+                  <div className='app-card rounded-b-lg shadow-md p-6 flex flex-col items-center justify-center relative overflow-hidden'>
                     <Cuboid
                       className='pointer-events-none absolute -right-16 -top-16 opacity-5 transform rotate-12'
                       size={200}

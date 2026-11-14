@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import QRCode from 'qrcode';
 import { FiCopy, FiDownload, FiLink, FiX } from 'react-icons/fi';
 import { MdOutlineQrCode2 } from 'react-icons/md';
+import useModalKeyboard from 'src/hooks/useModalKeyboard.js';
 import { generateShareLink, getShortLink } from 'src/utils/solve-link.js';
 
 const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
@@ -93,6 +94,12 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
     link.click();
   };
 
+  useModalKeyboard({
+    isOpen,
+    onConfirm: handleCopy,
+    onCancel: onClose,
+  });
+
   const truncateLink = (link, maxLength = 30) => {
     if (!link) return '';
     if (link.length <= maxLength) return link;
@@ -106,8 +113,10 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
         <dialog open className="modal">
           <div className="modal-box relative rounded-lg max-w-md">
             <button
+              type="button"
               onClick={onClose}
               className="btn btn-sm btn-circle absolute right-2 top-2"
+              title="Esc"
             >
               <FiX />
             </button>
@@ -166,9 +175,11 @@ const ShareSolveLinkModal = ({ isOpen, onClose, solveId }) => {
 
               <div className="flex gap-2">
                 <button
+                  type="button"
                   className={`btn btn-primary gap-2 ${isCopiedLink ? 'btn-success' : ''}`}
                   onClick={handleCopy}
                   disabled={!generatedLink || isLoading}
+                  title="Enter"
                 >
                   <FiCopy />
                   {isCopiedLink ? 'Copied!' : 'Copy Link'}

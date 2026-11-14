@@ -29,14 +29,14 @@ const HintSolution = ({
       {hasSolutions && (
         <div className='flex justify-end items-center gap-3'>
           <button
-            className='p-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+            className='app-btn p-1 rounded-full transition-colors'
             onClick={reload}
           >
             <AutorenewOutlinedIcon />
           </button>
           {setupComplete && (
             <button
-              className='p-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+              className='app-btn p-1 rounded-full transition-colors'
               onClick={toggleHintVisible}
               title='Toggle solution hint'
             >
@@ -44,7 +44,7 @@ const HintSolution = ({
             </button>
           )}
           <button
-            className='p-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+            className='app-btn p-1 rounded-full transition-colors'
             onClick={toggleHistory}
           >
             <HistoryOutlinedIcon />
@@ -53,7 +53,7 @@ const HintSolution = ({
       )}
 
       {visible && setupComplete && hasSolutions && (
-        <div className='bg-white dark:bg-gray-800 rounded-lg shadow-md p-4'>
+        <div className='app-inset rounded-lg p-4'>
           <h2>
             <b>{activeRecord?.name}</b>
           </h2>
@@ -70,7 +70,7 @@ const HintSolution = ({
       )}
 
       {historyVisible && (
-        <div className='p-4 mt-3 bg-white dark:bg-gray-800 rounded-lg shadow-md w-full max-w-full'>
+        <div className='app-inset p-4 mt-3 rounded-lg w-full max-w-full'>
           <h1 className='pb-2'>
             <b>History</b>
           </h1>

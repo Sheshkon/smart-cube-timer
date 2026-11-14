@@ -1,7 +1,15 @@
 import React from 'react';
 
+import useModalKeyboard from 'src/hooks/useModalKeyboard.js';
+
 export const CubeInfoModal = ({ info, isOpen, onClose }) => {
   const getValue = (value, fallback = '- n/a -') => value ?? fallback;
+
+  useModalKeyboard({
+    isOpen,
+    onCancel: onClose,
+    confirmOnEnter: false,
+  });
 
   return (
     <>

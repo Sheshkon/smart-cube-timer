@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 const Footer = ({ className = '' }) => (
   <footer
-    className={`py-4 px-4 text-center text-sm text-gray-500 dark:text-gray-400 ${className}`}
+    className={`app-chrome mt-auto rounded-t-2xl overflow-hidden py-4 px-4 text-center text-sm ${className}`}
   >
     <div className="container mx-auto">
       <div className="flex flex-col justify-between items-center">

@@ -154,7 +154,7 @@ const Cube = ({ className = '' }) => {
               {connection && (
                 <button
                   onClick={handleInfoModalOpen}
-                  className='p-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+                  className='app-btn p-1.5 rounded-full transition-colors'
                   title='Cube info'
                 >
                   <Info size={18} />

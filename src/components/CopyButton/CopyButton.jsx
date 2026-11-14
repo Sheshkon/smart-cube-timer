@@ -25,7 +25,7 @@ export default function CopyButton({ text, ariaLabel = 'Copy to clipboard', clas
       onClick={handleCopy}
       aria-label={copied ? 'Copied' : ariaLabel}
       title={copied ? 'Copied!' : 'Copy'}
-      className={`inline-flex shrink-0 items-center justify-center rounded p-1 text-gray-600 hover:bg-gray-100 hover:opacity-100 dark:text-gray-300 dark:hover:bg-gray-700 ${className}`}
+      className={`app-btn inline-flex shrink-0 items-center justify-center rounded p-1 ${className}`}
     >
       {copied ? <Check size={14} aria-hidden /> : <Copy size={14} aria-hidden />}
     </button>

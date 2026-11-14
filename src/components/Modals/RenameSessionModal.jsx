@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { sessionService } from 'src/db/sessionService.js';
+import useModalKeyboard from 'src/hooks/useModalKeyboard.js';
 
 const RenameSessionModal = ({ isOpen, onClose, setSessions, currentSession, sessions }) => {
   const [sessionName, setSessionName] = useState('');
@@ -40,6 +41,12 @@ const RenameSessionModal = ({ isOpen, onClose, setSessions, currentSession, sess
     }
   };
 
+  useModalKeyboard({
+    isOpen,
+    onConfirm: handleRenameSession,
+    onCancel: closeModal,
+  });
+
   return (
     <div>
       {isOpen && (
@@ -52,19 +59,24 @@ const RenameSessionModal = ({ isOpen, onClose, setSessions, currentSession, sess
               className='input'
               value={sessionName}
               onChange={(e) => setSessionName(e.target.value)}
+              autoFocus
             />
             {error && (<p className='text-red-700'>{error}</p>)}
             <div className='modal-action'>
               <button
+                type='button'
                 className='p-2 rounded bg-green-700 dark:bg-green-700 text-gray-100 dark:text-gray-300  transition-colors'
                 onClick={() => handleRenameSession()}
+                title='Enter'
               >
                 Rename
               </button>
 
               <button
+                type='button'
                 className='p-1.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors'
                 onClick={closeModal}
+                title='Esc'
               >
                 Cancel
               </button>

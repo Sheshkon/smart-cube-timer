@@ -31,31 +31,30 @@ const InfoPanel = ({ wrapperClassName = '' }) => {
   return (
     <div className={wrapperClassName}>
       {panels.map((panel) => {
-        const panelStyle =
-          panel.type === 'success'
-            ? 'bg-white dark:bg-gray-800'
-            : 'bg-white dark:bg-gray-800';
         return (
           <div
             key={panel.id}
-            className={`${panelStyle} w-[calc(100%-35px)] min-h-[100px] p-3 rounded relative text-sm mt-1`}
+            className='app-card w-[calc(100%-35px)] min-h-[100px] rounded-lg relative text-sm mt-1 overflow-hidden'
           >
-            <button
-              onClick={() => handleCloseTemporary(panel.id)}
-              aria-label='Close panel'
-              className='absolute top-2 right-2 font-bold text-lg hover:opacity-70'
-            >
-              ×
-            </button>
+            <div className='sortable-handle pointer-events-none h-6' aria-hidden />
+            <div className='relative p-3'>
+              <button
+                onClick={() => handleCloseTemporary(panel.id)}
+                aria-label='Close panel'
+                className='absolute top-2 right-2 font-bold text-lg hover:opacity-70'
+              >
+                ×
+              </button>
 
-            {panel.content}
+              {panel.content}
 
-            <button
-              onClick={() => handleCloseForever(panel.id)}
-              className='mt-3 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
-            >
-              Don&#39;t show again
-            </button>
+              <button
+                onClick={() => handleCloseForever(panel.id)}
+                className='app-btn mt-3 px-2 py-1 rounded transition-colors'
+              >
+                Don&#39;t show again
+              </button>
+            </div>
           </div>
         );
       })}

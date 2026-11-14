@@ -70,18 +70,18 @@ export default function RefreshPrompt() {
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden w-72">
+        className="app-card rounded-lg overflow-hidden w-72">
         <div className="p-4">
           <div className="flex items-start">
             <div className="flex-1">
-              <h3 className="font-medium text-gray-900 dark:text-white">
+              <h3 className="font-medium">
                 {offlineReady
                   ? 'App Ready'
                   : needRefresh
                     ? 'New Version'
                     : 'Install App'}
               </h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-sm opacity-70">
                 {offlineReady
                   ? 'Your app is now ready to work offline'
                   : needRefresh
@@ -91,7 +91,7 @@ export default function RefreshPrompt() {
             </div>
             <button
               onClick={closePrompt}
-              className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+              className="opacity-60 hover:opacity-100"
               aria-label="Close"
             >
               <FiX className="h-5 w-5" />
@@ -102,7 +102,8 @@ export default function RefreshPrompt() {
             {needRefresh && (
               <button
                 onClick={handleUpdate}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm"
+                style={{ backgroundColor: 'var(--app-accent)', color: 'var(--app-on-accent)' }}
               >
                 <FiRefreshCw className="mr-2 h-4 w-4" />
                 Update
@@ -111,7 +112,8 @@ export default function RefreshPrompt() {
             {isInstallable && (
               <button
                 onClick={handleInstall}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm"
+                style={{ backgroundColor: 'var(--app-accent)', color: 'var(--app-on-accent)' }}
               >
                 <FiDownload className="mr-2 h-4 w-4" />
                 Install

@@ -46,9 +46,9 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
   ];
 
   return (
-    <div className={`bg-white/50 dark:bg-gray-800/50 rounded-b-lg shadow-md p-4 ${className}`}>
+    <div className={`app-card rounded-b-lg shadow-md p-4 ${className}`}>
       <div className='flex items-center justify-between mb-4'>
-        <div className='text-2xl font-medium text-gray-900 dark:text-white'>Statistics</div>
+        <div className='text-2xl font-medium'>Statistics</div>
         <button
           onClick={() => setShowExtendedStats(true)}
           className='hover:text-gray-700 dark:hover:text-gray-200'
@@ -59,8 +59,11 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
       </div>
 
       {showExtendedStats && (
-        <FullScreenModal onClose={() => setShowExtendedStats(false)}>
-          <ExtendedStats />
+        <FullScreenModal
+          hideCloseButton
+          onClose={() => setShowExtendedStats(false)}
+        >
+          <ExtendedStats onClose={() => setShowExtendedStats(false)} />
         </FullScreenModal>
       )}
 
@@ -68,13 +71,13 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
         {statItems.map((item, index) => (
           <div
             key={index}
-            className='bg-gray-50/70 dark:bg-gray-900/70 p-3 rounded-md flex flex-col items-center justify-center'
+            className='app-inset p-3 rounded-md flex flex-col items-center justify-center'
           >
-            <div className='flex items-center text-gray-600 dark:text-gray-400 mb-1'>
+            <div className='flex items-center mb-1 opacity-80'>
               {item.icon}
               <span className='ml-1 text-xs font-medium'>{item.label}</span>
             </div>
-            <div className='font-mono font-semibold flex-col text-lg text-gray-900 dark:text-white'>
+            <div className='font-mono font-semibold flex-col text-lg'>
               <div
                 className={
                   item.value === stats.best?.formattedTime && item.label === 'Current'
@@ -99,15 +102,15 @@ const StatsDisplay = ({ times, stats, setStats, className = '' }) => {
 
               {item.label === 'Current' && item.value && (
                 <>
-                  <div className='flex justify-center ml-1 text-xs text-gray-500 dark:text-gray-400'>
+                  <div className='flex justify-center ml-1 text-xs opacity-80'>
                     Moves:{' '}
-                    <p className='text-gray-900 dark:text-white text-xs'>
+                    <p className='text-xs'>
                       {stats.currentStats?.movesCount}
                     </p>
                   </div>
-                  <div className='flex justify-center ml-1 text-xs text-gray-500 dark:text-gray-400'>
+                  <div className='flex justify-center ml-1 text-xs opacity-80'>
                     TPS:{' '}
-                    <p className='text-gray-900 text-xs dark:text-white'>
+                    <p className='text-xs'>
                       {stats.currentStats?.tps}
                     </p>
                   </div>

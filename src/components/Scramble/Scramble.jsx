@@ -326,14 +326,14 @@ const Scramble = ({ className = '' }) => {
       <div
         className={clsx('w-full', {
           [className]: showScramble && timerState === TimerState.IDLE,
-          'bg-white dark:bg-gray-800 rounded-lg shadow-md p-4':
+          'app-inset rounded-lg p-4':
             showScramble && timerState === TimerState.IDLE,
         })}
       >
         {showScramble && timerState === TimerState.IDLE && (
           <>
             <div className='flex flex-wrap justify-start items-center mb-2 gap-2'>
-              <h3 className='text-lg font-medium text-gray-900 dark:text-white'>Scramble</h3>
+              <h3 className='text-lg font-medium'>Scramble</h3>
 
               {practiceModeEnabled && (
                 <>
@@ -391,7 +391,6 @@ const Scramble = ({ className = '' }) => {
 
             <div
               className={`
-                bg-white dark:bg-gray-800 
                 p-3 rounded-md font-mono 
                 ${settings.scrambleSize}
                 overflow-x-auto

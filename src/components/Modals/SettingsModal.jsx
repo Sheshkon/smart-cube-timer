@@ -1,13 +1,106 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { CirclePicker } from 'react-color';
 import { TimerState } from 'src/components/Timer/util.js';
+import {
+  ACCENT_PALETTE,
+  ACCENT_THEME_IDS,
+  DEFAULT_ACCENT_COLOR,
+  STATIC_THEMES,
+  accentFromSpectrum,
+  buildAccentDesign,
+  resolveBackgroundTheme,
+  spectrumFromAccent,
+} from 'src/constants/backgroundThemes';
 import { useCube } from 'src/hooks/useCube.js';
+import useModalKeyboard from 'src/hooks/useModalKeyboard.js';
 import { useSettings } from 'src/hooks/useSettings';
+
+function DesignPreview({ colors, rail, accent }) {
+  const cardShadow = `inset ${rail || '0px'} 0 0 ${accent}, 0 0 0 1px ${colors.line}`;
+
+  return (
+    <span className='flex flex-col gap-1 p-1.5' style={{ backgroundColor: colors.page }}>
+      <span className='overflow-hidden rounded-sm'>
+        <span className='block h-1.5' style={{ backgroundColor: colors.handle }} />
+        <span className='block h-4' style={{ backgroundColor: colors.card, boxShadow: cardShadow }} />
+      </span>
+      <span className='overflow-hidden rounded-sm'>
+        <span className='block h-1.5' style={{ backgroundColor: colors.handle }} />
+        <span className='block h-3' style={{ backgroundColor: colors.card, boxShadow: cardShadow }} />
+      </span>
+    </span>
+  );
+}
+
+function AccentSpectrumSlider({ value, onChange }) {
+  const [position, setPosition] = useState(() =>
+    spectrumFromAccent(value || DEFAULT_ACCENT_COLOR)
+  );
+
+  const applyPosition = (next) => {
+    const clamped = Math.min(1, Math.max(0, next));
+    setPosition(clamped);
+    onChange(accentFromSpectrum(clamped));
+  };
+
+  return (
+    <div className='px-1'>
+      <input
+        type='range'
+        min={0}
+        max={1000}
+        step={1}
+        value={Math.round(position * 1000)}
+        aria-label='Accent color'
+        className='accent-spectrum'
+        style={{
+          backgroundImage: `linear-gradient(to right, ${ACCENT_PALETTE.join(', ')})`,
+          '--accent-spectrum-thumb': accentFromSpectrum(position),
+        }}
+        onChange={(event) => applyPosition(Number(event.target.value) / 1000)}
+      />
+    </div>
+  );
+}
+
+function ThemeChoice({ themeOption, selected, onSelect }) {
+  return (
+    <button
+      type='button'
+      onClick={onSelect}
+      className={`flex flex-col gap-2 rounded-xl p-2 text-left ${
+        selected
+          ? 'outline outline-2 outline-offset-2 outline-gray-900 dark:outline-white'
+          : 'outline outline-1 outline-black/10 dark:outline-white/20'
+      }`}
+      aria-pressed={selected}
+    >
+      <span className='grid grid-cols-2 overflow-hidden rounded-lg'>
+        <DesignPreview
+          colors={themeOption.light}
+          rail={themeOption.rail}
+          accent={themeOption.accent}
+        />
+        <DesignPreview
+          colors={themeOption.dark}
+          rail={themeOption.rail}
+          accent={themeOption.accent}
+        />
+      </span>
+      <span className='px-0.5 text-sm font-medium'>{themeOption.label}</span>
+    </button>
+  );
+}
 
 export const SettingsModal = ({ isOpen, onClose }) => {
   const { settings, updateSetting } = useSettings();
   const { timerState } = useCube();
+
+  useModalKeyboard({
+    isOpen,
+    onCancel: onClose,
+    confirmOnEnter: false,
+  });
 
   return (
     <>
@@ -147,19 +240,53 @@ export const SettingsModal = ({ isOpen, onClose }) => {
             </div>
             <div>
               <b>
-                <label htmlFor='backgroundColor'>Background color</label>
+                <label htmlFor='appTheme'>Theme</label>
               </b>
-              <CirclePicker
-                className='pt-4'
-                colors={['#000000','#d66202', '#8c0025', '#270091', '#086103', '#ffffff']}
-                onChange={(updatedColor) => updateSetting('backgroundColor', updatedColor.hex)}
-              />
+              <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3'>
+                {STATIC_THEMES.map((themeOption) => (
+                  <ThemeChoice
+                    key={themeOption.id}
+                    themeOption={themeOption}
+                    selected={resolveBackgroundTheme(settings.backgroundColor).id === themeOption.id}
+                    onSelect={() => updateSetting('backgroundColor', themeOption.id)}
+                  />
+                ))}
+              </div>
+              <fieldset className='mt-5 rounded-xl border border-black/10 dark:border-white/15 p-3'>
+                <legend className='px-1 text-sm font-bold'>Accent themes</legend>
+                <p className='text-sm text-gray-500 dark:text-gray-400 mb-3'>
+                  Color applies to Solid, Accent stripe and Ink cards.
+                </p>
+                <AccentSpectrumSlider
+                  value={settings.accentColor || DEFAULT_ACCENT_COLOR}
+                  onChange={(hex) => updateSetting('accentColor', hex)}
+                />
+                <div className='grid grid-cols-1 gap-3 mt-4'>
+                  {ACCENT_THEME_IDS.map((id) => {
+                    const themeOption = buildAccentDesign(
+                      id,
+                      settings.accentColor || DEFAULT_ACCENT_COLOR
+                    );
+
+                    return (
+                      <ThemeChoice
+                        key={id}
+                        themeOption={themeOption}
+                        selected={resolveBackgroundTheme(settings.backgroundColor).id === id}
+                        onSelect={() => updateSetting('backgroundColor', id)}
+                      />
+                    );
+                  })}
+                </div>
+              </fieldset>
             </div>
             <div className='modal-action'>
               <form method='dialog'>
                 <button
-                  className='p-1.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors'
+                  type='button'
+                  className='app-btn p-1.5 rounded transition-colors'
                   onClick={onClose}
+                  title='Esc'
                 >
                   Close
                 </button>

@@ -45,13 +45,29 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
 
   const handleGroupChange = (e) => setSelectedGroup(e.target.value);
 
+  const goToTimer = () => navigate(projectBaseUrl, { replace: false });
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        navigate(projectBaseUrl, { replace: false });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate]);
+
   return (
-    <div className='px-5'>
+    <div className='px-5 pb-8'>
       <div className='flex justify-between pb-2'>
-        <h1 className='pt-6 text-2xl font-bold text-gray-800 dark:text-white'>Formulas</h1>
+        <h1 className='pt-6 text-2xl font-bold'>Formulas</h1>
       <button
-        onClick={() => navigate(projectBaseUrl, { replace: false })}
-        className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+        type="button"
+        onClick={goToTimer}
+        className="app-btn-accent flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors"
+        title="Esc"
       >
         <FiArrowLeft /> To Timer
       </button>
@@ -62,7 +78,7 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
           id='category-select'
           value={selectedCategory}
           onChange={handleCategoryChange}
-          className="w-[140px] ml-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+          className="w-[140px] ml-2 px-3 py-2 rounded-md"
         >
           {categories.map((category) => (
             <option key={category} value={category}>
@@ -78,7 +94,7 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
           id='group-select'
           value={selectedGroup}
           onChange={handleGroupChange}
-          className="w-[140px] ml-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+          className="w-[140px] ml-2 px-3 py-2 rounded-md"
         >
           {groups.map((group) => (
             <option key={group} value={group}>
@@ -90,7 +106,7 @@ function FormulasLibrary({ sheetId = '11-C2joy19lxXM9FXPF7STqJ2WpRksoUwm0cMyE7oy
 
       <div className='scrambles-list grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
         {formulas.map((scramble, index) => (
-          <div key={index} className='scramble-item'>
+          <div key={index} className='scramble-item app-card rounded-lg p-4 overflow-hidden'>
             <h3>
               <b>{scramble.name}</b>
             </h3>
