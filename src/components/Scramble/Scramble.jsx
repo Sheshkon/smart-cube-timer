@@ -8,6 +8,8 @@ import Inspection from 'src/components/Inspection/Inspection.jsx';
 import AdditionalScrambleOptions from 'src/components/Scramble/HintSolution.jsx';
 import {
   getCategories,
+  getGroups,
+  getNames,
   getRandomPracticeScramble,
 } from 'src/components/Scramble/practiceScramble.js';
 import { getMoveComponent } from 'src/components/Scramble/svgMapper.js';
@@ -63,6 +65,8 @@ const Scramble = ({ className = '' }) => {
 
   const { settings, settingsRef, updateSetting } = useSettings();
   const [categories, setCategories] = useState([]);
+  const [groups, setGroups] = useState(['All']);
+  const [algorithms, setAlgorithms] = useState(['All']);
   const [historyPracticeRecords, setHistoryPracticeRecords] = useState([]);
   const [visibleHint, setVisibleHint] = useState(false);
   const [practiceSetupComplete, setPracticeSetupComplete] = useState(false);
@@ -129,7 +133,9 @@ const Scramble = ({ className = '' }) => {
     if (practiceModeEnabled) {
       const practiceScrambleRecord = await getRandomPracticeScramble(
         GOOGLE_SHEET_ID,
-        settings.practiceMode.category
+        settings.practiceMode.category,
+        settings.practiceMode.group,
+        settings.practiceMode.name
       );
       addPracticeRecord(practiceScrambleRecord);
       newScramble = Alg.fromString(practiceScrambleRecord.scramble);
@@ -231,7 +237,13 @@ const Scramble = ({ className = '' }) => {
 
   useEffect(() => {
     generateScramble().then(() => console.log(settings.practiceMode));
-  }, [settings.practiceMode, settings.practiceMode.category, practiceModeEnabled]);
+  }, [
+    settings.practiceMode,
+    settings.practiceMode.category,
+    settings.practiceMode.group,
+    settings.practiceMode.name,
+    practiceModeEnabled,
+  ]);
 
   useEffect(() => {
     if (practiceModeEnabled) {
@@ -253,6 +265,26 @@ const Scramble = ({ className = '' }) => {
       setCategories(categories);
     });
   }, []);
+
+  useEffect(() => {
+    if (!practiceModeEnabled || !settings.practiceMode.category) return;
+
+    getGroups(GOOGLE_SHEET_ID, settings.practiceMode.category).then((nextGroups) => {
+      setGroups(['All', ...nextGroups]);
+    });
+  }, [practiceModeEnabled, settings.practiceMode.category]);
+
+  useEffect(() => {
+    if (!practiceModeEnabled || !settings.practiceMode.category) return;
+
+    getNames(
+      GOOGLE_SHEET_ID,
+      settings.practiceMode.category,
+      settings.practiceMode.group
+    ).then((nextNames) => {
+      setAlgorithms(['All', ...nextNames]);
+    });
+  }, [practiceModeEnabled, settings.practiceMode.category, settings.practiceMode.group]);
 
   useEffect(() => {
     if (timerState === TimerState.STOPPED || timerState === TimerState.STOPPED) {
@@ -292,21 +324,56 @@ const Scramble = ({ className = '' }) => {
       >
         {showScramble && timerState === TimerState.IDLE && (
           <>
-            <div className='flex justify-start items-center mb-2'>
+            <div className='flex flex-wrap justify-start items-center mb-2 gap-2'>
               <h3 className='text-lg font-medium text-gray-900 dark:text-white'>Scramble</h3>
 
               {practiceModeEnabled && (
                 <>
                   <select
                     value={settings.practiceMode.category}
-                    className='select select-xs h-8 w-32 ml-2 mt-1 border-0 focus:outline-none'
+                    className='select select-xs h-8 w-32 border-0 focus:outline-none'
                     onChange={(e) => {
-                      updateSetting('practiceMode.category', e.target.value);
+                      updateSetting('practiceMode', {
+                        ...settings.practiceMode,
+                        category: e.target.value,
+                        group: 'All',
+                        name: 'All',
+                      });
                     }}
                   >
                     {categories.map((category) => (
                       <option key={category} value={category}>
                         {category}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={groups.includes(settings.practiceMode.group) ? settings.practiceMode.group : 'All'}
+                    className='select select-xs h-8 w-32 border-0 focus:outline-none'
+                    onChange={(e) => {
+                      updateSetting('practiceMode', {
+                        ...settings.practiceMode,
+                        group: e.target.value,
+                        name: 'All',
+                      });
+                    }}
+                  >
+                    {groups.map((group) => (
+                      <option key={group} value={group}>
+                        {group?.replaceAll('_', ' ')}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={algorithms.includes(settings.practiceMode.name) ? settings.practiceMode.name : 'All'}
+                    className='select select-xs h-8 min-w-32 max-w-48 border-0 focus:outline-none'
+                    onChange={(e) => {
+                      updateSetting('practiceMode.name', e.target.value);
+                    }}
+                  >
+                    {algorithms.map((algorithm) => (
+                      <option key={algorithm} value={algorithm}>
+                        {algorithm === 'All' ? 'All' : algorithm}
                       </option>
                     ))}
                   </select>

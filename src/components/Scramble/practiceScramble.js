@@ -60,25 +60,41 @@ async function syncScrambles(sheetId, sheetName = '1') {
 
 
 
+const isAllFilter = (value) => !value || value === 'All';
+
 /**
  * @param {string} sheetId - ID таблицы.
  * @param {string} category - Категория скрамбла.
- * @returns {Promise<string>} - Случайный скрамбл.
+ * @param {string} [group] - Опциональная группа.
+ * @param {string} [name] - Опциональный конкретный алгоритм.
+ * @returns {Promise<object>} - Случайная запись практики.
  */
-export async function getRandomPracticeScramble(sheetId, category) {
-  console.log(sheetId, category);
+export async function getRandomPracticeScramble(sheetId, category, group, name) {
+  console.log(sheetId, category, group, name);
   if (!sheetId || !category) throw new Error('Sheet ID and category must be provided.');
 
   await syncScrambles(sheetId);
 
-  const count = await db.practiceScrambles.where({ sheetId, category }).count();
+  const records = await getFilteredPracticeScrambles(sheetId, category, group, name);
 
-  if (count === 0) {
-    return `No scrambles found for "${category}"`;
+  if (records.length === 0) {
+    return {
+      scramble: `No scrambles found for "${category}"`,
+      solutions: [],
+      name: 'None',
+    };
   }
 
-  const randomIndex = Math.floor(Math.random() * count);
-  return await db.practiceScrambles.where({ sheetId, category }).offset(randomIndex).first();
+  const randomIndex = Math.floor(Math.random() * records.length);
+  return records[randomIndex];
+}
+
+async function getFilteredPracticeScrambles(sheetId, category, group, name) {
+  const byGroup = await getAllBySheetIdAndCategoryAndGroup(sheetId, category, group);
+  if (isAllFilter(name)) {
+    return byGroup;
+  }
+  return byGroup.filter((record) => record.name === name);
 }
 
 /**
@@ -106,7 +122,16 @@ export async function getGroups(sheetId, category) {
 }
 
 export async function getAllBySheetIdAndCategoryAndGroup(sheetId, category, group) {
-  return (!group || group === 'All')
+  return isAllFilter(group)
     ? await db.practiceScrambles.where({ sheetId, category }).toArray()
     : await db.practiceScrambles.where({ sheetId, category, group }).toArray();
+}
+
+export async function getNames(sheetId, category, group) {
+  if (!sheetId) throw new Error('Sheet ID must be provided.');
+
+  await syncScrambles(sheetId);
+
+  const records = await getAllBySheetIdAndCategoryAndGroup(sheetId, category, group);
+  return Array.from(new Set(records.map((s) => s.name))).filter(Boolean);
 }

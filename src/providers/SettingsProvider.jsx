@@ -15,7 +15,9 @@ const defaultSettings = {
   inspection: false,
   solvesPerPage: 5,
   practiceMode: {
-    category: 'ROUX_CMLL'
+    category: 'ROUX_CMLL',
+    group: 'All',
+    name: 'All',
   },
   showCubeAnimation: true,
   showScrambleArrows: true,
@@ -43,6 +45,10 @@ export const SettingsProvider = ({ children }) => {
         setSettings(() => ({
           ...defaultSettings,
           ...parsedSettings,
+          practiceMode: {
+            ...defaultSettings.practiceMode,
+            ...(parsedSettings.practiceMode || {}),
+          },
         }));
       } catch (e) {
         console.error('Failed to parse saved settings', e);
