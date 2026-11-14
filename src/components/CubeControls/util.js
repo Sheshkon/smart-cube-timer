@@ -11,6 +11,7 @@ const CubeEventType = Object.freeze({
   GYRO: 'GYRO',
   BATTERY: 'BATTERY',
   HARDWARE: 'HARDWARE',
+  DISCONNECT: 'DISCONNECT',
 });
 
 const customMacAddressProvider = async (device, isFallbackCall) => {

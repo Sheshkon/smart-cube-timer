@@ -31,7 +31,13 @@ import { useSettings } from 'src/hooks/useSettings.js';
 
 
 function App() {
-  const { practiceModeEnabled, setPracticeModeEnabled, practiceModeEnabledRef, connection } = useCube();
+  const {
+    practiceModeEnabled,
+    setPracticeModeEnabled,
+    practiceModeEnabledRef,
+    connection,
+    reconnecting,
+  } = useCube();
   const { settings, settingsRef, updateSetting } = useSettings();
   const isMiniGamesMode =
     Boolean(connection) && settings.appMode === AppMode.MINI_GAMES;
@@ -46,13 +52,22 @@ function App() {
       return;
     }
 
+    if (reconnecting) return;
+
     practiceModeEnabledRef.current = false;
     setPracticeModeEnabled(false);
     if (hadConnectionRef.current) {
       updateSetting('appMode', AppMode.SESSION);
       hadConnectionRef.current = false;
     }
-  }, [settings.appMode, setPracticeModeEnabled, practiceModeEnabledRef, connection, updateSetting]);
+  }, [
+    settings.appMode,
+    setPracticeModeEnabled,
+    practiceModeEnabledRef,
+    connection,
+    reconnecting,
+    updateSetting,
+  ]);
   const [sessions, setSessions] = useState([]);
   const [storedTimes, setStoredTimes] = useState([]);
   const [stats, setStats] = useState({});

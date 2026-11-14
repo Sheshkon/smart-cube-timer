@@ -7,6 +7,7 @@ import {
   formatDateTime,
   formatDuration,
 } from 'src/db/cubeHistoryService.js';
+import { useCube } from 'src/hooks/useCube';
 
 const endedByLabel = {
   user: 'Disconnected',
@@ -16,6 +17,7 @@ const endedByLabel = {
 };
 
 const CubeHistoryModal = ({ isOpen, onClose }) => {
+  const { connecting, reconnecting, connectCube } = useCube();
   const [cubes, setCubes] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [now, setNow] = useState(Date.now());
@@ -75,6 +77,8 @@ const CubeHistoryModal = ({ isOpen, onClose }) => {
       <div>
         <p className='text-sm opacity-70 mb-5'>
           Cubes you have connected over Bluetooth, with session start, end and duration.
+          The first pairing still uses the browser picker. After that, Connect and
+          auto-reconnect use the cube Chrome already remembered for this site.
         </p>
 
         {confirmClear && (
@@ -110,8 +114,22 @@ const CubeHistoryModal = ({ isOpen, onClose }) => {
                       <h3 className='font-bold'>{cube.deviceName || cube.hardwareName || 'Smart cube'}</h3>
                       <p className='text-sm opacity-70 selectable-text'>{cube.deviceMAC}</p>
                     </div>
-                    {cube.live && (
+                    {cube.live ? (
                       <span className='app-btn-accent rounded-full px-2 py-0.5 text-xs'>Live</span>
+                    ) : (
+                      <button
+                        type='button'
+                        className='app-btn rounded-full px-3 py-1 text-sm shrink-0'
+                        disabled={connecting || reconnecting}
+                        onClick={() =>
+                          connectCube({
+                            deviceName: cube.deviceName,
+                            openChooser: true,
+                          })
+                        }
+                      >
+                        {connecting || reconnecting ? 'Connecting…' : 'Connect'}
+                      </button>
                     )}
                   </div>
                   <dl className='mt-3 grid grid-cols-2 gap-x-3 gap-y-1 text-sm'>

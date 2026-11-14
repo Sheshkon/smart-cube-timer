@@ -30,6 +30,7 @@ const defaultSettings = {
   backgroundColor: DEFAULT_BACKGROUND_THEME_ID,
   accentColor: DEFAULT_ACCENT_COLOR,
   notifyEveryNSolves: -1,
+  autoReconnect: true,
   appMode: 'session',
   miniGameId: 'racing',
   miniGameSensitivity: 1,

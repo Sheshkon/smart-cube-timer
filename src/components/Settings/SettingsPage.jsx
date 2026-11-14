@@ -380,6 +380,18 @@ const SettingsPage = () => {
         <SettingsSection title='Cube & scramble'>
           <SettingRow>
             <b>
+              <label htmlFor='autoReconnect'>Auto-reconnect Bluetooth</label>
+            </b>
+            <input
+              id='autoReconnect'
+              type='checkbox'
+              className='toggle'
+              checked={settings.autoReconnect !== false}
+              onChange={(e) => updateSetting('autoReconnect', e.target.checked)}
+            />
+          </SettingRow>
+          <SettingRow>
+            <b>
               <label htmlFor='gyroToggle'>Use Gyroscope</label>
             </b>
             <input

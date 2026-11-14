@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { TimerState } from 'src/components/Timer/util.js';
 import { CubeContext } from 'src/contexts/CubeContext.jsx';
@@ -17,6 +17,8 @@ export const CubeProvider = ({ children }) => {
   const [showScramble, setShowScramble] = useState(false);
   const [shouldBeSolved, setShouldBeSolved] = useState(false);
   const [practiceModeEnabled, setPracticeModeEnabled] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
 
   const twistyPlayerRef = useRef(null);
   const connectionRef = useRef(connection);
@@ -34,6 +36,7 @@ export const CubeProvider = ({ children }) => {
   const practiceSetupMoveOffsetRef = useRef(0);
   const practiceSetupCompleteRef = useRef(false);
   const cubeHistorySessionIdRef = useRef(null);
+  const connectCubeHandlerRef = useRef(null);
 
   const [scrambleDisplay, setScrambleDisplay] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -62,10 +65,23 @@ export const CubeProvider = ({ children }) => {
 
   practiceModeEnabledRef.current = practiceModeEnabled;
 
+  const registerConnectCube = useCallback((handler) => {
+    connectCubeHandlerRef.current = handler;
+  }, []);
+
+  const connectCube = useCallback(async (options) => {
+    if (!connectCubeHandlerRef.current) {
+      throw new Error('Cube connection is not ready');
+    }
+    return connectCubeHandlerRef.current(options);
+  }, []);
+
   return (
     <CubeContext.Provider
       value={{
         connection,
+        connecting,
+        reconnecting,
         hardwareInfo,
         batteryLevel,
         scramble,
@@ -95,6 +111,10 @@ export const CubeProvider = ({ children }) => {
         cubeHistorySessionIdRef,
 
         setPracticeModeEnabled,
+        setConnecting,
+        setReconnecting,
+        registerConnectCube,
+        connectCube,
         setConnection,
         setHardwareInfo,
         setBatteryLevel,

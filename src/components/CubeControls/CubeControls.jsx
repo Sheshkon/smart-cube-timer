@@ -10,6 +10,12 @@ import { cubeHistoryService, SESSION_HEARTBEAT_MS } from 'src/db/cubeHistoryServ
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
 import {
+  canUseSilentBluetoothReconnect,
+  connectGanCubeToDevice,
+  findPermittedCube,
+  rememberConnectedCube,
+} from 'src/utils/ganCubeConnect.js';
+import {
   cubePoseQuaternion,
   cubeQuaternion,
   faceletsToPattern,
@@ -44,14 +50,31 @@ const cubeControls = () => {
     practiceModeEnabledRef,
     gyroBasisRef,
     cubeHistorySessionIdRef,
+    connecting,
+    reconnecting,
+    setConnecting,
+    setReconnecting,
+    registerConnectCube,
   } = useCube();
 
   const { settingsRef, settings, updateSetting } = useSettings();
 
   const batteryPollIntervalRef = useRef(null);
+  const connectingRef = useRef(false);
+  const userDisconnectRef = useRef(false);
+  const reconnectTimerRef = useRef(null);
+  const reconnectAttemptRef = useRef(0);
+  const handleCubeEventRef = useRef(null);
+  const eventsSubscriptionRef = useRef(null);
+  const tearingDownRef = useRef(false);
+  const cubeInitializedRef = useRef(false);
+
+  function toastTheme() {
+    return { theme: settingsRef.current.theme };
+  }
 
   function cubeDisconnectedNotification() {
-    return toast.error('Cube disconnected', { theme: settingsRef.current.theme });
+    return toast.error('Cube disconnected', toastTheme());
   }
 
   function isUserCancelledDeviceChooser(error) {
@@ -61,70 +84,200 @@ const cubeControls = () => {
     );
   }
 
-  const handleConnect = async () => {
+  function autoReconnectEnabled() {
+    return settingsRef.current.autoReconnect !== false;
+  }
+
+  function clearReconnectTimer() {
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+  }
+
+  function stopReconnect() {
+    clearReconnectTimer();
+    reconnectAttemptRef.current = 0;
+    setReconnecting(false);
+  }
+
+  function scheduleReconnect() {
+    if (!autoReconnectEnabled() || userDisconnectRef.current || !canUseSilentBluetoothReconnect()) {
+      setReconnecting(false);
+      return;
+    }
+
+    clearReconnectTimer();
+    setReconnecting(true);
+    reconnectAttemptRef.current += 1;
+    const delay = Math.min(15000, 1000 * 2 ** Math.min(reconnectAttemptRef.current - 1, 4));
+    reconnectTimerRef.current = setTimeout(() => {
+      connectPreferredCube({ openChooser: false, silent: true }).catch(() => {});
+    }, delay);
+  }
+
+  async function teardown(endedBy = 'user', { skipDeviceDisconnect = false, keepMode = false } = {}) {
+    if (tearingDownRef.current) return;
+    tearingDownRef.current = true;
     try {
-      if (connection) {
-        await disconnect();
-      } else {
-        if (batteryPollIntervalRef.current) {
-          clearInterval(batteryPollIntervalRef.current);
-          batteryPollIntervalRef.current = null;
-        }
-        const cn = await connectGanCube(customMacAddressProvider);
-        const training = settingsRef.current.appMode === AppMode.TRAINING;
-        practiceModeEnabledRef.current = training;
-        setPracticeModeEnabled(training);
-        timerStateRef.current = TimerState.IDLE;
-        setTimerState(TimerState.IDLE);
-        setLastMoves([]);
-        solutionMovesRef.current = [];
-        setShowScramble(true);
-        cubeHistorySessionIdRef.current = await cubeHistoryService.startSession({
-          deviceMAC: cn?.deviceMAC,
-          deviceName: cn?.deviceName,
-        });
-        setConnection(cn);
-        cn?.events$?.subscribe(handleCubeEvent);
+      eventsSubscriptionRef.current?.unsubscribe();
+      eventsSubscriptionRef.current = null;
+      clearInterval(batteryPollIntervalRef.current);
+      batteryPollIntervalRef.current = null;
 
-        await cn?.sendCubeCommand(CubeCommand.HARDWARE);
-        await cn?.sendCubeCommand(CubeCommand.FACELETS);
-        await cn?.sendCubeCommand(CubeCommand.BATTERY);
-
-        batteryPollIntervalRef.current = setInterval(() => {
-          cn?.sendCubeCommand(CubeCommand.BATTERY).catch((err) => {
-            clearInterval(batteryPollIntervalRef.current);
-            console.error('Battery poll error:', err);
-            disconnect('lost').then(() => cubeDisconnectedNotification());
-          });
-        }, 5000);
+      if (cubeHistorySessionIdRef.current) {
+        await cubeHistoryService.endSession(cubeHistorySessionIdRef.current, endedBy);
+        cubeHistorySessionIdRef.current = null;
       }
-    } catch (e) {
-      await disconnect();
-      if (isUserCancelledDeviceChooser(e)) {
+
+      const current = connectionRef.current;
+      if (!skipDeviceDisconnect && current && current !== false) {
+        await current.disconnect().catch(() => console.log('no connection'));
+      }
+
+      setConnection(false);
+      connectionRef.current = false;
+      setLastMoves([]);
+      if (gyroBasisRef) gyroBasisRef.current = null;
+
+      if (!keepMode) {
+        practiceModeEnabledRef.current = false;
+        setPracticeModeEnabled(false);
+      }
+    } finally {
+      tearingDownRef.current = false;
+    }
+  }
+
+  async function establishConnection(device) {
+    if (batteryPollIntervalRef.current) {
+      clearInterval(batteryPollIntervalRef.current);
+      batteryPollIntervalRef.current = null;
+    }
+
+    const cn = device
+      ? await connectGanCubeToDevice(device, customMacAddressProvider)
+      : await connectGanCube(customMacAddressProvider);
+
+    const training = settingsRef.current.appMode === AppMode.TRAINING;
+    practiceModeEnabledRef.current = training;
+    setPracticeModeEnabled(training);
+    timerStateRef.current = TimerState.IDLE;
+    setTimerState(TimerState.IDLE);
+    setLastMoves([]);
+    solutionMovesRef.current = [];
+    setShowScramble(true);
+    cubeHistorySessionIdRef.current = await cubeHistoryService.startSession({
+      deviceMAC: cn?.deviceMAC,
+      deviceName: cn?.deviceName,
+    });
+    cubeInitializedRef.current = false;
+    setShouldBeSolved(false);
+    shouldBeSolvedRef.current = false;
+    connectionRef.current = cn;
+    setConnection(cn);
+    await rememberConnectedCube(cn, device);
+    eventsSubscriptionRef.current?.unsubscribe();
+    eventsSubscriptionRef.current = cn?.events$?.subscribe((event) =>
+      handleCubeEventRef.current?.(event)
+    );
+
+    await cn?.sendCubeCommand(CubeCommand.HARDWARE);
+    await cn?.sendCubeCommand(CubeCommand.FACELETS);
+    await cn?.sendCubeCommand(CubeCommand.BATTERY);
+
+    batteryPollIntervalRef.current = setInterval(() => {
+      cn?.sendCubeCommand(CubeCommand.BATTERY).catch((err) => {
+        clearInterval(batteryPollIntervalRef.current);
+        batteryPollIntervalRef.current = null;
+        console.error('Battery poll error:', err);
+        handleUnexpectedDisconnect();
+      });
+    }, 5000);
+
+    return cn;
+  }
+
+  async function connectPreferredCube({
+    deviceName,
+    deviceId,
+    openChooser = false,
+    silent = false,
+  } = {}) {
+    if (connectingRef.current) return;
+
+    userDisconnectRef.current = false;
+    connectingRef.current = true;
+    if (!silent) setConnecting(true);
+
+    try {
+      if (connectionRef.current && connectionRef.current !== false) {
+        const sameCube =
+          deviceName && connectionRef.current.deviceName === deviceName;
+        if (sameCube) return;
+        await teardown('user', { keepMode: true });
+      }
+
+      const permitted = await findPermittedCube({ deviceId, deviceName });
+      if (permitted) {
+        try {
+          const notifyReconnect = silent && reconnectAttemptRef.current > 0;
+          await establishConnection(permitted);
+          stopReconnect();
+          if (notifyReconnect) toast.success('Cube reconnected', toastTheme());
+          return;
+        } catch (error) {
+          console.warn('Silent cube connect failed', error);
+          if (!openChooser) throw error;
+        }
+      }
+
+      if (!openChooser) {
+        throw new Error('No permitted cube available');
+      }
+
+      await establishConnection(null);
+      stopReconnect();
+    } catch (error) {
+      await teardown(silent ? 'lost' : 'user', { skipDeviceDisconnect: true, keepMode: silent });
+      if (silent) {
+        const permitted = await findPermittedCube({ deviceId, deviceName });
+        if (permitted) scheduleReconnect();
+        else stopReconnect();
         return;
       }
+      if (isUserCancelledDeviceChooser(error)) return;
       cubeDisconnectedNotification();
-      console.error(e);
+      console.error(error);
+    } finally {
+      connectingRef.current = false;
+      if (!silent) setConnecting(false);
     }
-  };
-
-  async function disconnect(endedBy = 'user') {
-    clearInterval(batteryPollIntervalRef.current);
-
-    if (cubeHistorySessionIdRef.current) {
-      await cubeHistoryService.endSession(cubeHistorySessionIdRef.current, endedBy);
-      cubeHistorySessionIdRef.current = null;
-    }
-
-    if (connection) await connection.disconnect().catch(() => console.log('no connection'));
-
-    setConnection(false);
-    connectionRef.current = false;
-    practiceModeEnabledRef.current = false;
-    setPracticeModeEnabled(false);
-    setLastMoves([]);
-    if (gyroBasisRef) gyroBasisRef.current = null;
   }
+
+  function handleUnexpectedDisconnect() {
+    if (userDisconnectRef.current || tearingDownRef.current) return;
+    if (!connectionRef.current) {
+      if (autoReconnectEnabled()) scheduleReconnect();
+      return;
+    }
+
+    teardown('lost', { skipDeviceDisconnect: true, keepMode: autoReconnectEnabled() }).then(() => {
+      cubeDisconnectedNotification();
+      if (autoReconnectEnabled()) scheduleReconnect();
+    });
+  }
+
+  const handleConnect = async () => {
+    if (connectionRef.current && connectionRef.current !== false) {
+      userDisconnectRef.current = true;
+      stopReconnect();
+      await teardown('user');
+      return;
+    }
+
+    await connectPreferredCube({ openChooser: true });
+  };
 
   const handleResetCubeState = () => {
     connection?.sendCubeCommand(CubeCommand.RESET);
@@ -155,8 +308,13 @@ const cubeControls = () => {
       case CubeEventType.HARDWARE:
         await handleHardwareEvent(event);
         break;
+      case CubeEventType.DISCONNECT:
+        handleUnexpectedDisconnect();
+        break;
     }
   };
+
+  handleCubeEventRef.current = handleCubeEvent;
 
   function handleGyroEvent(event) {
     if (event.type !== CubeEventType.GYRO) return;
@@ -187,8 +345,6 @@ const cubeControls = () => {
     }
   }
 
-  let cubeInitialized = false;
-
   async function handleFaceletsEvent(event) {
     const isSolved = practiceModeEnabledRef.current
       ? matchesPattern(
@@ -200,9 +356,10 @@ const cubeControls = () => {
     if (event.type === CubeEventType.FACELETS && isSolved) {
       setLastMoves([]);
       setShouldBeSolved(false);
+      shouldBeSolvedRef.current = false;
     }
 
-    if (event.type === CubeEventType.FACELETS && !cubeInitialized) {
+    if (event.type === CubeEventType.FACELETS && !cubeInitializedRef.current) {
       if (event.facelets !== SOLVED_STATE) {
         setShouldBeSolved(true);
         shouldBeSolvedRef.current = true;
@@ -212,7 +369,7 @@ const cubeControls = () => {
       } else {
         twistyPlayerRef.current.alg = '';
       }
-      cubeInitialized = true;
+      cubeInitializedRef.current = true;
       console.log('Initial cube state is applied successfully', event.facelets);
     }
   }
@@ -257,6 +414,38 @@ const cubeControls = () => {
     }
   }, [lastMoves, setLastMoves, setShouldBeSolved, setShowScramble, setTimerState, timerStateRef]);
 
+  const connectPreferredCubeRef = useRef(connectPreferredCube);
+  connectPreferredCubeRef.current = connectPreferredCube;
+
+  useEffect(() => {
+    registerConnectCube((options) => connectPreferredCubeRef.current(options));
+    return () => {
+      registerConnectCube(null);
+      clearReconnectTimer();
+    };
+  }, [registerConnectCube]);
+
+  useEffect(() => {
+    if (!autoReconnectEnabled()) {
+      stopReconnect();
+      return undefined;
+    }
+    if (connectionRef.current) return undefined;
+    if (!canUseSilentBluetoothReconnect()) return undefined;
+
+    const timeoutId = setTimeout(() => {
+      connectPreferredCube({ openChooser: false, silent: true }).catch(() => {});
+    }, 400);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    if (settings.autoReconnect === false) {
+      stopReconnect();
+    }
+  }, [settings.autoReconnect]);
+
   useEffect(() => {
     const handlePageHide = () => {
       const sessionId = cubeHistorySessionIdRef.current;
@@ -297,8 +486,9 @@ const cubeControls = () => {
         <button
           className='app-btn relative z-10 p-1.5 rounded-full px-3 transition-colors'
           onClick={handleConnect}
+          disabled={connecting}
         >
-          {connection ? 'Disconnect' : 'Connect'}
+          {connection ? 'Disconnect' : reconnecting ? 'Reconnecting…' : connecting ? 'Connecting…' : 'Connect'}
         </button>
         <button
           className='app-btn relative z-10 p-1.5 rounded-full px-3 transition-colors'
