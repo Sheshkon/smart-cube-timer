@@ -72,6 +72,11 @@ const cubeControls = () => {
         const training = settingsRef.current.appMode === AppMode.TRAINING;
         practiceModeEnabledRef.current = training;
         setPracticeModeEnabled(training);
+        timerStateRef.current = TimerState.IDLE;
+        setTimerState(TimerState.IDLE);
+        setLastMoves([]);
+        solutionMovesRef.current = [];
+        setShowScramble(true);
         setConnection(cn);
         cn?.events$?.subscribe(handleCubeEvent);
 

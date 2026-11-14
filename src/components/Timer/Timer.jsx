@@ -170,8 +170,11 @@ const Timer = ({ onSaveTime }) => {
   }, [timerState, getTimerValueFromTimestamp, startTimer, handleSolvedState, stopTimer]);
 
   useEffect(() => {
-    if (!connection) clearTimerAndSolvingData();
-  }, [connection]);
+    clearTimerAndSolvingData();
+    if (connection) {
+      setShowScramble(true);
+    }
+  }, [connection, clearTimerAndSolvingData, setShowScramble]);
 
   return (
     <>

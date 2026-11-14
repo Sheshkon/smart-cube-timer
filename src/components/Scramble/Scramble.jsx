@@ -158,13 +158,20 @@ const Scramble = ({ className = '' }) => {
 
   const checkScramble = async (cubeMoves) => {
     if (timerState !== TimerState.IDLE) return;
+    if (!connection) return;
 
     if (practiceModeEnabledRef.current && practiceSetupCompleteRef.current) {
       syncPracticeHintArrows();
       return;
     }
 
-    const scrambleMoves = scramble?.toString().split(' ');
+    const scrambleMoves = scramble
+      ?.toString()
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+
+    if (!scrambleMoves?.length) return;
 
     const { moves, rollbackMoves } = checkScrambleProgress(scrambleMoves, cubeMoves);
 
@@ -203,7 +210,8 @@ const Scramble = ({ className = '' }) => {
 
     setScrambleDisplay(coloredScramble);
 
-    const isSolved = moves.every(m => m.status === MoveScrambleStatus.CORRECT);
+    const isSolved =
+      moves.length > 0 && moves.every((m) => m.status === MoveScrambleStatus.CORRECT);
 
     if (isSolved) {
       if (practiceModeEnabledRef.current) {
@@ -233,7 +241,7 @@ const Scramble = ({ className = '' }) => {
     if (practiceModeEnabledRef.current && practiceSetupCompleteRef.current) {
       syncPracticeHintArrows();
     }
-  }, [lastMoves, timerState, practiceSetupComplete, practiceModeEnabled, visibleHint]);
+  }, [lastMoves, timerState, scramble, connection, practiceSetupComplete, practiceModeEnabled, visibleHint]);
 
   useEffect(() => {
     generateScramble().then(() => console.log(settings.practiceMode));
