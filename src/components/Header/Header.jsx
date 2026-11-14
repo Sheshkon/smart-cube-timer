@@ -11,7 +11,7 @@ import { useConsole } from 'src/contexts/ConsoleContext.jsx';
 
 const projectBaseUrl = import.meta.env.BASE_URL;
 const iconButtonClass =
-  'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-0 leading-none hover:opacity-80 transition-colors';
+  'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full p-0 leading-none hover:opacity-80 transition-colors';
 const muiIconSx = { fontSize: 24, display: 'block' };
 
 const Header = ({ className = '' }) => {
@@ -34,7 +34,7 @@ const Header = ({ className = '' }) => {
             </div>
           </div>
 
-          <div className='flex items-center gap-1 mr-4'>
+          <div className='flex items-center gap-0 mr-4'>
             <button
               type='button'
               className={iconButtonClass}

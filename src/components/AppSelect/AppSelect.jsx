@@ -20,6 +20,7 @@ const AppSelect = ({
   triggerClassName = '',
   align = 'start',
   fullWidth = false,
+  size = 'md',
   'aria-label': ariaLabel,
 }) => {
   const generatedId = useId();
@@ -53,7 +54,10 @@ const AppSelect = ({
 
     const spaceBelow = window.innerHeight - rect.bottom - VIEW_PAD;
     const spaceAbove = rect.top - VIEW_PAD;
-    const estimatedHeight = Math.min(280, Math.max(48, options.length * 34 + 12));
+    const estimatedHeight = Math.min(
+      280,
+      Math.max(48, options.length * (size === 'sm' ? 26 : 30) + 10)
+    );
     const openUp = spaceBelow < estimatedHeight + MENU_GAP && spaceAbove > spaceBelow;
     const maxHeight = Math.max(120, Math.min(280, openUp ? spaceAbove - MENU_GAP : spaceBelow - MENU_GAP));
 
@@ -69,7 +73,7 @@ const AppSelect = ({
   useLayoutEffect(() => {
     if (!open) return;
     updatePosition();
-  }, [open, options.length, align, fullWidth]);
+  }, [open, options.length, align, fullWidth, size]);
 
   useLayoutEffect(() => {
     if (!open || !coords) return undefined;
@@ -210,7 +214,14 @@ const AppSelect = ({
   };
 
   return (
-    <div className={clsx('app-select', fullWidth && 'w-full', className)}>
+    <div
+      className={clsx(
+        'app-select',
+        size === 'sm' && 'app-select-sm',
+        fullWidth && 'w-full',
+        className
+      )}
+    >
       <button
         ref={triggerRef}
         id={id}
@@ -230,7 +241,7 @@ const AppSelect = ({
       >
         <span className='app-select-value'>{selected?.label ?? 'Select'}</span>
         <ChevronDown
-          size={14}
+          size={size === 'sm' ? 12 : 14}
           aria-hidden
           className={clsx('app-select-chevron', open && 'app-select-chevron-open')}
         />
@@ -248,7 +259,7 @@ const AppSelect = ({
               activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined
             }
             popover='manual'
-            className='app-select-menu'
+            className={clsx('app-select-menu', size === 'sm' && 'app-select-sm')}
             style={{
               top: coords.top,
               bottom: coords.bottom,
@@ -278,7 +289,7 @@ const AppSelect = ({
                   onClick={() => selectValue(option.value)}
                 >
                   <span>{option.label}</span>
-                  {isSelected && <Check size={14} aria-hidden />}
+                  {isSelected && <Check size={size === 'sm' ? 12 : 14} aria-hidden />}
                 </button>
               );
             })}

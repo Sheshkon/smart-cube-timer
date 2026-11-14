@@ -339,28 +339,33 @@ const Scramble = ({ className = '' }) => {
       >
         {showScramble && timerState === TimerState.IDLE && (
           <>
-            <div className='flex flex-wrap justify-start items-center mb-2 gap-2'>
-              <h3 className='text-lg font-medium'>Scramble</h3>
-
-              {practiceModeEnabled && (
-                <>
+            {practiceModeEnabled && (
+              <div className='mb-3 flex min-w-0 flex-col gap-2'>
+                <AppSelect
+                  fullWidth
+                  aria-label='Practice category'
+                  value={settings.practiceMode.category}
+                  onChange={(next) => {
+                    updateSetting('practiceMode', {
+                      ...settings.practiceMode,
+                      category: next,
+                      group: 'All',
+                      name: 'All',
+                    });
+                  }}
+                  options={categories.map((category) => ({
+                    value: category,
+                    label: category,
+                  }))}
+                />
+                <div className='grid min-w-0 grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-x-2 gap-y-1.5'>
+                  <span className='text-[10px] font-semibold uppercase tracking-wide opacity-55'>
+                    Group
+                  </span>
                   <AppSelect
-                    aria-label='Practice category'
-                    value={settings.practiceMode.category}
-                    onChange={(next) => {
-                      updateSetting('practiceMode', {
-                        ...settings.practiceMode,
-                        category: next,
-                        group: 'All',
-                        name: 'All',
-                      });
-                    }}
-                    options={categories.map((category) => ({
-                      value: category,
-                      label: category,
-                    }))}
-                  />
-                  <AppSelect
+                    size='sm'
+                    fullWidth
+                    className='min-w-0'
                     aria-label='Practice group'
                     value={groups.includes(settings.practiceMode.group) ? settings.practiceMode.group : 'All'}
                     onChange={(next) => {
@@ -375,7 +380,13 @@ const Scramble = ({ className = '' }) => {
                       label: group?.replaceAll('_', ' '),
                     }))}
                   />
+                  <span className='text-[10px] font-semibold uppercase tracking-wide opacity-55'>
+                    Case
+                  </span>
                   <AppSelect
+                    size='sm'
+                    fullWidth
+                    className='min-w-0'
                     aria-label='Practice algorithm'
                     value={algorithms.includes(settings.practiceMode.name) ? settings.practiceMode.name : 'All'}
                     onChange={(next) => {
@@ -386,9 +397,13 @@ const Scramble = ({ className = '' }) => {
                       label: algorithm,
                     }))}
                   />
-                </>
-              )}
-            </div>
+                </div>
+              </div>
+            )}
+
+            <h3 className='text-lg font-medium mb-2'>
+              {practiceModeEnabled ? 'Setup moves' : 'Scramble'}
+            </h3>
 
             <div
               className={`
