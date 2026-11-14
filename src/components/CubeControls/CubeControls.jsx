@@ -18,6 +18,7 @@ import {
 } from 'src/utils/util.ts';
 import * as THREE from 'three';
 
+import { cubeHistoryService } from 'src/db/cubeHistoryService.js';
 import { CubeCommand, CubeEventType, customMacAddressProvider, matchesPattern } from './/util.js';
 
 const cubeControls = () => {
@@ -42,6 +43,7 @@ const cubeControls = () => {
     setPracticeModeEnabled,
     practiceModeEnabledRef,
     gyroBasisRef,
+    cubeHistorySessionIdRef,
   } = useCube();
 
   const { settingsRef, settings, updateSetting } = useSettings();
@@ -77,6 +79,10 @@ const cubeControls = () => {
         setLastMoves([]);
         solutionMovesRef.current = [];
         setShowScramble(true);
+        cubeHistorySessionIdRef.current = await cubeHistoryService.startSession({
+          deviceMAC: cn?.deviceMAC,
+          deviceName: cn?.deviceName,
+        });
         setConnection(cn);
         cn?.events$?.subscribe(handleCubeEvent);
 
@@ -88,7 +94,7 @@ const cubeControls = () => {
           cn?.sendCubeCommand(CubeCommand.BATTERY).catch((err) => {
             clearInterval(batteryPollIntervalRef.current);
             console.error('Battery poll error:', err);
-            disconnect().then(() => cubeDisconnectedNotification());
+            disconnect('lost').then(() => cubeDisconnectedNotification());
           });
         }, 5000);
       }
@@ -102,8 +108,13 @@ const cubeControls = () => {
     }
   };
 
-  async function disconnect() {
+  async function disconnect(endedBy = 'user') {
     clearInterval(batteryPollIntervalRef.current);
+
+    if (cubeHistorySessionIdRef.current) {
+      await cubeHistoryService.endSession(cubeHistorySessionIdRef.current, endedBy);
+      cubeHistorySessionIdRef.current = null;
+    }
 
     if (connection) await connection.disconnect().catch(() => console.log('no connection'));
 
@@ -216,6 +227,9 @@ const cubeControls = () => {
     };
     hardwareInfoRef.current = updatedHardwareInfo;
     setHardwareInfo(updatedHardwareInfo);
+    if (cubeHistorySessionIdRef.current) {
+      cubeHistoryService.updateSession(cubeHistorySessionIdRef.current, updatedHardwareInfo);
+    }
   }
 
   useEffect(() => {
@@ -242,6 +256,18 @@ const cubeControls = () => {
       setTimerState(TimerState.IDLE);
     }
   }, [lastMoves, setLastMoves, setShouldBeSolved, setShowScramble, setTimerState, timerStateRef]);
+
+  useEffect(() => {
+    const handlePageHide = () => {
+      const sessionId = cubeHistorySessionIdRef.current;
+      if (!sessionId) return;
+      cubeHistoryService.endSession(sessionId, 'unload');
+      cubeHistorySessionIdRef.current = null;
+    };
+
+    window.addEventListener('pagehide', handlePageHide);
+    return () => window.removeEventListener('pagehide', handlePageHide);
+  }, [cubeHistorySessionIdRef]);
 
   return (
     <div className='controls flex flex-col items-center justify-center gap-2 py-2'>

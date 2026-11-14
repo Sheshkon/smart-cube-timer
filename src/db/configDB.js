@@ -1,6 +1,6 @@
 export const DB_NAME = 'session_data';
 
-export const DB_VERSION = 3;
+export const DB_VERSION = 4;
 export const DEFAULT_SESSION_ID = 1;
 
 export const DB_SCHEMA = {
@@ -42,5 +42,11 @@ export const DB_SCHEMA = {
   practiceScrambleMeta: `
     &sheetId,
     timestamp
+  `,
+  cubeConnectionSessions: `
+    ++id,
+    deviceMAC,
+    connectedAt,
+    disconnectedAt
   `,
 };

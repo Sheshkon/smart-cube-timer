@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { TimerState } from 'src/components/Timer/util.js';
 import { CubeContext } from 'src/contexts/CubeContext.jsx';
+import { cubeHistoryService } from 'src/db/cubeHistoryService.js';
 
 export const CubeProvider = ({ children }) => {
   const [connection, setConnection] = useState(false);
@@ -32,9 +33,18 @@ export const CubeProvider = ({ children }) => {
   const practiceHintArrowRef = useRef({ active: false, move: null });
   const practiceSetupMoveOffsetRef = useRef(0);
   const practiceSetupCompleteRef = useRef(false);
+  const cubeHistorySessionIdRef = useRef(null);
 
   const [scrambleDisplay, setScrambleDisplay] = useState([]);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    const startedAt = Date.now();
+    cubeHistoryService.closeDanglingSessions({
+      before: startedAt,
+      excludeId: cubeHistorySessionIdRef.current,
+    });
+  }, []);
 
   useEffect(() => {
     connectionRef.current = connection;
@@ -82,6 +92,7 @@ export const CubeProvider = ({ children }) => {
         practiceHintArrowRef,
         practiceSetupMoveOffsetRef,
         practiceSetupCompleteRef,
+        cubeHistorySessionIdRef,
 
         setPracticeModeEnabled,
         setConnection,

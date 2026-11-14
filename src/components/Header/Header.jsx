@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
 import ContactSupportIcon from '@mui/icons-material/ContactSupportOutlined';
 import TerminalIcon from '@mui/icons-material/Terminal';
-import { BluetoothSearching } from 'lucide-react';
+import { BluetoothSearching, History } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import CubeHistoryModal from 'src/components/Modals/CubeHistoryModal.jsx';
 import SettingsControl from 'src/components/SettingsControl.jsx';
 import { useConsole } from 'src/contexts/ConsoleContext.jsx';
 
@@ -13,6 +14,7 @@ const projectBaseUrl = import.meta.env.BASE_URL;
 
 const Header = ({ className = '' }) => {
   const { showConsole, setShowConsole } = useConsole();
+  const [historyOpen, setHistoryOpen] = useState(false);
 
   return (
     <>
@@ -31,6 +33,15 @@ const Header = ({ className = '' }) => {
           </div>
 
           <div className='flex gap-2 mr-4'>
+            <button
+              type='button'
+              className='rounded-full p-1 hover:opacity-80 transition-colors'
+              onClick={() => setHistoryOpen(true)}
+              title='Cube history'
+            >
+              <History size={24} />
+            </button>
+
             <Link
               to={`${projectBaseUrl}library/`}
               className='rounded-full p-1 hover:opacity-80 transition-colors'
@@ -57,6 +68,7 @@ const Header = ({ className = '' }) => {
           </div>
         </div>
       </header>
+      <CubeHistoryModal isOpen={historyOpen} onClose={() => setHistoryOpen(false)} />
     </>
   );
 };
