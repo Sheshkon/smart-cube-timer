@@ -62,6 +62,8 @@ const Scramble = ({ className = '' }) => {
     practiceSetupMoveOffsetRef,
     practiceSetupCompleteRef,
     practiceModeEnabledRef,
+    connectionRef,
+    timerStateRef,
   } = useCube();
 
   const { settings, settingsRef, updateSetting } = useSettings();
@@ -72,6 +74,7 @@ const Scramble = ({ className = '' }) => {
   const [visibleHint, setVisibleHint] = useState(false);
   const [practiceSetupComplete, setPracticeSetupComplete] = useState(false);
   const lastPracticeSolveTimeRef = useRef(null);
+  const scrambleGenIdRef = useRef(0);
 
   const toggleVisibleHint = () => setVisibleHint(!visibleHint);
 
@@ -129,32 +132,49 @@ const Scramble = ({ className = '' }) => {
     });
 
   const generateScramble = async () => {
+    const genId = ++scrambleGenIdRef.current;
+    const usePractice = practiceModeEnabledRef.current;
     let newScramble;
     console.log('generate');
-    if (practiceModeEnabled) {
-      const practiceScrambleRecord = await getRandomPracticeScramble(
-        GOOGLE_SHEET_ID,
-        settings.practiceMode.category,
-        settings.practiceMode.group,
-        settings.practiceMode.name
-      );
-      addPracticeRecord(practiceScrambleRecord);
-      newScramble = Alg.fromString(practiceScrambleRecord.scramble);
-      console.log('Practice Record: ', practiceScrambleRecord);
-    } else {
-      setHistoryPracticeRecords([]);
-      newScramble = await randomScrambleForEvent('333');
+
+    try {
+      if (usePractice) {
+        const practiceScrambleRecord = await getRandomPracticeScramble(
+          GOOGLE_SHEET_ID,
+          settingsRef.current.practiceMode.category,
+          settingsRef.current.practiceMode.group,
+          settingsRef.current.practiceMode.name
+        );
+        if (genId !== scrambleGenIdRef.current) return;
+        addPracticeRecord(practiceScrambleRecord);
+        newScramble = Alg.fromString(practiceScrambleRecord.scramble);
+        console.log('Practice Record: ', practiceScrambleRecord);
+      } else {
+        setHistoryPracticeRecords([]);
+        newScramble = await randomScrambleForEvent('333');
+      }
+    } catch (error) {
+      console.error('Failed to generate scramble', error);
+      return;
     }
+
+    if (genId !== scrambleGenIdRef.current) return;
+    if (practiceModeEnabledRef.current !== usePractice) return;
 
     const newScrambleDisplay = newScramble
       .toString()
       .split(' ')
+      .filter(Boolean)
       .map((move, index) => new ColoredMove(move, index));
 
     lastScrambleRef.current = scramble;
     setScramble(newScramble);
     setScrambleDisplay(newScrambleDisplay);
     resetPracticeSolutionPhase();
+
+    if (connectionRef.current && timerStateRef.current === TimerState.IDLE) {
+      setShowScramble(true);
+    }
   };
 
   const checkScramble = async (cubeMoves) => {
@@ -218,7 +238,9 @@ const Scramble = ({ className = '' }) => {
     setScrambleDisplay(coloredScramble);
 
     const isSolved =
-      moves.length > 0 && moves.every((m) => m.status === MoveScrambleStatus.CORRECT);
+      cubeMoves.length > 0 &&
+      moves.length > 0 &&
+      moves.every((m) => m.status === MoveScrambleStatus.CORRECT);
 
     if (isSolved) {
       if (practiceModeEnabledRef.current) {
@@ -253,7 +275,6 @@ const Scramble = ({ className = '' }) => {
   useEffect(() => {
     generateScramble().then(() => console.log(settings.practiceMode));
   }, [
-    settings.practiceMode,
     settings.practiceMode.category,
     settings.practiceMode.group,
     settings.practiceMode.name,
@@ -272,7 +293,13 @@ const Scramble = ({ className = '' }) => {
   }, [practiceModeEnabled]);
 
   useEffect(() => {
-    connection ? setShowScramble(true) : setShowScramble(false);
+    if (!connection) {
+      setShowScramble(false);
+      return;
+    }
+
+    setShowScramble(true);
+    generateScramble();
   }, [connection]);
 
   useEffect(() => {

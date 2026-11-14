@@ -167,15 +167,15 @@ const cubeControls = () => {
     setLastMoves([]);
     solutionMovesRef.current = [];
     setShowScramble(true);
-    cubeHistorySessionIdRef.current = await cubeHistoryService.startSession({
-      deviceMAC: cn?.deviceMAC,
-      deviceName: cn?.deviceName,
-    });
     cubeInitializedRef.current = false;
     setShouldBeSolved(false);
     shouldBeSolvedRef.current = false;
     connectionRef.current = cn;
     setConnection(cn);
+    cubeHistorySessionIdRef.current = await cubeHistoryService.startSession({
+      deviceMAC: cn?.deviceMAC,
+      deviceName: cn?.deviceName,
+    });
     await rememberConnectedCube(cn, device);
     eventsSubscriptionRef.current?.unsubscribe();
     eventsSubscriptionRef.current = cn?.events$?.subscribe((event) =>
