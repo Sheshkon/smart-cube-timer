@@ -1,5 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { GripHorizontal } from 'lucide-react';
 
 export default function SortableItem({ id, children }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -17,12 +18,16 @@ export default function SortableItem({ id, children }) {
 
   return (
     <div ref={setNodeRef} style={style}>
-      <div
-        {...attributes}
-        {...listeners}
-        className='sortable-handle'
-      >
-        ≡
+      <div className='sortable-handle-bar'>
+        <div
+          {...attributes}
+          {...listeners}
+          className='sortable-handle'
+          role='button'
+          aria-label='Drag to reorder'
+        >
+          <GripHorizontal size={18} aria-hidden />
+        </div>
       </div>
 
       <div style={{ touchAction: 'auto' }}>{children}</div>

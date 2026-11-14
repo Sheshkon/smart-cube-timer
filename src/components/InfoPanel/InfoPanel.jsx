@@ -36,7 +36,7 @@ const InfoPanel = ({ wrapperClassName = '' }) => {
             key={panel.id}
             className='app-card w-[calc(100%-35px)] min-h-[100px] rounded-lg relative text-sm mt-1 overflow-hidden'
           >
-            <div className='sortable-handle pointer-events-none h-6' aria-hidden />
+            <div className='sortable-handle-bar pointer-events-none h-6' aria-hidden />
             <div className='relative p-3'>
               <button
                 onClick={() => handleCloseTemporary(panel.id)}

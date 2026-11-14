@@ -63,6 +63,21 @@ function AccentSpectrumSlider({ value, onChange }) {
   );
 }
 
+function SettingsSection({ title, children }) {
+  return (
+    <section className='mb-4'>
+      <h4 className='text-xs font-semibold uppercase tracking-wide opacity-60 mb-2'>{title}</h4>
+      <div className='rounded-xl border border-black/10 dark:border-white/15 p-3 space-y-3'>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function SettingRow({ children }) {
+  return <div className='flex justify-between items-center gap-3'>{children}</div>;
+}
+
 function ThemeChoice({ themeOption, selected, onSelect }) {
   return (
     <button
@@ -108,151 +123,148 @@ export const SettingsModal = ({ isOpen, onClose }) => {
         <dialog open className='modal'>
           <div className={`modal-box ${settings.theme === 'dark' ? 'dark-theme' : 'light-theme'}`}>
             <h3 className='font-bold text-lg mb-4'>Settings</h3>
-            <div className='flex justify-between items-center mb-3'>
-              <b>
-                <label htmlFor='themeToggle'>Dark Mode</label>
-              </b>
-              <input
-                id='themeToggle'
-                type='checkbox'
-                className='toggle'
-                checked={settings.theme === 'dark'}
-                onChange={() =>
-                  updateSetting('theme', settings.theme === 'light' ? 'dark' : 'light')
-                }
-              />
-            </div>
-            <div className='flex justify-between items-center mb-3'>
-              <b>
-                <label htmlFor='gyroToggle'>Use Gyroscope</label>
-              </b>
-              <input
-                id='gyroToggle'
-                type='checkbox'
-                className='toggle'
-                checked={settings.useGyroscope || false}
-                onChange={(e) => updateSetting('useGyroscope', e.target.checked)}
-              />
-            </div>
-            <div className='flex justify-between items-center mb-3'>
-              <b>
-                <label htmlFor='imageNotation'>Use Image Moves Notation</label>
-              </b>
-              <input
-                id='imageNotation'
-                type='checkbox'
-                className='toggle'
-                checked={settings.imageNotation || false}
-                onChange={(e) => updateSetting('imageNotation', e.target.checked)}
-              />
-            </div>
-            <div className='flex justify-between items-center mb-3'>
-              <b>
-                <label htmlFor='showScrambleArrows'>Scramble arrows on cube</label>
-              </b>
-              <input
-                id='showScrambleArrows'
-                type='checkbox'
-                className='toggle'
-                checked={settings.showScrambleArrows !== false}
-                onChange={(e) => updateSetting('showScrambleArrows', e.target.checked)}
-              />
-            </div>
-            <div className='flex justify-between items-center mb-3'>
-              <b>
-                <label htmlFor='inspection'>Use inspection</label>
-              </b>
-              <input
-                id='inspection'
-                type='checkbox'
-                className='toggle'
-                checked={settings.inspection || false}
-                onChange={(e) => updateSetting('inspection', e.target.checked)}
-                disabled={timerState === TimerState.RUNNING}
-              />
-            </div>
-            <div className='flex justify-between items-center mb-3'>
-              <b>
-                <label htmlFor='solutionChart'>Solve analyse chart</label>
-              </b>
-              <input
-                id='solutionChart'
-                type='checkbox'
-                className='toggle'
-                checked={settings.solutionChart || false}
-                onChange={(e) => updateSetting('solutionChart', e.target.checked)}
-              />
-            </div>
-            <div className='flex justify-between items-center mb-3'>
-              <b>
-                <label htmlFor='scrambleSize'>Scramble Size</label>
-              </b>
-              <select
-                value={settings?.scrambleSize || 'text-sm'}
-                className='select select-xs w-32'
-                onChange={(e) => updateSetting('scrambleSize', e.target.value)}
-              >
-                <option value='text-xs'>Small</option>
-                <option value='text-sm'>Default</option>
-                <option value='text-lg'>Large</option>
-                <option value='text-xl'>X-Large</option>
-                <option value='text-2xl'>2XL</option>
-                <option value='text-3xl'>3XL</option>
-                <option value='text-4xl'>4XL</option>
-                <option value='text-5xl'>5XL</option>
-              </select>
-            </div>
-            <div className='flex justify-between items-center mb-3'>
-              <b>
-                <label htmlFor='solvesPerPage'>Solves Per Page</label>
-              </b>
-              <select
-                value={settings?.solvesPerPage || 'text-sm'}
-                className='select select-xs w-32'
-                onChange={(e) => updateSetting('solvesPerPage', parseInt(e.target.value))}
-              >
-                <option value='5'>5</option>
-                <option value='10'>10</option>
-                <option value='15'>15</option>
-                <option value='20'>20</option>
-                <option value='25'>25</option>
-                <option value='50'>50</option>
-                <option value='75'>75</option>
-                <option value='100'>100</option>
-              </select>
-            </div>
-            <div className='flex justify-between items-center mb-3'>
-              <b>
-                <label htmlFor='notifyEveryNSolves'>Notify Every Solves</label>
-              </b>
-              <select
-                value={settings?.notifyEveryNSolves || 'text-sm'}
-                className='select select-xs w-32'
-                onChange={(e) => updateSetting('notifyEveryNSolves', parseInt(e.target.value))}
-              >
-                <option value='-1'>Disabled</option>
-                <option value='5'>5</option>
-                <option value='10'>10</option>
-                <option value='12'>15</option>
-                <option value='15'>20</option>
-                <option value='100'>100</option>
-              </select>
-            </div>
-            <div>
-              <b>
-                <label htmlFor='appTheme'>Theme</label>
-              </b>
-              <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3'>
-                {STATIC_THEMES.map((themeOption) => (
-                  <ThemeChoice
-                    key={themeOption.id}
-                    themeOption={themeOption}
-                    selected={resolveBackgroundTheme(settings.backgroundColor).id === themeOption.id}
-                    onSelect={() => updateSetting('backgroundColor', themeOption.id)}
-                  />
-                ))}
+            <SettingsSection title='Timer'>
+              <SettingRow>
+                <b>
+                  <label htmlFor='inspection'>Use inspection</label>
+                </b>
+                <input
+                  id='inspection'
+                  type='checkbox'
+                  className='toggle'
+                  checked={settings.inspection || false}
+                  onChange={(e) => updateSetting('inspection', e.target.checked)}
+                  disabled={timerState === TimerState.RUNNING}
+                />
+              </SettingRow>
+              <SettingRow>
+                <b>
+                  <label htmlFor='notifyEveryNSolves'>Notify Every Solves</label>
+                </b>
+                <select
+                  id='notifyEveryNSolves'
+                  value={settings?.notifyEveryNSolves || 'text-sm'}
+                  className='select select-xs w-32'
+                  onChange={(e) => updateSetting('notifyEveryNSolves', parseInt(e.target.value))}
+                >
+                  <option value='-1'>Disabled</option>
+                  <option value='5'>5</option>
+                  <option value='10'>10</option>
+                  <option value='12'>15</option>
+                  <option value='15'>20</option>
+                  <option value='100'>100</option>
+                </select>
+              </SettingRow>
+              <SettingRow>
+                <b>
+                  <label htmlFor='solvesPerPage'>Solves Per Page</label>
+                </b>
+                <select
+                  id='solvesPerPage'
+                  value={settings?.solvesPerPage || 'text-sm'}
+                  className='select select-xs w-32'
+                  onChange={(e) => updateSetting('solvesPerPage', parseInt(e.target.value))}
+                >
+                  <option value='5'>5</option>
+                  <option value='10'>10</option>
+                  <option value='15'>15</option>
+                  <option value='20'>20</option>
+                  <option value='25'>25</option>
+                  <option value='50'>50</option>
+                  <option value='75'>75</option>
+                  <option value='100'>100</option>
+                </select>
+              </SettingRow>
+            </SettingsSection>
+            <SettingsSection title='Cube & scramble'>
+              <SettingRow>
+                <b>
+                  <label htmlFor='gyroToggle'>Use Gyroscope</label>
+                </b>
+                <input
+                  id='gyroToggle'
+                  type='checkbox'
+                  className='toggle'
+                  checked={settings.useGyroscope || false}
+                  onChange={(e) => updateSetting('useGyroscope', e.target.checked)}
+                />
+              </SettingRow>
+              <SettingRow>
+                <b>
+                  <label htmlFor='showScrambleArrows'>Scramble arrows on cube</label>
+                </b>
+                <input
+                  id='showScrambleArrows'
+                  type='checkbox'
+                  className='toggle'
+                  checked={settings.showScrambleArrows !== false}
+                  onChange={(e) => updateSetting('showScrambleArrows', e.target.checked)}
+                />
+              </SettingRow>
+              <SettingRow>
+                <b>
+                  <label htmlFor='imageNotation'>Use Image Moves Notation</label>
+                </b>
+                <input
+                  id='imageNotation'
+                  type='checkbox'
+                  className='toggle'
+                  checked={settings.imageNotation || false}
+                  onChange={(e) => updateSetting('imageNotation', e.target.checked)}
+                />
+              </SettingRow>
+              <SettingRow>
+                <b>
+                  <label htmlFor='scrambleSize'>Scramble Size</label>
+                </b>
+                <select
+                  id='scrambleSize'
+                  value={settings?.scrambleSize || 'text-sm'}
+                  className='select select-xs w-32'
+                  onChange={(e) => updateSetting('scrambleSize', e.target.value)}
+                >
+                  <option value='text-xs'>Small</option>
+                  <option value='text-sm'>Default</option>
+                  <option value='text-lg'>Large</option>
+                  <option value='text-xl'>X-Large</option>
+                  <option value='text-2xl'>2XL</option>
+                  <option value='text-3xl'>3XL</option>
+                  <option value='text-4xl'>4XL</option>
+                  <option value='text-5xl'>5XL</option>
+                </select>
+              </SettingRow>
+            </SettingsSection>
+            <SettingsSection title='Appearance'>
+              <SettingRow>
+                <b>
+                  <label htmlFor='themeToggle'>Dark Mode</label>
+                </b>
+                <input
+                  id='themeToggle'
+                  type='checkbox'
+                  className='toggle'
+                  checked={settings.theme === 'dark'}
+                  onChange={() =>
+                    updateSetting('theme', settings.theme === 'light' ? 'dark' : 'light')
+                  }
+                />
+              </SettingRow>
+              <div>
+                <b>
+                  <label htmlFor='appTheme'>Theme</label>
+                </b>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3'>
+                  {STATIC_THEMES.map((themeOption) => (
+                    <ThemeChoice
+                      key={themeOption.id}
+                      themeOption={themeOption}
+                      selected={resolveBackgroundTheme(settings.backgroundColor).id === themeOption.id}
+                      onSelect={() => updateSetting('backgroundColor', themeOption.id)}
+                    />
+                  ))}
+                </div>
               </div>
-              <fieldset className='mt-5 rounded-xl border border-black/10 dark:border-white/15 p-3'>
+              <fieldset className='rounded-xl border border-black/10 dark:border-white/15 p-3'>
                 <legend className='px-1 text-sm font-bold'>Accent themes</legend>
                 <p className='text-sm text-gray-500 dark:text-gray-400 mb-3'>
                   Color applies to Solid, Accent stripe and Ink cards.
@@ -279,7 +291,7 @@ export const SettingsModal = ({ isOpen, onClose }) => {
                   })}
                 </div>
               </fieldset>
-            </div>
+            </SettingsSection>
             <div className='modal-action'>
               <form method='dialog'>
                 <button

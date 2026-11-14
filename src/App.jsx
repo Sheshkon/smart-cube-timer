@@ -156,7 +156,6 @@ function App() {
         return !practiceModeEnabled && !isMiniGamesMode;
       case 'chart':
         return (
-          settings.solutionChart &&
           stats?.current?.reconstruction?.steps != null &&
           !practiceModeEnabled &&
           !isMiniGamesMode
@@ -172,7 +171,7 @@ function App() {
     const filtered = blocks.filter(shouldShow);
     console.log('visibleBlocks:', filtered);
     return filtered;
-  }, [blocks, practiceModeEnabled, isMiniGamesMode, settings.solutionChart, stats?.current?.reconstruction?.steps]);
+  }, [blocks, practiceModeEnabled, isMiniGamesMode, stats?.current?.reconstruction?.steps]);
 
   usePwaExitConfirmation();
 
