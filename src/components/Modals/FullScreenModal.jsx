@@ -68,7 +68,7 @@ const FullScreenModal = ({ children, onClose, hideCloseButton = false }) => {
         </div>
       )}
 
-      <div className="w-full h-full overflow-y-auto app-page">
+      <div className="w-full h-full overflow-y-auto overscroll-y-contain app-page">
         <div className="w-full max-w-[1800px] mx-auto min-h-full">
           {children}
         </div>
