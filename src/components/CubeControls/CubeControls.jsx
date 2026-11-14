@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import AppModeSwitcher from 'src/components/AppModeSwitcher/AppModeSwitcher.jsx';
 import { TimerState } from 'src/components/Timer/util.js';
 import { AppMode } from 'src/constants/appModes';
+import { cubeHistoryService, SESSION_HEARTBEAT_MS } from 'src/db/cubeHistoryService.js';
 import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
 import {
@@ -18,7 +19,6 @@ import {
 } from 'src/utils/util.ts';
 import * as THREE from 'three';
 
-import { cubeHistoryService } from 'src/db/cubeHistoryService.js';
 import { CubeCommand, CubeEventType, customMacAddressProvider, matchesPattern } from './/util.js';
 
 const cubeControls = () => {
@@ -268,6 +268,27 @@ const cubeControls = () => {
     window.addEventListener('pagehide', handlePageHide);
     return () => window.removeEventListener('pagehide', handlePageHide);
   }, [cubeHistorySessionIdRef]);
+
+  useEffect(() => {
+    if (!connection) return undefined;
+
+    const touch = () => {
+      const sessionId = cubeHistorySessionIdRef.current;
+      if (sessionId) cubeHistoryService.touchSession(sessionId);
+    };
+
+    touch();
+    const heartbeat = setInterval(touch, SESSION_HEARTBEAT_MS);
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') touch();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      clearInterval(heartbeat);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [connection, cubeHistorySessionIdRef]);
 
   return (
     <div className='controls flex flex-col items-center justify-center gap-2 py-2'>

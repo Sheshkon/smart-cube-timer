@@ -1,6 +1,7 @@
 import db from 'src/db/db.js';
 
 const UNKNOWN_MAC = 'unknown';
+export const SESSION_HEARTBEAT_MS = 15_000;
 
 const cubeKey = (mac) => (mac && String(mac).trim() !== '' ? String(mac).trim() : UNKNOWN_MAC);
 
@@ -54,6 +55,7 @@ export const cubeHistoryService = {
       softwareVersion: softwareVersion || '',
       gyroSupported: gyroSupported || '',
       connectedAt,
+      lastSeenAt: connectedAt,
       disconnectedAt: null,
       durationMs: null,
       endedBy: null,
@@ -66,6 +68,13 @@ export const cubeHistoryService = {
     const existing = await db.cubeConnectionSessions.get(id);
     if (!existing || existing.disconnectedAt) return;
     await db.cubeConnectionSessions.update(id, patch);
+  },
+
+  async touchSession(id, at = Date.now()) {
+    if (!id) return;
+    const existing = await db.cubeConnectionSessions.get(id);
+    if (!existing || existing.disconnectedAt) return;
+    await db.cubeConnectionSessions.update(id, { lastSeenAt: at });
   },
 
   async endSession(id, endedBy = 'user') {
@@ -91,13 +100,14 @@ export const cubeHistoryService = {
       )
       .toArray();
     await Promise.all(
-      openSessions.map((session) =>
-        db.cubeConnectionSessions.update(session.id, {
-          disconnectedAt: session.connectedAt,
-          durationMs: 0,
+      openSessions.map((session) => {
+        const disconnectedAt = session.lastSeenAt || session.connectedAt;
+        return db.cubeConnectionSessions.update(session.id, {
+          disconnectedAt,
+          durationMs: Math.max(0, disconnectedAt - session.connectedAt),
           endedBy: 'interrupted',
-        })
-      )
+        });
+      })
     );
   },
 
