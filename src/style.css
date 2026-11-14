@@ -199,28 +199,28 @@ twisty-player {
 }
 
 
+.scramble-moves {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+
+.scramble-move {
+    display: inline-block;
+    box-sizing: content-box;
+    padding: 0 0.2em;
+    text-align: center;
+}
+
+.scramble-move-icon {
+    display: inline-block;
+    padding: 0 0.2em;
+}
+
 .is-current-move {
     position: relative;
     background-color: rgb(189, 186, 186);
     border-radius: 2px;
-}
-
-.is-current-move::before,
-.is-current-move::after {
-    content: ''; /* Creates an empty pseudo-element */
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    background-color: rgb(189, 186, 186);
-    border-radius: 2px;
-}
-
-.is-current-move::before {
-    left: -5px;
-}
-
-.is-current-move::after {
-    right: -5px;
 }
 
 .controls button {

@@ -205,7 +205,13 @@ const Scramble = ({ className = '' }) => {
 
       const isCurrent = index === currentMoveIndex;
 
-      return new ColoredMove(item.move, index, color, isCurrent);
+      return new ColoredMove(
+        item.move,
+        index,
+        color,
+        isCurrent,
+        scrambleMoves[index] ?? item.move
+      );
     });
 
     setScrambleDisplay(coloredScramble);
@@ -396,7 +402,7 @@ const Scramble = ({ className = '' }) => {
                 overflow-x-auto
           `}
             >
-              <div className='whitespace-normal break-all leading-relaxed text-gray-900 dark:text-gray-50'>
+              <div className='scramble-moves leading-relaxed text-gray-900 dark:text-gray-50'>
                 {shouldBeSolved ? (
                   <div className='text-red-500 px-10 py-2'>Cube should be solved</div>
                 ) : (
@@ -415,11 +421,11 @@ const Scramble = ({ className = '' }) => {
                         return (
                           <span
                             key={el.index}
-                            className={`${el.isCurrent ? 'is-current-move' : ''} inline-block px-1`}
+                            className={`${el.isCurrent ? 'is-current-move' : ''} scramble-move-icon`}
                           >
                             <div className='relative'>
                               {el.move.includes('2') && (
-                                <span className='absolute -right-2 -top-4'>x2</span>
+                                <span className='absolute -right-2 -top-4 pointer-events-none'>x2</span>
                               )}
                               <MoveComponent
                                 fill={el.color !== MoveColor.WHITE ? el.color : color}
@@ -431,10 +437,14 @@ const Scramble = ({ className = '' }) => {
                         );
                       }
                     }
+                    const slotMove = el.layoutMove || el.move || '';
+                    const slotWidth = Math.max(slotMove.length, el.move?.length ?? 0, 1);
+
                     return (
                       <span
                         key={el.index}
-                        className={`${el.isCurrent ? 'is-current-move' : ''} inline-block px-1`}
+                        className={`${el.isCurrent ? 'is-current-move' : ''} scramble-move`}
+                        style={{ width: `${slotWidth}ch` }}
                       >
                         <span {...textProps} />
                       </span>

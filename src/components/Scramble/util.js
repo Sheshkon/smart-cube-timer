@@ -14,11 +14,12 @@ const MoveScrambleStatus = Object.freeze({
 });
 
 class ColoredMove {
-  constructor(move, index, color = MoveColor.WHITE, isCurrent = false) {
+  constructor(move, index, color = MoveColor.WHITE, isCurrent = false, layoutMove = move) {
     this.move = move;
     this.index = index;
     this.color = color;
     this.isCurrent = isCurrent;
+    this.layoutMove = layoutMove;
   }
 }
 
