@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import clsx from 'clsx';
 import { Alg } from 'cubing/alg';
-import { randomScrambleForEvent } from 'cubing/scramble';
 import { normalizeCubeMove } from 'src/components/Cube/cubeHintArrows.js';
 import AppSelect from 'src/components/AppSelect/AppSelect.jsx';
 import Inspection from 'src/components/Inspection/Inspection.jsx';
@@ -19,7 +18,7 @@ import { useCube } from 'src/hooks/useCube';
 import { useSettings } from 'src/hooks/useSettings';
 import { prepareMoves } from 'src/utils/util.ts';
 
-import { ColoredMove, MoveColor, MoveScrambleStatus } from './/util.js';
+import { ColoredMove, generate333Scramble, MoveColor, MoveScrambleStatus } from './/util.js';
 import 'src/style.css';
 import { checkScrambleProgress, getSolutionHintState } from './checkScrambleProgress.js';
 
@@ -151,7 +150,7 @@ const Scramble = ({ className = '' }) => {
         console.log('Practice Record: ', practiceScrambleRecord);
       } else {
         setHistoryPracticeRecords([]);
-        newScramble = await randomScrambleForEvent('333');
+        newScramble = await generate333Scramble();
       }
     } catch (error) {
       console.error('Failed to generate scramble', error);
@@ -299,7 +298,9 @@ const Scramble = ({ className = '' }) => {
     }
 
     setShowScramble(true);
-    generateScramble();
+    if (!scrambleDisplay.length) {
+      generateScramble();
+    }
   }, [connection]);
 
   useEffect(() => {

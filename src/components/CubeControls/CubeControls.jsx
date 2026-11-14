@@ -330,6 +330,8 @@ const cubeControls = () => {
 
   async function handleMoveEvent(event) {
     if (event.type === CubeEventType.MOVE) {
+      if (!cubeInitializedRef.current) return;
+
       twistyPlayerRef.current.experimentalAddMove(event.move, {
         cancel: false,
       });
@@ -360,16 +362,21 @@ const cubeControls = () => {
     }
 
     if (event.type === CubeEventType.FACELETS && !cubeInitializedRef.current) {
+      cubeInitializedRef.current = true;
+      setLastMoves([]);
       if (event.facelets !== SOLVED_STATE) {
         setShouldBeSolved(true);
         shouldBeSolvedRef.current = true;
-        const kpattern = faceletsToPattern(event.facelets);
-        const solution = await experimentalSolve3x3x3IgnoringCenters(kpattern);
-        twistyPlayerRef.current.alg = solution.invert();
+        try {
+          const kpattern = faceletsToPattern(event.facelets);
+          const solution = await experimentalSolve3x3x3IgnoringCenters(kpattern);
+          twistyPlayerRef.current.alg = solution.invert();
+        } catch (error) {
+          console.warn('Failed to apply initial cube state', error);
+        }
       } else {
         twistyPlayerRef.current.alg = '';
       }
-      cubeInitializedRef.current = true;
       console.log('Initial cube state is applied successfully', event.facelets);
     }
   }
