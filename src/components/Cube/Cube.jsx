@@ -160,20 +160,20 @@ const Cube = ({ className = '' }) => {
                   <Info size={18} />
                 </button>
               )}
-              <CubeInfoModal
-                info={{
-                  ...hardwareInfo,
-                  batteryLevel,
-                  deviceMAC: connection?.deviceMAC,
-                  deviceName: connection?.deviceName,
-                }}
-                isOpen={infoModalOpen}
-                onClose={handleInfoModalOpen}
-              />
             </div>
           </div>
         </div>
       </div>
+      <CubeInfoModal
+        info={{
+          ...hardwareInfo,
+          batteryLevel,
+          deviceMAC: connection?.deviceMAC,
+          deviceName: connection?.deviceName,
+        }}
+        isOpen={infoModalOpen}
+        onClose={handleInfoModalOpen}
+      />
     </div>
   );
 };

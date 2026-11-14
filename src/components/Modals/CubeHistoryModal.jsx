@@ -134,9 +134,9 @@ const CubeHistoryModal = ({ isOpen, onClose }) => {
                 <thead>
                   <tr>
                     <th>Cube</th>
+                    <th>Duration</th>
                     <th>Connected</th>
                     <th>Disconnected</th>
-                    <th>Duration</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -150,9 +150,9 @@ const CubeHistoryModal = ({ isOpen, onClose }) => {
                           <div className='font-medium'>{session.deviceName || session.hardwareName || 'Smart cube'}</div>
                           <div className='text-xs opacity-70 selectable-text'>{session.deviceMAC}</div>
                         </td>
+                        <td>{formatDuration(duration, { ongoing: live })}</td>
                         <td>{formatDateTime(session.connectedAt)}</td>
                         <td>{live ? '—' : formatDateTime(session.disconnectedAt)}</td>
-                        <td>{formatDuration(duration, { ongoing: live })}</td>
                         <td>
                           {live ? 'Connected' : endedByLabel[session.endedBy] || 'Ended'}
                         </td>
