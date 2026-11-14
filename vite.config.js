@@ -110,6 +110,8 @@ export default defineConfig({
         type: 'module',
       },
       workbox: {
+        // Main bundle is ~2.25 MB; Workbox default precache limit is 2 MiB.
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: false,
