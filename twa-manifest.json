@@ -3,7 +3,7 @@
   "host": "sheshkon.github.io",
   "name": "Smart Cube Timer",
   "launcherName": "Smart³",
-  "display": "fullscreen",
+  "display": "standalone",
   "themeColor": "#000000",
   "themeColorDark": "#000000",
   "navigationColor": "#000000",
